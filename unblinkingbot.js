@@ -24,7 +24,6 @@ var rtm;
 // unblinkingBot utilities https://github.com/nothingworksright/unblinkingBot
 var ubproc = require('./unblinkingprocess.js');
 var ubslack = require('./unblinkingslack.js');
-var ubip = require('./unblinkingip.js');
 
 // Just a few more things ...
 var port = 1138;

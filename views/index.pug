@@ -13,19 +13,16 @@ body
             .col-md-5
                 .panel.panel-primary
                     .panel-heading
-                        |IP Address
+                        |Slack Activity
                     .panel-body
                         .text-primary.small
-                            |External IP address watch. Know when your external IP address changes.
+                            |Recent activity using Slack integration.
                         br
-                        pre#ipaddresspanelbody.
+                        pre#slackactivitypanelbody.
                             Loading.
-                        br
-                        .text-info.small
-                            |The IP address refresh report receives updates from the server every 15 seconds. If one hour has elapsed since the last verification of the external IP address, it will be verified again. If the external IP address changes, a notification is sent via Slack.
                     .panel-footer
                         .text-warning.small
-                            |Requires Slack integration setup. Auto-refreshed every fifteen seconds
+                            |Requires Slack token setup. See the Settings page.
 
         include footer
 
