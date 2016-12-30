@@ -1,0 +1,6 @@
+node_modules/
+unblinkingbot.db/
+.vscode/
+.eslintrc.json
+npm-debug.log.*
+testing*

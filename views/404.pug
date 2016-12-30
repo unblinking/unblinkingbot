@@ -1,0 +1,32 @@
+doctype html(lang='en')
+
+head
+
+    include head
+
+body
+
+    include mixins
+
+    br
+    .container.theme-showcase(role='main')
+        br
+        .page-header
+        h1
+            |Error 404: Not Found
+        p
+            |Sorry, an error has occured. The requested page was not found!
+        p
+            button.btn.btn-default(type='button', onclick='history.go(-1);return true;')
+                |Back
+            a.btn.btn-primary(href='/', role='button')
+                |Home
+
+    // Bootstrap core JavaScript
+    // Placed at the end of the document so the pages load faster
+    // Latest compiled and minified JavaScript
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+    script.
+        window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\\/script>')
+    // http://getbootstrap.com/getting-started/
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa', crossorigin='anonymous')

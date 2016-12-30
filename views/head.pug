@@ -1,0 +1,56 @@
+meta(charset='utf-8')
+meta(http-equiv='X-UA-Compatible', content='IE=edge')
+meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+// The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
+
+title= 'unblinkingBot' + ' - ' + title
+
+// favicon stuff
+link(rel='apple-touch-icon', sizes='180x180', href='/public/images/apple-touch-icon.png')
+link(rel='icon', type='image/png', href='/public/images/favicon-32x32.png', sizes='32x32')
+link(rel='icon', type='image/png', href='/public/images/favicon-16x16.png', sizes='16x16')
+link(rel='manifest', href='/public/images/manifest.json')
+link(rel='mask-icon', href='/public/images/safari-pinned-tab.svg', color='#0000ff')
+link(rel='shortcut icon', href='/public/images/favicon.ico')
+meta(name='msapplication-config', content='/public/images/browserconfig.xml')
+meta(name='theme-color', content='#ffffff')
+
+// http://getbootstrap.com/getting-started/
+// Latest compiled and minified CSS
+link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u', crossorigin='anonymous')
+// Optional theme
+//link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css', integrity='sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp', crossorigin='anonymous')
+//link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css", integrity="sha384-S7YMK1xjUjSpEnF4P8hPUcgjXYLZKK3fQW1j5ObLSl787II9p8RO9XUGehRmKsxd", crossorigin="anonymous")
+link(href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css", rel="stylesheet", integrity="sha384-+ENW/yibaokMnme+vBLnHMphUYxHs34h9lpdbSLuAwGkOKFRl4C34WkjazBtb7eT", crossorigin="anonymous")
+script(src="https://maxcdn.bootstrapcdn.com/bootlint/0.14.2/bootlint.min.js", integrity="sha384-SLfe/wBrCVfyGjtLhfUmA5cYQLnNVTRmwMUJ11s7x5HxXCKom2oeEwX9bvY74CAs", crossorigin="anonymous")
+script.
+    function(){
+        var s=document.createElement("script");
+        s.onload=function(){bootlint.showLintReportForCurrentDocument([]);};s.src="https://maxcdn.bootstrapcdn.com/bootlint/latest/bootlint.min.js";document.body.appendChild(s)
+    }();
+
+// Some last minute css
+style(type='text/css').
+    .loader {
+        width: 20px;
+        height: 20px;
+        border-top: 5px solid #008ae6;
+        border-right: 5px solid #cccccc;
+        border-bottom: 5px solid #008ae6;
+        border-left: 5px solid #cccccc;
+        border-radius: 50%;
+        animation: spin 3s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .alert-fixed {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        z-index: 9999; /* Overlap and cover elements with index less than 9999 */
+        margin: 0px;
+        padding: 0px;
+    }

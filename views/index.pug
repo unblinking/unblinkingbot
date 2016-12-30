@@ -1,0 +1,34 @@
+doctype html(lang='en')
+head
+    include head
+body
+    include mixins
+    include navbar
+    br
+    .container.theme-showcase(role='main')
+        br
+        .page-header.clearfix
+            h4=title
+        .row
+            .col-md-5
+                .panel.panel-primary
+                    .panel-heading
+                        |IP Address
+                    .panel-body
+                        .text-primary.small
+                            |External IP address watch. Know when your external IP address changes.
+                        br
+                        pre#ipaddresspanelbody.
+                            Loading.
+                        br
+                        .text-info.small
+                            |The IP address refresh report receives updates from the server every 15 seconds. If one hour has elapsed since the last verification of the external IP address, it will be verified again. If the external IP address changes, a notification is sent via Slack.
+                    .panel-footer
+                        .text-warning.small
+                            |Requires Slack integration setup. Auto-refreshed every fifteen seconds
+
+        include footer
+
+    // Place JavaScript at the end of the document so the pages load faster
+    include js
+    script(src='/js/index.js')

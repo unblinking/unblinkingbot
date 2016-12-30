@@ -1,0 +1,36 @@
+doctype html(lang='en')
+head
+    include head
+body
+    include mixins
+    include navbar
+    // Showcase container begin
+    br
+    .container.theme-showcase(role='main')
+        br
+        .page-header.clearfix
+            h4=title
+        .row
+            .col-md-12
+                .panel.panel-primary
+                    .panel-heading
+                        |Data Store
+                    .panel-body
+                        .small|The refresh button will request a fresh copy of the levelDB data store from this server. The response will be displayed below for your review.
+                        br
+                        pre#datastorepanelbody
+                    .panel-footer
+                        button#datastorerefreshbutton.btn.btn-primary
+                            span.glyphicon.glyphicon-refresh
+                            +space
+                            | Refresh Full Data Store
+                        +space
+                        button#datastorehidebutton.btn.btn-default
+                            span.glyphicon.glyphicon-remove
+                            +space
+                            | Hide
+        include footer
+
+    // Place JavaScript at the end of the document so the pages load faster
+    include js
+    script(src='/js/datastore.js')
