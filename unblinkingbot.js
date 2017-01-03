@@ -311,11 +311,14 @@ io.on('connection', function(socket) {
     // Restart the unblinkingBot application
     socket.on('restartReq', function() {
         console.log('Request to restart unblinkingBot application.');
+        process.exit(1);
+        /*
         ubproc.unblinkingSpawn({
             command:'npm',
             args:'restart',
             options:undefined
         });
+        */
     });
 
 });
