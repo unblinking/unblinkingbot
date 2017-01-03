@@ -1,6 +1,8 @@
 engines:
   fixme:
     enabled: true
+  markdownlint:
+    enabled: true
   nodesecurity:
     enabled: true
   golint:
@@ -18,5 +20,6 @@ engines:
 ratings:
   paths:
   - "**.js"
+  - "**.md"
 exclude_paths:
 - "public/images/"
