@@ -39,7 +39,19 @@ app.set('views', './views');
 app.set('view engine', 'pug');
 
 app.get('/', function (req, res) {
-    res.render('index', {title:'Dashboard'});
+    var bundle = {};
+    bundle.title = 'Dashboard';
+    if (rtm && rtm.connected) {
+        bundle.rtmConnected = true;
+    }
+    db.get(['unblinkingSlack','history'], function(err, history) {
+        if (err) {
+            console.log(`ERROR: ${err}`);
+        } else {
+            bundle.history = JSON.stringify(history, undefined, 2);
+            res.render('index', bundle);
+        }
+    });
 });
 app.get('/settings', function (req, res) {
     var bundle = {};
