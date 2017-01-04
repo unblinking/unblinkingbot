@@ -1,6 +1,6 @@
 # unblinkingBot  
 
-A Slack bot starting point.  
+Another Slack bot.  
 
 ## Try it out  
 
