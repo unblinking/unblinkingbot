@@ -1,6 +1,6 @@
 # unblinkingBot  
 
-Another Slack bot.  
+Another Slack bot, but easy.  
 
 ## Try it out  
 
