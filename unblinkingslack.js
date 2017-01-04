@@ -144,8 +144,9 @@ function listenForEvents(bundle) {
         bundle.event = message;
         // See whats in the message text, if there is any
         if (bundle.event.text) {
-            // If the unblinkingbot name is mentioned ...
-            if (bundle.event.text.match(/unblinkingbot/gi)) {
+            // If the unblinkingbot name or user ID is mentioned ...
+            var re = new RegExp(bundle.rtm.activeUserId, 'g');
+            if (bundle.event.text.match(/unblinkingbot/gi) || bundle.event.text.match(re)) {
                 // Reply to the message
                 bundle.sending = {};
                 bundle.sending.user = bundle.rtm.dataStore.getUserById(bundle.event.user);
