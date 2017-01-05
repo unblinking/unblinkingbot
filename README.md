@@ -33,6 +33,8 @@ Use the settings page to save your own Slack bot token.
 
 Open your Slack app and say hello to the unblinkingbot.
 
+![unblinkingbot in Slack](https://raw.githubusercontent.com/nothingworksright/unblinkingbot/gh-pages/slack.png "unblinkingbot in Slack")
+
 ## More  
 
 Screenshots are at [http://unblinkingbot.com/](http://unblinkingbot.com/).
