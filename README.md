@@ -6,7 +6,17 @@ Another Slack bot.
 
 ![unblinkingbot logo](public/images/android-chrome-192x192.png "unblinkingbot logo")
 
+## Why
+
+To make it as easy as possible to get started on a new Slack bot integration.  
+
+The bot creates it's own website where you paste in a Slack bot token. Once the token is saved you can immediately talk to the bot through Slack. As it is, mentioning the bot's name in a direct message or channel with the bot will trigger a response of "That's my name, don't wear it out!" but the bot does nothing else.  
+
+Fork this repository and then customize the bot for your own needs. Maybe add other message responses, schedule tasks for home automation or server maintenance, setup notifications for important events, etc. 
+
 ## Try it out  
+
+To make it as easy as possible to try it out, the bot can be cloned, built, and run as a docker container. Using this method avoids installing it as a systemd based service directly on your Linux machine, and instead runs it inside of the docker container.
 
 To clone, build, and run the unblinkingbot as a docker container:  
 
