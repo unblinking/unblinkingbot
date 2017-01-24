@@ -17,6 +17,7 @@ engines:
           mass_threshold: 50
 ratings:
   paths:
+  - "**.css"
   - "**.js"
   - "**.md"
 exclude_paths:
