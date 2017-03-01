@@ -37,5 +37,8 @@ Open your Slack app and say hello to the unblinkingbot.
 
 ## More  
 
-Screenshots are at [http://unblinkingbot.com/](http://unblinkingbot.com/).
+Screenshots are at [http://unblinkingbot.com/](http://unblinkingbot.com/).  
 
+## Show your support  
+
+Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
