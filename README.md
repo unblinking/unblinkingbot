@@ -5,7 +5,7 @@
 
 Another Slack bot.  
 
-![unblinkingbot logo](public/images/android-chrome-192x192.png "unblinkingbot logo")
+![unblinkingbot logo](https://raw.githubusercontent.com/nothingworksright/unblinkingbot/gh-pages/android-chrome-192x192.png "unblinkingbot logo")
 
 ## Why
 
