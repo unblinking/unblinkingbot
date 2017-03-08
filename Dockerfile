@@ -8,7 +8,7 @@ RUN yum -y update; yum clean all
 RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
 RUN yum -y install nodejs; yum clean all
 
-# Prepare the unblinkingBot application files
+# Prepare the unblinkingbot application files
 RUN mkdir -p /unblinkingbot
 WORKDIR /unblinkingbot
 COPY . /unblinkingbot
@@ -19,7 +19,7 @@ COPY unblinkingbot.service /lib/systemd/system/unblinkingbot.service
 RUN systemctl enable unblinkingbot.service
 
 # Listens to the specified network port at runtime
-# Using port 1138, probably not already being used
+# Using port 1138, hopefully not already in use
 EXPOSE 1138
 
 # Run systemd
@@ -32,5 +32,3 @@ CMD [ "/usr/sbin/init" ]
 # 
 # Running:
 # docker run --privileged --name unblinkingbot -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 1138:1138 -d unblinkingbot
-#
-#
