@@ -1,12 +1,13 @@
-# Using the official CentOS systemd docker container
+# Using the Resin Base Images
 # Useful for running systemd based services
-# https://hub.docker.com/r/centos/systemd/
-FROM centos/systemd
+# https://docs.resin.io/runtime/resin-base-images/
+FROM resin/amd64-debian:jessie-20170304
 
 # Update sources and install node.js
-RUN yum -y update; yum clean all
-RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
-RUN yum -y install nodejs; yum clean all
+RUN apt-get update
+RUN apt-get install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+RUN apt-get install -y nodejs
 
 # Prepare the unblinkingbot application files
 RUN mkdir -p /unblinkingbot
