@@ -6,8 +6,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/unblinkingbot
-ExecStart=/usr/bin/node /unblinkingbot/unblinkingbot.js
+WorkingDirectory=/usr/local/unblinkingbot
+ExecStart=/usr/bin/node /usr/local/unblinkingbot/unblinkingbot.js
 Restart=on-failure
 
 [Install]
