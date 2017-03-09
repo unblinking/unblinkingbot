@@ -1,7 +1,4 @@
-# Using the Resin Base Images
-# Useful for running systemd based services
-# https://docs.resin.io/runtime/resin-base-images/
-FROM resin/amd64-debian:jessie-20170304
+FROM nothingworksright/amd64_debian_jessie_node
 
 # Enable the systemd init system
 ENV INITSYSTEM on
