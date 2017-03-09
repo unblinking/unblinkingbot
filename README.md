@@ -23,7 +23,7 @@ Run these two commands to pull and then run the unblinkingbot Docker image from 
 
 ```Bash
 docker pull nothingworksright/unblinkingbot
-docker run --privileged --name unblinkingbot -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 1138:1138 -d unblinkingbot
+docker run --privileged --name unblinkingbot -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 1138:1138 -d nothingworksright/unblinkingbot
 ```
 
 On the same machine running the docker container, open a web browser and go to [http://127.0.0.1:1138](http://127.0.0.1:1138).  
