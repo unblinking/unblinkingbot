@@ -23,10 +23,9 @@ CMD [ "/usr/sbin/init" ]
 ##  Example docker commands
 # 
 # Building:
-# docker build --rm --no-cache -t unblinkingbot .
+# docker build --rm --no-cache -t nothingworksright/unblinkingbot:latest .
 # 
 # Running:
-# docker run --privileged --name unblinkingbot -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 1138:1138 -d unblinkingbot
-#
+# docker run --privileged --name unblinkingbot -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 1138:1138 -d nothingworksright/unblinkingbot:latest
+# 
 ##
-
