@@ -3,12 +3,6 @@ FROM nothingworksright/amd64_debian_jessie_node
 # Enable the systemd init system
 ENV INITSYSTEM on
 
-# Update sources and install node.js
-RUN apt-get update
-RUN apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-RUN apt-get install -y nodejs
-
 # Prepare the unblinkingbot application files
 RUN mkdir -p /usr/local/unblinkingbot
 WORKDIR /usr/local/unblinkingbot
