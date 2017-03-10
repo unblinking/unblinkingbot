@@ -5,7 +5,7 @@
 
 Another [Slack](https://api.slack.com/bot-users) bot.  
 
-![unblinkingbot logo](https://raw.githubusercontent.com/nothingworksright/unblinkingbot/gh-pages/android-chrome-192x192.png "unblinkingbot logo")
+![unblinkingbot logo](https://raw.githubusercontent.com/nothingworksright/unblinkingbot/gh-pages/android-chrome-192x192.png "unblinkingbot logo")  
 
 ## Why  
 
@@ -27,7 +27,7 @@ To run the unblinkingbot [Docker](https://www.docker.com/) image from [Docker Hu
 docker run --privileged --name unblinkingbot -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 1138:1138 -d nothingworksright/unblinkingbot:latest
 ```
 
-Once the container is running, open a web browser on the same machine and go to [http://127.0.0.1:1138](http://127.0.0.1:1138). To use a browser from a differet machine  
+Once the container is running, open a web browser on the same machine and go to [http://127.0.0.1:1138](http://127.0.0.1:1138). To use a browser from a differet machine, use the proper IP address.  
 
 Use the settings page to save your own [Slack](https://api.slack.com/bot-users) bot token.  
 
