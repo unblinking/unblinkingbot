@@ -94,9 +94,7 @@ function bindSaveSlackTokenButton() {
         $(this).unbind('click');
         $(this).html("<div class=\"loader pull-left\"></div>");
         // Emit our save request with the token
-        socket.emit('saveSlackTokenReq', {
-            slackToken: $('input[id=slackToken]').val()
-        });
+        socket.emit('saveSlackTokenReq', $('input[id=slackToken]').val());
     });
 }
 bindSaveSlackTokenButton();
@@ -192,10 +190,7 @@ function bindSaveSlackDefaultNotifyButton(bundle) {
             bundle.defaultNotify = $('select[id=defaultUserSelect]').val();
         }
         // Emit request to save the default notification target
-        socket.emit('saveSlackNotifyReq', {
-            defaultNotifyType:bundle.defaultNotifyType,
-            defaultNotify:bundle.defaultNotify
-        });
+        socket.emit('saveSlackNotifyReq', {type: bundle.defaultNotifyType, notify: bundle.defaultNotify});
     });
 }
 
