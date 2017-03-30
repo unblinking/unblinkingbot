@@ -51,30 +51,39 @@ const disconnectRtmInstance = bluebird.promisify(require("./unblinkingslack.js")
 
 /**
  * Define all app configurations here except routes (define routes last).
- * 
- * Why instantiate the server constant here? From https://github.com/socketio/socket.io - Starting with 3.0, express applications have become request handler functions that you pass to http or http Server instances. You need to pass the Server to socket.io, and not the express application function. Also make sure to call .listen on the server, not the app.
  */
 const app = express();
-const server = http.Server(app); // To be able to use socket.io
 app.use(express.static(path.join(__dirname, '/public')));
 app.set('views', './views');
 app.set('view engine', 'pug');
 
 /**
- * Create the main bundle. An object reference to hold some things that will be passed around.
+ * Instantiate the server constant here.
+ * @see {@link https://github.com/socketio/socket.io socket.io}
+ * "Starting with 3.0, express applications have become request handler functions that you pass to http or http Server instances. You need to pass the Server to socket.io, and not the express application function. Also make sure to call .listen on the server, not the app."
+ */
+const server = http.Server(app);
+
+/**
+ * Create the main bundle. Holds references to the LevelDB data store, Slack RTM Client, and Socket.io server.
  */
 var bundle = {};
 bundle.db = new levelPathwise(level('./unblinkingbot.db'));
-bundle.rtm = {}; // Add an empty starter object to hold the Slack RTM Client later.
+bundle.rtm = {}; // An empty object to hold the Slack RTM Client
 bundle.socket = io(server);
 
+/**
+ * Socket.io stuff.
+ * TODO: Fix this ugly stuff.
+ */
 unblinking_sockets.on(bundle);
 
 /**
  * Define route configurations after other app configurations.
  * @param {object} app - The Express application instance.
+ * @param {object} bundle - The main bundle of db, rtm, and socket objects.
  */
-routes(app, bundle.db, bundle.rtm);
+routes(app, bundle);
 
 /**
  * Define error-handling middleware after app and route configurations.

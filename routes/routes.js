@@ -21,57 +21,58 @@
  * @see {@link https://expressjs.com/en/guide/routing.html Express routing}
  * @see {@link http://expressjs.com/en/api.html Express API}
  */
-const router = function (app, db, rtm) {
+const router = function (app, bundle) {
 
   app.get('/', function (req, res) {
-    let bundle = {};
-    bundle.title = 'Dashboard';
-    if (rtm !== null && rtm.connected) {
-      bundle.rtmConnected = true;
+    let params = {};
+    params.title = 'Dashboard';
+    if (bundle.rtm !== null && bundle.rtm.connected) {
+      params.rtmConnected = true;
     }
-    db.get(['unblinkingSlack', 'history'], function (err, history) {
+    bundle.db.get(['unblinkingSlack', 'history'], function (err, history) {
       if (err) {
         console.log(`ERROR: ${err}`);
       } else {
-        bundle.history = JSON.stringify(history, undefined, 2);
-        res.render('index', bundle);
+        params.history = JSON.stringify(history, undefined, 2);
+        res.render('index', params);
       }
     });
   });
+
   app.get('/settings', function (req, res) {
-    let bundle = {};
-    bundle.title = 'Settings';
-    if (rtm !== null && rtm.connected) {
-      bundle.rtmConnected = true;
+    let settingsBundle = {};
+    settingsBundle.title = 'Settings';
+    if (bundle.rtm !== null && bundle.rtm.connected) {
+      settingsBundle.rtmConnected = true;
     }
-    db.get(['unblinkingSlack', 'credentials', 'token'], function (err, token) {
+    bundle.db.get(['unblinkingSlack', 'credentials', 'token'], function (err, token) {
       if (err) {
         console.log(`ERROR: ${err}`);
       } else {
         if (typeof token === 'string' || token instanceof String) {
-          bundle.slackToken = token;
+          settingsBundle.slackToken = token;
         } else {
-          bundle.slackToken = undefined;
+          settingsBundle.slackToken = undefined;
         }
-        db.get(['unblinkingSlack', 'credentials', 'defaultNotify'], function (err, defaultNotify) {
+        bundle.db.get(['unblinkingSlack', 'credentials', 'defaultNotify'], function (err, defaultNotify) {
           if (err) {
             console.log(`ERROR: ${err}`);
           } else {
             if (typeof defaultNotify === 'string' || defaultNotify instanceof String) {
-              bundle.defaultNotify = defaultNotify;
+              settingsBundle.defaultNotify = defaultNotify;
             } else {
-              bundle.defaultNotify = undefined;
+              settingsBundle.defaultNotify = undefined;
             }
-            db.get(['unblinkingSlack', 'credentials', 'defaultNotifyType'], function (err, defaultNotifyType) {
+            bundle.db.get(['unblinkingSlack', 'credentials', 'defaultNotifyType'], function (err, defaultNotifyType) {
               if (err) {
                 console.log(`ERROR: ${err}`);
               } else {
                 if (typeof defaultNotifyType === 'string' || defaultNotifyType instanceof String) {
-                  bundle.defaultNotifyType = defaultNotifyType;
+                  settingsBundle.defaultNotifyType = defaultNotifyType;
                 } else {
-                  bundle.defaultNotifyType = undefined;
+                  settingsBundle.defaultNotifyType = undefined;
                 }
-                res.render('settings', bundle);
+                res.render('settings', settingsBundle);
               }
             });
           }
@@ -79,6 +80,7 @@ const router = function (app, db, rtm) {
       }
     });
   });
+
   app.get('/datastore', function (req, res) {
     res.render('datastore', {
       title: 'Data Store'
