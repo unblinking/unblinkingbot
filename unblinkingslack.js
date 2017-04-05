@@ -24,12 +24,64 @@ var unblinking_db = require('./unblinkingdb.js');
 
 const slacking = {
 
-  getCredentials: function (bundle, callback) {
-    bundle.db.get(['unblinkingSlack', 'credentials', 'token'], function (err, token) {
-      if (err === null && (typeof token === 'string' || token instanceof String)) {
-        bundle.token = token;
-      } else {
-        err = "Slack credentials error. Token is not a string.";
+  getToken: function (bundle, callback) {
+    let key = "slack::credentials::token";
+    bundle.db.get(key, function (err, data) {
+      if (data) {
+        if (typeof data === 'string' || data instanceof String) {
+          bundle.token = data;
+        } else {
+          bundle.token = "Invalid token.";
+        }
+      }
+      if (err) {
+        if (err.notFound) {
+          // Common and expected, null this error.
+          err = null;
+          bundle.token = "Token not found.";
+        }
+      }
+      callback(err, bundle);
+    });
+  },
+
+  getNotify: function (bundle, callback) {
+    let key = "slack::credentials::notify";
+    bundle.db.get(key, function (err, data) {
+      if (data) {
+        if (typeof data === 'string' || data instanceof String) {
+          bundle.notify = data;
+        } else {
+          bundle.notify = "Invalid notify.";
+        }
+      }
+      if (err) {
+        if (err.notFound) {
+          // Common and expected, null this error.
+          err = null;
+          bundle.notify = "Notify not found.";
+        }
+      }
+      callback(err, bundle);
+    });
+  },
+
+  getNotifyType: function (bundle, callback) {
+    let key = "slack::credentials::notifyType";
+    bundle.db.get(key, function (err, data) {
+      if (data) {
+        if (typeof data === 'string' || data instanceof String) {
+          bundle.notifyType = data;
+        } else {
+          bundle.notifyType = "Invalid notifyType.";
+        }
+      }
+      if (err) {
+        if (err.notFound) {
+          // Common and expected, null this error.
+          err = null;
+          bundle.notifyType = "Notify type not found.";
+        }
       }
       callback(err, bundle);
     });
@@ -59,37 +111,12 @@ const slacking = {
 
       bundle.socket.emit('slackRestartRes');
 
-      function saveSlackData(object) {
-        bundle.db.put([], {
-          unblinkingSlack: object
-        }, function (err) {
-          if (err) {
-            console.log(`ERROR: ${err}`);
-          } else {
-            // Success
-          }
-        });
-      }
-      saveSlackData({
-        channels: bundle.rtm.dataStore.channels
-      });
-      saveSlackData({
-        users: bundle.rtm.dataStore.users
-      });
-      saveSlackData({
-        dms: bundle.rtm.dataStore.dms
-      });
-      saveSlackData({
-        groups: bundle.rtm.dataStore.groups
-      });
-      saveSlackData({
-        bots: bundle.rtm.dataStore.bots
-      });
-      saveSlackData({
-        teams: bundle.rtm.dataStore.teams
-      });
-
-      callback(err, bundle);
+      bundle.db.put("slack::channels", bundle.rtm.dataStore.channels, function(err) {});
+      bundle.db.put("slack::users", bundle.rtm.dataStore.users, function(err) {});
+      bundle.db.put("slack::dms", bundle.rtm.dataStore.dms, function(err) {});
+      bundle.db.put("slack::groups", bundle.rtm.dataStore.groups, function(err) {});
+      bundle.db.put("slack::bots", bundle.rtm.dataStore.bots, function(err) {});
+      bundle.db.put("slack::teams", bundle.rtm.dataStore.teams, function(err) {});
     });
 
     // Some extra logging to the console to determine why we sometimes end up
@@ -139,7 +166,7 @@ const slacking = {
 
   },
 
-  disconnectRtmInstance: function(bundle, callback) {
+  disconnectRtmInstance: function (bundle, callback) {
     let err = null;
     if (bundle.rtm !== null && Object.keys(bundle.rtm).length !== 0) { // not null or empty object
       bundle.rtm.autoReconnect = false;

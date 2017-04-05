@@ -45,7 +45,6 @@ function bindRestartSlackIntegration() {
         // Unbind the button (do not respond to clicks anymore) and show loader animation
         $(this).unbind('click');
         $(this).html("<div class=\"loader pull-left\"></div> &nbsp; Restarting Slack Integration");
-        // Emit our save request with the token
         socket.emit('slackRestartReq');
     });
 }
@@ -69,7 +68,6 @@ function bindStopSlackIntegration() {
         // Unbind the button (do not respond to clicks anymore) and show loader animation
         $(this).unbind('click');
         $(this).html("<div class=\"loader pull-left\"></div> &nbsp; Stopping Slack Integration");
-        // Emit our save request with the token
         socket.emit('slackStopReq');
     });
 }

@@ -33,22 +33,22 @@ body
                                                         |.
                                                     else
                                                         +space
-                                                        b#slackIntegrationStatus.text-danger stopped
+                                                        b#slackIntegrationStatus.text-danger disconnected
                                                         |.
                                                 br
                                                 b.small|Token:
                                                 br
                                                 .text-info.small#currentSettingsToken
-                                                    if slackToken
-                                                        |#{slackToken}
+                                                    if token
+                                                        |#{token}
                                                     else
                                                         |undefined
                                                 br
                                                 b.small|Notifications:
                                                 br
                                                 .text-info.small#currentSettingsNotify
-                                                    if defaultNotify
-                                                        |#{defaultNotifyType}  #{defaultNotify}
+                                                    if notify
+                                                        |#{notifyType}  #{notify}
                                                     else
                                                         |undefined
                                                 .alert-fixed

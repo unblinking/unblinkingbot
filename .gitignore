@@ -1,5 +1,5 @@
 node_modules/
-unblinkingbot.db/
+db/
 .vscode/
 .eslintrc.json
 npm-debug.log.*
