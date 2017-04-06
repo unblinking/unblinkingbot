@@ -22,7 +22,7 @@ const bluebird = require('bluebird');
 /**
  * Promisify the unblinkingdb.js callback functions.
  */
-const getToken = bluebird.promisify(require("./unblinkingslack.js").getToken);
+const getToken = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
 const getNotify = bluebird.promisify(require("./unblinkingslack.js").getNotify);
 const getNotifyType = bluebird.promisify(require("./unblinkingslack.js").getNotifyType);
 

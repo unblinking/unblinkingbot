@@ -20,9 +20,11 @@
 const bluebird = require("bluebird");
 
 /**
- * Require the local modules that will be used.
+ * Promisify some local module callback functions.
  */
-const getToken = bluebird.promisify(require("./unblinkingslack.js").getToken);
+const getFullDataStore = bluebird.promisify(require("./unblinkingdb.js").getFullDataStore);
+const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
+const getChannelNamesArray = bluebird.promisify(require("./unblinkingslack.js").getChannelNamesArray);
 const getRtmInstance = bluebird.promisify(require("./unblinkingslack.js").getRtmInstance);
 const startRtmInstance = bluebird.promisify(require("./unblinkingslack.js").startRtmInstance);
 const listenForRtmEvents = bluebird.promisify(require("./unblinkingslack.js").listenForEvents);
@@ -30,48 +32,35 @@ const disconnectRtm = bluebird.promisify(require("./unblinkingslack.js").disconn
 
 const sockets = {
 
-  on: function (bundle, callback) {
+  events: function (bundle, callback) {
 
     bundle.socket.on("connection", function (socket) {
-      // console.log("Socket.io connection.");
+      // let handshake = JSON.stringify(socket.handshake, null, 2);
+      // console.log(`Socket.io connection handshake: ${handshake}.`);
+
       socket.on("disconnect", function () {
         // console.log("Socket.io disconnection.");
       });
 
-      // Read full data store
       socket.on("readFullDbReq", function () {
-        let fullDataStore = {};
-        bundle.db.createReadStream()
-          .on("data", function (data) {
-            //socket.emit("readFullDbRes", data);
-            //console.log(data);
-            fullDataStore[data.key] = data.value;
+        getFullDataStore(bundle)
+          .then(function (data) {
+            socket.emit("readFullDbRes", data);
           })
-          .on("error", function (err) {
-            // console.log("Oh my!", err);
-          })
-          .on("close", function () {
-            // console.log("Stream closed");
-          })
-          .on("end", function () {
-            // console.log("Stream ended");
-            socket.emit("readFullDbRes", fullDataStore);
+          .catch(function (err) {
+            socket.emit("readFullDbRes", err.message);
           });
       });
 
       // Read available Slack channels
       socket.on("readSlackChannelsReq", function () {
-        bundle.db.get("slack::channels", function (err, data) {
-          if (err) return console.log(err);
-          let names = [];
-          Object.keys(data).forEach(function (key) {
-            // Only if the bot is a member of the channel.
-            if (data[key].is_member) {
-              names.push(data[key].name);
-            }
+        getChannelNamesArray(bundle)
+          .then(function (data) {
+            socket.emit("readSlackChannelsRes", data);
+          })
+          .catch(function (err) {
+            socket.emit("readSlackChannelsRes", err.message);
           });
-          socket.emit("readSlackChannelsRes", names);
-        });
       });
 
       // Read available Slack groups
@@ -95,14 +84,11 @@ const sockets = {
           Object.keys(dms).forEach(function (key) {
             ids.push(dms[key].user);
           });
-          console.log(ids);
           bundle.db.get("slack::users", function (err, users) {
             if (err) return console.log(err);
             ids.forEach(function (id) {
-              console.log(id);
               names.push(users[id].name);
             });
-            console.log(names);
             socket.emit("readSlackUsersRes", names);
           });
         });
@@ -195,7 +181,7 @@ const sockets = {
       // Restart Slack integration
       socket.on("slackRestartReq", function () {
         disconnectRtm(bundle)
-          .then(getToken)
+          .then(addTokenToBundle)
           .then(getRtmInstance)
           .then(startRtmInstance)
           .then(listenForRtmEvents)

@@ -15,34 +15,72 @@
 
 /**
  * Require the 3rd party modules that will be used.
+ * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
  */
+const bluebird = require("bluebird");
 const slackClient = require("@slack/client");
-
 
 var unblinking_db = require('./unblinkingdb.js');
 
+/**
+ * Promisify some local module callback functions.
+ */
+const getKeyValue = bluebird.promisify(require("./unblinkingdb.js").getKeyValue);
+
 const slacking = {
 
-  getToken: function (bundle, callback) {
-    let key = "slack::credentials::token";
-    bundle.db.get(key, function (err, data) {
-      if (data) {
-        if (typeof data === 'string' || data instanceof String) {
-          bundle.token = data;
-        } else {
-          bundle.token = "Invalid token.";
+  addTokenToBundle: function (bundle, callback) {
+    bundle.lookupKey = "slack::credentials::token";
+    getKeyValue(bundle)
+      .then(validateString)
+      .then(function(data){
+        bundle.token = data;
+        callback(null, bundle);
+      })
+      .catch(function (err) {
+        callback(err, bundle);
+      });
+  },
+
+  validateTypeOrInstanceOfString: function (string, callback) {
+    let err;
+    if (typeof string === 'string' || string instanceof String) {
+      // String looks like a string.
+      err = null;
+    } else {
+      err = new Error(`Invalid string: ${string}`);
+    }
+    callback(err, string);
+  },
+
+  getChannelNamesArray: function (bundle, callback) {
+    bundle.lookupKey = "slack::channels";
+    getKeyValue(bundle)
+      .then(channelArrayFromObject)
+      .then(function (channelNamesArray) {
+        delete bundle.lookupKey; // Clean this up.
+        callback(null, channelNamesArray);
+      })
+      .catch(function (err) {
+        callback(err, null);
+      });
+  },
+
+  channelNameArrayFromRtmChannelsObject: function (rtmChannelsObject, callback) {
+    let err = null;
+    let channelNames = [];
+    try {
+      Object.keys(rtmChannelsObject).forEach(function (key) {
+        // Only include channel names if the bot is a member.
+        if (rtmChannelsObject[key].is_member) {
+          channelNames.push(rtmChannelsObject[key].name);
         }
-      }
-      if (err) {
-        if (err.notFound) {
-          // Common and expected, null this error.
-          err = null;
-          bundle.token = "Token not found.";
-        }
-      }
-      callback(err, bundle);
-    });
+      });
+    } catch (e) {
+      err = e;
+    }
+    callback(err, channelNames);
   },
 
   getNotify: function (bundle, callback) {
@@ -111,12 +149,12 @@ const slacking = {
 
       bundle.socket.emit('slackRestartRes');
 
-      bundle.db.put("slack::channels", bundle.rtm.dataStore.channels, function(err) {});
-      bundle.db.put("slack::users", bundle.rtm.dataStore.users, function(err) {});
-      bundle.db.put("slack::dms", bundle.rtm.dataStore.dms, function(err) {});
-      bundle.db.put("slack::groups", bundle.rtm.dataStore.groups, function(err) {});
-      bundle.db.put("slack::bots", bundle.rtm.dataStore.bots, function(err) {});
-      bundle.db.put("slack::teams", bundle.rtm.dataStore.teams, function(err) {});
+      bundle.db.put("slack::channels", bundle.rtm.dataStore.channels, function (err) {});
+      bundle.db.put("slack::users", bundle.rtm.dataStore.users, function (err) {});
+      bundle.db.put("slack::dms", bundle.rtm.dataStore.dms, function (err) {});
+      bundle.db.put("slack::groups", bundle.rtm.dataStore.groups, function (err) {});
+      bundle.db.put("slack::bots", bundle.rtm.dataStore.bots, function (err) {});
+      bundle.db.put("slack::teams", bundle.rtm.dataStore.teams, function (err) {});
     });
 
     // Some extra logging to the console to determine why we sometimes end up
@@ -250,5 +288,11 @@ const slacking = {
   }
 
 };
+
+/**
+ * Had to promisify after declaring the slacking object, for 'strict'.
+ */
+const channelArrayFromObject = bluebird.promisify(slacking.channelNameArrayFromRtmChannelsObject);
+const validateString = bluebird.promisify(slacking.validateTypeOrInstanceOfString);
 
 module.exports = slacking;

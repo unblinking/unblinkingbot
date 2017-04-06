@@ -20,6 +20,29 @@
  */
 const unblinkingdb = {
 
+  getFullDataStore: function (bundle, callback) {
+    let err = null;
+    let fullDataStore = {};
+    bundle.db.createReadStream()
+      .on("data", function (data) {
+        fullDataStore[data.key] = data.value;
+      })
+      .on("error", function (e) {
+        err = e;
+      })
+      .on("close", function () {
+      })
+      .on("end", function () {
+        callback(err, fullDataStore);
+      });
+  },
+
+  getKeyValue: function (bundle, callback) {
+    bundle.db.get(bundle.lookupKey, function (err, data) {
+      callback(err, data);
+    });
+  },
+
   trimObjKeys: function (bundle, callback) {
     bundle.db.get(bundle.objectPath, function (err, obj) {
       if (err) {

@@ -73,15 +73,12 @@ bundle.rtm = {}; // An empty object to hold the Slack RTM Client
 bundle.socket = io(server);
 
 /**
- * Socket.io stuff.
- * TODO: Fix this ugly stuff.
+ * Define socket.io events.
  */
-sockets.on(bundle);
+sockets.events(bundle);
 
 /**
  * Define route configurations after other app configurations.
- * @param {object} app - The Express application instance.
- * @param {object} bundle - The main bundle of db, rtm, and socket references.
  */
 routes(app, bundle);
 
