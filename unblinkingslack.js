@@ -21,12 +21,14 @@
 const bluebird = require("bluebird");
 const slackClient = require("@slack/client");
 
+// TODO: Get rid of this, maybe move to a utility
 var unblinking_db = require('./unblinkingdb.js');
 
 /**
  * Promisify some local module callback functions.
  */
 const getKeyValue = bluebird.promisify(require("./unblinkingdb.js").getKeyValue);
+const validateString = bluebird.promisify(require("./unblinkingutilities.js").validateStringOrUndefined);
 
 const slacking = {
 
@@ -34,104 +36,54 @@ const slacking = {
     bundle.lookupKey = "slack::credentials::token";
     getKeyValue(bundle)
       .then(validateString)
-      .then(function(data){
-        bundle.token = data;
+      .then(function (token) {
+        bundle.token = token;
+        delete bundle.lookupKey;
         callback(null, bundle);
-      })
-      .catch(function (err) {
-        callback(err, bundle);
-      });
-  },
-
-  validateTypeOrInstanceOfString: function (string, callback) {
-    let err;
-    if (typeof string === 'string' || string instanceof String) {
-      // String looks like a string.
-      err = null;
-    } else {
-      err = new Error(`Invalid string: ${string}`);
-    }
-    callback(err, string);
-  },
-
-  getChannelNamesArray: function (bundle, callback) {
-    bundle.lookupKey = "slack::channels";
-    getKeyValue(bundle)
-      .then(channelArrayFromObject)
-      .then(function (channelNamesArray) {
-        delete bundle.lookupKey; // Clean this up.
-        callback(null, channelNamesArray);
       })
       .catch(function (err) {
         callback(err, null);
       });
   },
 
-  channelNameArrayFromRtmChannelsObject: function (rtmChannelsObject, callback) {
-    let err = null;
-    let channelNames = [];
-    try {
-      Object.keys(rtmChannelsObject).forEach(function (key) {
-        // Only include channel names if the bot is a member.
-        if (rtmChannelsObject[key].is_member) {
-          channelNames.push(rtmChannelsObject[key].name);
-        }
+  addNotifyToBundle: function (bundle, callback) {
+    bundle.lookupKey = "slack::credentials::notify";
+    getKeyValue(bundle)
+      .then(validateString)
+      .then(function (data) {
+        bundle.notify = data;
+        delete bundle.lookupKey;
+        callback(null, bundle);
+      })
+      .catch(function (err) {
+        callback(err, null);
       });
-    } catch (e) {
-      err = e;
-    }
-    callback(err, channelNames);
   },
 
-  getNotify: function (bundle, callback) {
-    let key = "slack::credentials::notify";
-    bundle.db.get(key, function (err, data) {
-      if (data) {
-        if (typeof data === 'string' || data instanceof String) {
-          bundle.notify = data;
-        } else {
-          bundle.notify = "Invalid notify.";
-        }
-      }
-      if (err) {
-        if (err.notFound) {
-          // Common and expected, null this error.
-          err = null;
-          bundle.notify = "Notify not found.";
-        }
-      }
-      callback(err, bundle);
-    });
-  },
-
-  getNotifyType: function (bundle, callback) {
-    let key = "slack::credentials::notifyType";
-    bundle.db.get(key, function (err, data) {
-      if (data) {
-        if (typeof data === 'string' || data instanceof String) {
-          bundle.notifyType = data;
-        } else {
-          bundle.notifyType = "Invalid notifyType.";
-        }
-      }
-      if (err) {
-        if (err.notFound) {
-          // Common and expected, null this error.
-          err = null;
-          bundle.notifyType = "Notify type not found.";
-        }
-      }
-      callback(err, bundle);
-    });
+  addNotifyTypeToBundle: function (bundle, callback) {
+    bundle.lookupKey = "slack::credentials::notifyType";
+    getKeyValue(bundle)
+      .then(validateString)
+      .then(function (notifyType) {
+        bundle.notifyType = notifyType;
+        delete bundle.lookupKey;
+        callback(null, bundle);
+      })
+      .catch(function (err) {
+        callback(err, null);
+      });
   },
 
   getRtmInstance: function (bundle, callback) {
-    let err = null;
-    bundle.rtm = new slackClient.RtmClient(bundle.token, {
-      logLevel: 'verbose',
-      dataStore: new slackClient.MemoryDataStore()
-    });
-    callback(err, bundle);
+    try {
+      bundle.rtm = new slackClient.RtmClient(bundle.token, {
+        logLevel: 'verbose',
+        dataStore: new slackClient.MemoryDataStore()
+      });
+      callback(null, bundle);
+    } catch (err) {
+      callback(err, bundle);
+    }
   },
 
   startRtmInstance: function (bundle, callback) {
@@ -288,11 +240,5 @@ const slacking = {
   }
 
 };
-
-/**
- * Had to promisify after declaring the slacking object, for 'strict'.
- */
-const channelArrayFromObject = bluebird.promisify(slacking.channelNameArrayFromRtmChannelsObject);
-const validateString = bluebird.promisify(slacking.validateTypeOrInstanceOfString);
 
 module.exports = slacking;

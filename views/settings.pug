@@ -1,167 +1,167 @@
 doctype html(lang='en')
 head
-    include head
+  include head
 body
-    include mixins
-    include navbar
-    // Showcase container begin
+  include mixins
+  include navbar
+  // Showcase container begin
+  br
+  .container.theme-showcase(role='main')
     br
-    .container.theme-showcase(role='main')
-        br
-        .page-header.clearfix
-            h4=title
-        .row
-            .col-md-12
-                .panel.panel-primary
-                    .panel-heading.small
-                        |Slack Settings
-                    .panel-body
-                        form#slackSettings
-                            fieldset.form-group.row
-                                legend.col-form-legend.col-sm-2
-                                    |Slack Integration
-                                .col-sm-10
-                                    #currentSettingsPanel.form-group
-                                        .panel.panel-info
-                                            .panel-heading.small
-                                                |Current Settings
-                                            .panel-body
-                                                .small|Slack integration is currently
-                                                    if rtmConnected
-                                                        +space
-                                                        b#slackIntegrationStatus.text-success connected
-                                                        |.
-                                                    else
-                                                        +space
-                                                        b#slackIntegrationStatus.text-danger disconnected
-                                                        |.
-                                                br
-                                                b.small|Token:
-                                                br
-                                                .text-info.small#currentSettingsToken
-                                                    if token
-                                                        |#{token}
-                                                    else
-                                                        |undefined
-                                                br
-                                                b.small|Notifications:
-                                                br
-                                                .text-info.small#currentSettingsNotify
-                                                    if notify
-                                                        |#{notifyType}  #{notify}
-                                                    else
-                                                        |undefined
-                                                .alert-fixed
-                                                    #restartSlackIntegrationAlert
-                                                    #stopSlackIntegrationAlert
-                                            .panel-footer
-                                                #setupSlackIntegration.btn.btn-xs.btn-primary(style="margin-bottom: 5px;")
-                                                    span.glyphicon.glyphicon-wrench
-                                                    +space
-                                                    |Change Settings
-                                                +space
-                                                #restartSlackIntegration.btn.btn-xs.btn-warning.hidden(style="margin-bottom: 5px;")
-                                                    if slackToken
-                                                        script.
-                                                            document.getElementById("restartSlackIntegration").classList.remove('hidden');
-                                                    span.glyphicon.glyphicon-refresh
-                                                    +space
-                                                    |Restart Slack Integration
-                                                +space
-                                                #stopSlackIntegration.btn.btn-xs.btn-danger.hidden(style="margin-bottom: 5px;")
-                                                    if slackToken
-                                                            script.
-                                                                document.getElementById("stopSlackIntegration").classList.remove('hidden');
-                                                    span.glyphicon.glyphicon-off
-                                                    +space
-                                                    |Stop Slack Integration
-                                    #tokenPanel.form-group.hidden
-                                        .panel.panel-info
-                                            .panel-heading.small
-                                                |Enter or change the token
-                                            .panel-body
-                                                .small
-                                                    |Enter the Slack bot-user token here. If a token has been previously saved, it will be automatically populated here to allow for changes.
-                                                br
-                                                #slackTokenInputGroup.input-group
-                                                    input#slackToken.form-control(type='text', placeholder='e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX' value=slackToken)
-                                                    #saveSlackTokenButton.input-group-addon.btn.btn-default
-                                                        span.glyphicon.glyphicon-save
-                                                        +space
-                                                        |Save
-                                                br
-                                                #saveSlackTokenAlert
-                                                #restartSlackTokenAlert
-                                    #defaultNotifyPanel.form-group.hidden
-                                        .panel.panel-info
-                                            .panel-heading.small
-                                                |Choose where to send notifications
-                                            .panel-body
-                                                .small
-                                                    |Choose where you would like the Slack bot user to send default notifications. Choose between a channel, a group, or a direct message to a user. Add the bot user to the desired channel or direct message in Slack first.
-                                                br
-                                                .small
-                                                    b Channels
-                                                    +space
-                                                    |include non-private channels where the bot user has already been invited (is a member of the channel).
-                                                br
-                                                .small
-                                                    b Groups
-                                                    +space
-                                                    |include private channels where the bot user has already been invited (is a member of the channel).
-                                                br
-                                                .small
-                                                    b Users
-                                                    +space
-                                                    |include direct messages already open between users and the bot.
-                                                br
-                                                .btn-group(data-toggle="buttons")
-                                                    label#radioChannel.btn.btn-default
-                                                        input(type='radio')
-                                                        |Channel
-                                                    label#radioGroup.btn.btn-default
-                                                        input(type='radio')
-                                                        |Group
-                                                    label#radioUser.btn.btn-default
-                                                        input(type='radio')
-                                                        |User
-                                                br
-                                                br
-                                                #progressDefaultNotifications.progress.hidden
-                                                    .progress-bar.progress-bar-striped.active(role='progressbar', aria-valuenow="100", aria-valuemin="0", aria-valuemax="100", style="width: 100%")
-                                                #inputChannels.input-group.hidden
-                                                    .input-group-addon
-                                                        |Channels
-                                                    select#defaultChannelSelect.form-control(type='text')
-                                                    #saveSlackDefaultNotifyChannel.input-group-addon.btn.btn-default
-                                                        span.glyphicon.glyphicon-save
-                                                        +space
-                                                        |Save
-                                                #inputGroups.input-group.hidden
-                                                    .input-group-addon
-                                                        |Groups
-                                                    select#defaultGroupSelect.form-control(type='text')
-                                                    #saveSlackDefaultNotifyGroup.input-group-addon.btn.btn-default
-                                                        span.glyphicon.glyphicon-save
-                                                        +space
-                                                        |Save
-                                                #inputUsers.input-group.hidden
-                                                    .input-group-addon
-                                                        |Users
-                                                    select#defaultUserSelect.form-control(type='text')
-                                                    #saveSlackDefaultNotifyUser.input-group-addon.btn.btn-default
-                                                        span.glyphicon.glyphicon-save
-                                                        +space
-                                                        |Save
-                                                br
-                                                #saveSlackNotifyAlert(style="min-height:1px;")
-                                                #restartSlackNotifyAlert
-                    .panel-footer.clearfix
-                        a.label.label-info.pull-right(href='https://api.slack.com/bot-users', target='_blank')
-                            span.glyphicon.glyphicon-link
+    .page-header.clearfix
+      h4=title
+    .row
+      .col-md-12
+        .panel.panel-primary
+          .panel-heading.small
+            |Slack Settings
+          .panel-body
+            form#slackSettings
+              fieldset.form-group.row
+                legend.col-form-legend.col-sm-2
+                  |Slack Integration
+                .col-sm-10
+                  #currentSettingsPanel.form-group
+                    .panel.panel-info
+                      .panel-heading.small
+                        |Current Settings
+                      .panel-body
+                        .small|Slack integration is currently
+                          if rtmConnected
                             +space
-                            |About Slack bot users
-        include footer
-    // Place JavaScript at the end of the document so the pages load faster
-    include js
-    script(src='/js/settings.js')
+                            b#slackIntegrationStatus.text-success connected
+                            |.
+                          else
+                            +space
+                            b#slackIntegrationStatus.text-danger disconnected
+                            |.
+                        br
+                        b.small|Token:
+                        br
+                        .text-info.small#currentSettingsToken
+                          if token
+                            |#{token}
+                          else
+                            |undefined
+                        br
+                        b.small|Notifications:
+                        br
+                        .text-info.small#currentSettingsNotify
+                          if notify
+                            |#{notifyType}  #{notify}
+                          else
+                            |undefined
+                        .alert-fixed
+                          #restartSlackIntegrationAlert
+                          #stopSlackIntegrationAlert
+                      .panel-footer
+                        #setupSlackIntegration.btn.btn-xs.btn-primary(style="margin-bottom: 5px;")
+                          span.glyphicon.glyphicon-wrench
+                          +space
+                          |Change Settings
+                        +space
+                        #restartSlackIntegration.btn.btn-xs.btn-warning.hidden(style="margin-bottom: 5px;")
+                          if token
+                            script.
+                              document.getElementById("restartSlackIntegration").classList.remove('hidden');
+                          span.glyphicon.glyphicon-refresh
+                          +space
+                          |Restart Slack Integration
+                        +space
+                        #stopSlackIntegration.btn.btn-xs.btn-danger.hidden(style="margin-bottom: 5px;")
+                          if token
+                            script.
+                              document.getElementById("stopSlackIntegration").classList.remove('hidden');
+                          span.glyphicon.glyphicon-off
+                          +space
+                          |Stop Slack Integration
+                  #tokenPanel.form-group.hidden
+                    .panel.panel-info
+                      .panel-heading.small
+                        |Enter or change the token
+                      .panel-body
+                        .small
+                          |Enter the Slack bot-user token here. If a token has been previously saved, it will be automatically populated here to allow for changes.
+                        br
+                        #slackTokenInputGroup.input-group
+                          input#slackToken.form-control(type='text', placeholder='e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX' value=token)
+                          #saveSlackTokenButton.input-group-addon.btn.btn-default
+                            span.glyphicon.glyphicon-save
+                            +space
+                            |Save
+                        br
+                        #saveSlackTokenAlert
+                        #restartSlackTokenAlert
+                  #defaultNotifyPanel.form-group.hidden
+                    .panel.panel-info
+                      .panel-heading.small
+                        |Choose where to send notifications
+                      .panel-body
+                        .small
+                          |Choose where you would like the Slack bot user to send default notifications. Choose between a channel, a group, or a direct message to a user. Add the bot user to the desired channel or direct message in Slack first.
+                        br
+                        .small
+                          b Channels
+                          +space
+                          |include non-private channels where the bot user has already been invited (is a member of the channel).
+                        br
+                        .small
+                          b Groups
+                          +space
+                          |include private channels where the bot user has already been invited (is a member of the channel).
+                        br
+                        .small
+                          b Users
+                          +space
+                          |include direct messages already open between users and the bot.
+                        br
+                        .btn-group(data-toggle="buttons")
+                          label#radioChannel.btn.btn-default
+                            input(type='radio')
+                            |Channel
+                          label#radioGroup.btn.btn-default
+                            input(type='radio')
+                            |Group
+                          label#radioUser.btn.btn-default
+                            input(type='radio')
+                            |User
+                        br
+                        br
+                        #progressDefaultNotifications.progress.hidden
+                          .progress-bar.progress-bar-striped.active(role='progressbar', aria-valuenow="100", aria-valuemin="0", aria-valuemax="100", style="width: 100%")
+                        #inputChannels.input-group.hidden
+                          .input-group-addon
+                            |Channels
+                          select#defaultChannelSelect.form-control(type='text')
+                          #saveSlackDefaultNotifyChannel.input-group-addon.btn.btn-default
+                            span.glyphicon.glyphicon-save
+                            +space
+                            |Save
+                        #inputGroups.input-group.hidden
+                          .input-group-addon
+                            |Groups
+                          select#defaultGroupSelect.form-control(type='text')
+                          #saveSlackDefaultNotifyGroup.input-group-addon.btn.btn-default
+                            span.glyphicon.glyphicon-save
+                            +space
+                            |Save
+                        #inputUsers.input-group.hidden
+                          .input-group-addon
+                            |Users
+                          select#defaultUserSelect.form-control(type='text')
+                          #saveSlackDefaultNotifyUser.input-group-addon.btn.btn-default
+                            span.glyphicon.glyphicon-save
+                            +space
+                            |Save
+                        br
+                        #saveSlackNotifyAlert(style="min-height:1px;")
+                        #restartSlackNotifyAlert
+          .panel-footer.clearfix
+            a.label.label-info.pull-right(href='https://api.slack.com/bot-users', target='_blank')
+              span.glyphicon.glyphicon-link
+              +space
+              |About Slack bot users
+    include footer
+  // Place JavaScript at the end of the document so the pages load faster
+  include js
+  script(src='/js/settings.js')

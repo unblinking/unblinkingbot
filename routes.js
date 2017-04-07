@@ -22,9 +22,9 @@ const bluebird = require('bluebird');
 /**
  * Promisify the unblinkingdb.js callback functions.
  */
-const getToken = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
-const getNotify = bluebird.promisify(require("./unblinkingslack.js").getNotify);
-const getNotifyType = bluebird.promisify(require("./unblinkingslack.js").getNotifyType);
+const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
+const addNotifyToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyToBundle);
+const addNotifyTypeToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyTypeToBundle);
 
 /**
  * @public
@@ -53,9 +53,9 @@ const router = function (app, bundle) {
     } else {
       params.rtmConnected = false;
     }
-    getToken(bundle)
-      .then(getNotify)
-      .then(getNotifyType)
+    addTokenToBundle(bundle)
+      .then(addNotifyToBundle)
+      .then(addNotifyTypeToBundle)
       .then(function (data) {
         params.token = data.token;
         params.notify = data.notify;

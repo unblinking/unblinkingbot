@@ -24,7 +24,7 @@ const bluebird = require("bluebird");
  */
 const getFullDataStore = bluebird.promisify(require("./unblinkingdb.js").getFullDataStore);
 const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
-const getChannelNamesArray = bluebird.promisify(require("./unblinkingslack.js").getChannelNamesArray);
+
 const getRtmInstance = bluebird.promisify(require("./unblinkingslack.js").getRtmInstance);
 const startRtmInstance = bluebird.promisify(require("./unblinkingslack.js").startRtmInstance);
 const listenForRtmEvents = bluebird.promisify(require("./unblinkingslack.js").listenForEvents);
@@ -44,8 +44,8 @@ const sockets = {
 
       socket.on("readFullDbReq", function () {
         getFullDataStore(bundle)
-          .then(function (data) {
-            socket.emit("readFullDbRes", data);
+          .then(function (fullDataStore) {
+            socket.emit("readFullDbRes", fullDataStore);
           })
           .catch(function (err) {
             socket.emit("readFullDbRes", err.message);
@@ -54,44 +54,59 @@ const sockets = {
 
       // Read available Slack channels
       socket.on("readSlackChannelsReq", function () {
-        getChannelNamesArray(bundle)
-          .then(function (data) {
-            socket.emit("readSlackChannelsRes", data);
-          })
-          .catch(function (err) {
-            socket.emit("readSlackChannelsRes", err.message);
-          });
+        try {
+          let channelNames = [];
+          if (bundle.rtm !== null && bundle.rtm.connected === true) {
+            Object.keys(bundle.rtm.dataStore.channels).forEach(function (key) {
+              // Only include channel names if the bot is a member.
+              if (bundle.rtm.dataStore.channels[key].is_member) {
+                channelNames.push(bundle.rtm.dataStore.channels[key].name);
+              }
+            });
+          }
+          socket.emit("readSlackChannelsRes", channelNames);
+        } catch (err) {
+          socket.emit("readSlackChannelsRes", err.message);
+        }
       });
+
+      // TODO: Make the others more like this one for available Slack groups
 
       // Read available Slack groups
       socket.on("readSlackGroupsReq", function () {
-        bundle.db.get("slack::groups", function (err, data) {
-          if (err) return console.log(err);
-          let names = [];
-          Object.keys(data).forEach(function (key) {
-            names.push(data[key].name);
-          });
-          socket.emit("readSlackGroupsRes", names);
-        });
+        let groupNames = [];
+        let rtmExists = bundle.rtm !== null && bundle.rtm.connected === true;
+        let groups = bundle.rtm.dataStore.groups;
+        try {
+          if (rtmExists) {
+            Object.keys(groups).forEach(function (key) {
+              groupNames.push(groups[key].name);
+            });
+          }
+        } catch (err) {
+          console.log(err.message);
+        } finally {
+          socket.emit("readSlackGroupsRes", groupNames);
+        }
       });
 
       // Read available Slack users
       socket.on("readSlackUsersReq", function () {
-        let ids = [];
-        let names = [];
-        bundle.db.get("slack::dms", function (err, dms) {
-          if (err) return console.log(err);
-          Object.keys(dms).forEach(function (key) {
-            ids.push(dms[key].user);
-          });
-          bundle.db.get("slack::users", function (err, users) {
-            if (err) return console.log(err);
-            ids.forEach(function (id) {
-              names.push(users[id].name);
+        try {
+          let directMessageUserIds = [];
+          let directMessageUserNames = [];
+          if (bundle.rtm !== null && bundle.rtm.connected === true) {
+            Object.keys(bundle.rtm.dataStore.dms).forEach(function (key) {
+              directMessageUserIds.push(bundle.rtm.dataStore.dms[key].user);
             });
-            socket.emit("readSlackUsersRes", names);
-          });
-        });
+            directMessageUserIds.forEach(function (id) {
+              directMessageUserNames.push(bundle.rtm.dataStore.users[id].name);
+            });
+          }
+          socket.emit("readSlackUsersRes", directMessageUserNames);
+        } catch (err) {
+          socket.emit("readSlackUsersRes", err.message);
+        }
       });
 
       // Save Slack token

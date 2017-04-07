@@ -30,8 +30,7 @@ const unblinkingdb = {
       .on("error", function (e) {
         err = e;
       })
-      .on("close", function () {
-      })
+      .on("close", function () {})
       .on("end", function () {
         callback(err, fullDataStore);
       });
@@ -39,6 +38,7 @@ const unblinkingdb = {
 
   getKeyValue: function (bundle, callback) {
     bundle.db.get(bundle.lookupKey, function (err, data) {
+      if (err && err.notFound) err = null; // Common error and is ok.
       callback(err, data);
     });
   },
