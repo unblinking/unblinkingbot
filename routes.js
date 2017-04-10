@@ -17,14 +17,14 @@
  * Require the 3rd party modules that will be used.
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  */
-const bluebird = require('bluebird');
+const bluebird = require("bluebird");
 
 /**
  * Promisify the unblinkingdb.js callback functions.
  */
-const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
-const addNotifyToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyToBundle);
-const addNotifyTypeToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyTypeToBundle);
+//const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
+//const addNotifyToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyToBundle);
+//const addNotifyTypeToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyTypeToBundle);
 
 /**
  * @public
@@ -36,41 +36,56 @@ const addNotifyTypeToBundle = bluebird.promisify(require("./unblinkingslack.js")
  */
 const router = function (app, bundle) {
 
-  app.get('/', function (req, res) {
-    let params = {};
-    params.title = 'Dashboard';
-    if (bundle.rtm !== null && bundle.rtm.connected) {
-      params.rtmConnected = true;
-    }
-    res.render('index', params);
+  app.get("/", function (req, res) {
+    let params = {
+      title: "Dashboard",
+      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected
+    };
+    res.render("index", params);
   });
 
-  app.get('/settings', function (req, res) {
-    let params = {};
-    params.title = 'Settings';
-    if (bundle.rtm !== null && bundle.rtm.connected === true) {
-      params.rtmConnected = true;
-    } else {
-      params.rtmConnected = false;
-    }
-    addTokenToBundle(bundle)
-      .then(addNotifyToBundle)
-      .then(addNotifyTypeToBundle)
-      .then(function (data) {
-        params.token = data.token;
-        params.notify = data.notify;
-        params.notifyType = data.notifyType;
-        res.render('settings', params);
+  app.get("/settings", function (req, res) {
+    let params = {
+      title: "Settings",
+      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
+    };
+    bundle.dbp.get("slack::credentials::token")
+      .then(function (token) {
+        params.token = token;
+      })
+      .then(function () {
+        return bundle.dbp.get("slack::credentials::notify");
+      })
+      .then(function (err, notify) {
+        if (err) throw err;
+        params.notify = notify;
+      })
+      .then(function () {
+        return bundle.dbp.get("slack::credentials::notifyType");
+      })
+      .then(function (notifyType) {
+        params.notifyType = notifyType;
+      })
+      .then(function () {
+        res.render("settings", params);
       })
       .catch(function (err) {
-        res.status(500).send(err.message);
+        if (err.notFound) {
+          // Common expected error, continue normally.
+          console.log(err.message);
+          res.render("settings", params);
+        } else {
+          res.status(500).send(err.message);
+        }
       });
   });
 
-  app.get('/datastore', function (req, res) {
-    let params = {};
-    params.title = "Data Store";
-    res.render('datastore', params);
+  app.get("/datastore", function (req, res) {
+    let params = {
+      title: "Data Store",
+      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
+    };
+    res.render("datastore", params);
   });
 
 };

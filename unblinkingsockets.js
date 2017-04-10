@@ -23,7 +23,7 @@ const bluebird = require("bluebird");
  * Promisify some local module callback functions.
  */
 const getFullDataStore = bluebird.promisify(require("./unblinkingdb.js").getFullDataStore);
-const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
+//const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
 
 const getRtmInstance = bluebird.promisify(require("./unblinkingslack.js").getRtmInstance);
 const startRtmInstance = bluebird.promisify(require("./unblinkingslack.js").startRtmInstance);
@@ -55,9 +55,9 @@ const sockets = {
       // Read available Slack channels
       socket.on("readSlackChannelsReq", function () {
         let channelNames = [];
-        let rtmExists = bundle.rtm !== null && bundle.rtm.connected === true;
+        let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
-          if (rtmExists) {
+          if (rtmConnected) {
             let channels = bundle.rtm.dataStore.channels;
             Object.keys(channels).forEach(function (key) {
               // Only if the bot is a member.
@@ -76,9 +76,9 @@ const sockets = {
       // Read available Slack groups
       socket.on("readSlackGroupsReq", function () {
         let groupNames = [];
-        let rtmExists = bundle.rtm !== null && bundle.rtm.connected === true;
+        let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
-          if (rtmExists) {
+          if (rtmConnected) {
             let groups = bundle.rtm.dataStore.groups;
             Object.keys(groups).forEach(function (key) {
               groupNames.push(groups[key].name);
@@ -94,9 +94,9 @@ const sockets = {
       // Read available Slack users
       socket.on("readSlackUsersReq", function () {
         let directMessageUserNames = [];
-        let rtmExists = bundle.rtm !== null && bundle.rtm.connected === true;
+        let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
-          if (rtmExists) {
+          if (rtmConnected) {
             let directMessageUserIds = [];
             let dms = bundle.rtm.dataStore.dms;
             let users = bundle.rtm.dataStore.users;
@@ -119,7 +119,7 @@ const sockets = {
         let success = true;
         let err = null;
         try {
-          bundle.db.put("slack::credentials::token", token);
+          bundle.dbp.put("slack::credentials::token", token);
         } catch (e) {
           success = false;
           err = e;
@@ -137,26 +137,26 @@ const sockets = {
       socket.on("saveSlackNotifyReq", function (defaults) {
         let success = true;
         let err = null;
-        let rtmExists = bundle.rtm !== null && bundle.rtm.connected === true;
+        let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         let notify = defaults.notify;
         let notifyId = null;
         let notifyType = defaults.type;
         try {
-          if (rtmExists && notifyType === "channel") {
+          if (rtmConnected && notifyType === "channel") {
             let channels = bundle.rtm.dataStore.channels;
             Object.keys(channels).forEach(function (key) {
               if (channels[key].name === notify) {
                 notifyId = key.toString();
               }
             });
-          } else if (rtmExists && notifyType === "group") {
+          } else if (rtmConnected && notifyType === "group") {
             let groups = bundle.rtm.dataStore.groups;
             Object.keys(groups).forEach(function (key) {
               if (groups[key].name === notify) {
                 notifyId = key.toString();
               }
             });
-          } else if (rtmExists && notifyType === "user") {
+          } else if (rtmConnected && notifyType === "user") {
             let users = bundle.rtm.dataStore.users;
             let dms = bundle.rtm.dataStore.dms;
             Object.keys(users).forEach(function (usersKey) {
@@ -169,9 +169,9 @@ const sockets = {
               }
             });
           }
-          bundle.db.put("slack::credentials::notify", notify);
-          bundle.db.put("slack::credentials::notifyId", notifyId);
-          bundle.db.put("slack::credentials::notifyType", notifyType);
+          bundle.dbp.put("slack::credentials::notify", notify);
+          bundle.dbp.put("slack::credentials::notifyId", notifyId);
+          bundle.dbp.put("slack::credentials::notifyType", notifyType);
         } catch (e) {
           success = false;
           err = e;

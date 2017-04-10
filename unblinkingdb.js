@@ -23,7 +23,7 @@ const unblinkingdb = {
   getFullDataStore: function (bundle, callback) {
     let err = null;
     let fullDataStore = {};
-    bundle.db.createReadStream()
+    bundle.dbp.createReadStream()
       .on("data", function (data) {
         fullDataStore[data.key] = data.value;
       })
@@ -36,13 +36,7 @@ const unblinkingdb = {
       });
   },
 
-  getKeyValue: function (bundle, callback) {
-    bundle.db.get(bundle.lookupKey, function (err, data) {
-      if (err && err.notFound) err = null; // Common error and is ok.
-      callback(err, data);
-    });
-  },
-
+  // TODO: Convert to using then-levelup
   trimObjKeys: function (bundle, callback) {
     bundle.db.get(bundle.objectPath, function (err, obj) {
       if (err) {

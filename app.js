@@ -30,6 +30,7 @@ const io = require("socket.io");
 const level = require("levelup");
 const path = require("path");
 const slackClient = require("@slack/client");
+const thenLevel = require("then-levelup");
 
 /**
  * Require the local modules that will be used.
@@ -69,7 +70,10 @@ var bundle = {};
 bundle.db = level("db", {
   valueEncoding: 'json'
 });
-bundle.rtm = {}; // An empty object to hold the Slack RTM Client
+bundle.dbp = thenLevel(level("dbp", {
+  valueEncoding: 'json'
+}));
+bundle.rtm = undefined;
 bundle.socket = io(server);
 
 /**

@@ -27,60 +27,22 @@ var unblinking_db = require('./unblinkingdb.js');
 /**
  * Promisify some local module callback functions.
  */
-const getKeyValue = bluebird.promisify(require("./unblinkingdb.js").getKeyValue);
-const validateString = bluebird.promisify(require("./unblinkingutilities.js").validateStringOrUndefined);
+//const getKeyValue = bluebird.promisify(require("./unblinkingdb.js").getKeyValue);
+//const validateString = bluebird.promisify(require("./unblinkingutilities.js").validateStringOrUndefined);
 
 const slacking = {
 
-  addTokenToBundle: function (bundle, callback) {
-    bundle.lookupKey = "slack::credentials::token";
-    getKeyValue(bundle)
-      .then(validateString)
-      .then(function (token) {
-        bundle.token = token;
-        delete bundle.lookupKey;
-        callback(null, bundle);
-      })
-      .catch(function (err) {
-        callback(err, null);
-      });
-  },
-
-  addNotifyToBundle: function (bundle, callback) {
-    bundle.lookupKey = "slack::credentials::notify";
-    getKeyValue(bundle)
-      .then(validateString)
-      .then(function (data) {
-        bundle.notify = data;
-        delete bundle.lookupKey;
-        callback(null, bundle);
-      })
-      .catch(function (err) {
-        callback(err, null);
-      });
-  },
-
-  addNotifyTypeToBundle: function (bundle, callback) {
-    bundle.lookupKey = "slack::credentials::notifyType";
-    getKeyValue(bundle)
-      .then(validateString)
-      .then(function (notifyType) {
-        bundle.notifyType = notifyType;
-        delete bundle.lookupKey;
-        callback(null, bundle);
-      })
-      .catch(function (err) {
-        callback(err, null);
-      });
-  },
-
   getRtmInstance: function (bundle, callback) {
     let err = null;
+    let rtmStartExists = bundle.rtm !== undefined && bundle.rtm.start !== undefined;
     try {
-      bundle.rtm = new slackClient.RtmClient(bundle.token, {
-        // logLevel: 'verbose',
-        dataStore: new slackClient.MemoryDataStore()
-      });
+      // If rtm.start() doesn't exist yet, create a new rtm client object.
+      if (!rtmStartExists) {
+        bundle.rtm = new slackClient.RtmClient(bundle.token, {
+          // logLevel: 'verbose',
+          dataStore: new slackClient.MemoryDataStore()
+        });
+      }
     } catch (e) {
       err = e;
     } finally {
@@ -89,80 +51,22 @@ const slacking = {
   },
 
   startRtmInstance: function (bundle, callback) {
-    bundle.rtm.start();
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
-      // console.log(`RTM Client authenticated. Rtm.start payload captured.`);
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function () {
-      // var user = bundle.rtm.dataStore.getUserById(bundle.rtm.activeUserId);
-      // var team = bundle.rtm.dataStore.getTeamById(bundle.rtm.activeTeamId);
-      // console.log(`RTM connection opened. RTM hello event received.`);
-      // console.log(`Slack RTM Client connected to ${team.name} as user ${user.name}.`);
-      bundle.socket.emit('slackRestartRes');
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.DISCONNECT, function (message) {
-      console.log(`RTM Disconnect: ${message}`);
-      bundle.socket.emit('slackStopRes');
-    });
-
-    /*
-    // Some extra logging to the db and console for debugging.
-    bundle.db.put("slack::channels", bundle.rtm.dataStore.channels);
-    bundle.db.put("slack::users", bundle.rtm.dataStore.users);
-    bundle.db.put("slack::dms", bundle.rtm.dataStore.dms);
-    bundle.db.put("slack::groups", bundle.rtm.dataStore.groups);
-    bundle.db.put("slack::bots", bundle.rtm.dataStore.bots);
-    bundle.db.put("slack::teams", bundle.rtm.dataStore.teams);
-    function clientEventLogging(desc, err, code, reason) {
-      if (desc) {
-        console.log(`RTM Client Event: ${desc}`);
+    let err = null;
+    let rtmStartExists = bundle.rtm.start !== undefined;
+    try {
+      if (rtmStartExists) {
+        bundle.rtm.start();
       }
-      if (err) {
-        console.log(`RTM Client Event: ${err}`);
-      }
-      if (code) {
-        console.log(`RTM Client Event: ${code}`);
-      }
-      if (reason) {
-        console.log(`RTM Client Event: ${reason}`);
-      }
+    } catch (e) {
+      err = e;
+    } finally {
+      callback(err, bundle);
     }
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.DISCONNECT, function (err, code) {
-      var desc = 'CLIENT_EVENTS.RTM.DISCONNECT';
-      clientEventLogging(desc, err, code, undefined);
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.ATTEMPTING_RECONNECT, function () {
-      var desc = 'CLIENT_EVENTS.RTM.ATTEMPTING_RECONNECT';
-      clientEventLogging(desc, undefined, undefined, undefined);
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.UNABLE_TO_RTM_START, function (err) {
-      var desc = 'CLIENT_EVENTS.RTM.UNABLE_TO_RTM_START';
-      clientEventLogging(desc, err, undefined, undefined);
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.WS_OPENING, function () {
-      var desc = 'CLIENT_EVENTS.RTM.WS_OPENING';
-      clientEventLogging(desc, undefined, undefined, undefined);
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.WS_OPENED, function () {
-      var desc = 'CLIENT_EVENTS.RTM.WS_OPENED';
-      clientEventLogging(desc, undefined, undefined, undefined);
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.WS_CLOSE, function (code, reason) {
-      var desc = 'CLIENT_EVENTS.RTM.WS_CLOSE';
-      clientEventLogging(desc, undefined, code, reason);
-    });
-    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.WS_ERROR, function (err) {
-      var desc = 'CLIENT_EVENTS.RTM.WS_ERROR';
-      clientEventLogging(desc, err, undefined, undefined);
-    });
-    */
-
-    callback(null, bundle);
   },
 
   disconnectRtmInstance: function (bundle, callback) {
     let err = null;
-    let rtmExists = bundle.rtm !== null && bundle.rtm.connected === true;
+    let rtmExists = bundle.rtm !== undefined && bundle.rtm.connected === true;
     try {
       if (rtmExists) {
         bundle.rtm.autoReconnect = false;
@@ -227,6 +131,20 @@ const slacking = {
   },
 
   listenForEvents: function (bundle, callback) {
+    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
+      // console.log(`RTM Client authenticated. Rtm.start payload captured.`);
+    });
+    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function () {
+      // var user = bundle.rtm.dataStore.getUserById(bundle.rtm.activeUserId);
+      // var team = bundle.rtm.dataStore.getTeamById(bundle.rtm.activeTeamId);
+      // console.log(`RTM connection opened. RTM hello event received.`);
+      // console.log(`Slack RTM Client connected to ${team.name} as user ${user.name}.`);
+      bundle.socket.emit('slackRestartRes');
+    });
+    bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.DISCONNECT, function (message) {
+      console.log(`RTM Disconnect: ${message}`);
+      bundle.socket.emit('slackStopRes');
+    });
     bundle.rtm.on(slackClient.RTM_EVENTS.MESSAGE, function (message) {
       // Log the activity
       bundle.slacktivity = message;
