@@ -15,52 +15,52 @@
 
 /**
  * Require the 3rd party modules that will be used.
- * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
  */
-const bluebird = require("bluebird");
 const slackClient = require("@slack/client");
 
 // TODO: Get rid of this, maybe move to a utility
 var unblinking_db = require('./unblinkingdb.js');
 
-/**
- * Promisify some local module callback functions.
- */
-//const getKeyValue = bluebird.promisify(require("./unblinkingdb.js").getKeyValue);
-//const validateString = bluebird.promisify(require("./unblinkingutilities.js").validateStringOrUndefined);
-
 const slacking = {
 
   getRtmInstance: function (bundle, callback) {
     let err = null;
-    let rtmStartExists = bundle.rtm !== undefined && bundle.rtm.start !== undefined;
+    let rtmExists = bundle.rtm !== undefined && Object.keys(bundle.rtm).length !== 0;
     try {
-      // If rtm.start() doesn't exist yet, create a new rtm client object.
-      if (!rtmStartExists) {
+      // If RTM instance doesn't exist yet, instantiate a new RTM client object.
+      if (!rtmExists) {
         bundle.rtm = new slackClient.RtmClient(bundle.token, {
           // logLevel: 'verbose',
           dataStore: new slackClient.MemoryDataStore()
         });
+      } else {
+        // RTM instance already exists, don't go making duplicates.
       }
     } catch (e) {
       err = e;
     } finally {
-      callback(err, bundle);
+      if (typeof callback === "function") {
+        callback(err, bundle);
+      }
     }
   },
 
   startRtmInstance: function (bundle, callback) {
     let err = null;
-    let rtmStartExists = bundle.rtm.start !== undefined;
+    let rtmStartExists = bundle.rtm !== undefined && bundle.rtm.start !== undefined;
     try {
       if (rtmStartExists) {
         bundle.rtm.start();
+      } else {
+        err = new Error("No RTM instance exists to start.");
       }
     } catch (e) {
       err = e;
     } finally {
-      callback(err, bundle);
+      if (typeof callback === "function") {
+        callback(err, bundle);
+      }
     }
   },
 
@@ -83,51 +83,46 @@ const slacking = {
     } catch (e) {
       err = e;
     } finally {
-      callback(err, bundle);
+      if (typeof callback === "function") {
+        callback(err, bundle);
+      }
     }
   },
 
-  trimMessageLog: function (bundle, callback) {
-    bundle.objectPath = ['unblinkingSlack', 'history'];
-    unblinking_db.trimObjKeys(bundle);
-  },
-
   logSlacktivity: function (bundle, callback) {
-    bundle.now = new Date().getTime();
-    if (bundle.slacktivity) {
-      bundle.db.put([], {
-        unblinkingSlack: {
-          history: {
-            [bundle.now]: {
-              slacktivity: bundle.slacktivity
-            }
-          }
-        }
-      }, function (err) {
-        if (err) {
-          console.log(`ERROR: ${err}`);
-        } else {
-          // Success logging this message, now trim the message log.
-          slacking.trimMessageLog(bundle);
-        }
-      });
+    let err = null;
+    try {
+      bundle.dbp.put("slack::activity::" + new Date().getTime(), bundle.slacktivity);
+      unblinking_db.trimObjKeys(bundle);
+    } catch (e) {
+      err = e;
+    } finally {
+      if (typeof callback === "function") {
+        callback(err, bundle);
+      }
     }
   },
 
   sendMessage: function (bundle, callback) {
-    bundle.rtm.sendMessage(
-      bundle.sending.text,
-      bundle.sending.id,
-      function messageSent(err, msg) {
-        if (err) {
-          bundle.slacktivity = err;
-          slacking.logSlacktivity(bundle);
-        } else {
-          bundle.slacktivity = msg;
-          slacking.logSlacktivity(bundle);
-        }
+    let err = null;
+    let rtmExists = bundle.rtm !== undefined && Object.keys(bundle.rtm).length !== 0;
+    let text;
+    let id;
+    if (bundle.sending !== undefined) text = bundle.sending.text;
+    if (bundle.sending !== undefined) id = bundle.sending.id;
+    try {
+      if (rtmExists && text !== undefined && id !== undefined) {
+        bundle.rtm.sendMessage(text, id);
+      } else {
+        // No RTM instance exists to send a message
       }
-    );
+    } catch (e) {
+      err = e;
+    } finally {
+      if (typeof callback === "function") {
+        callback(err, bundle);
+      }
+    }
   },
 
   listenForEvents: function (bundle, callback) {

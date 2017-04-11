@@ -32,49 +32,39 @@ const unblinkingdb = {
       })
       .on("close", function () {})
       .on("end", function () {
-        callback(err, fullDataStore);
+        if (typeof callback === "function") {
+          callback(err, fullDataStore);
+        }
       });
   },
 
-  // TODO: Convert to using then-levelup
   trimObjKeys: function (bundle, callback) {
-    bundle.db.get(bundle.objectPath, function (err, obj) {
-      if (err) {
-        console.log(`ERROR: ${err}`);
-      } else {
-        var keys = Object.keys(obj);
-        var keyCount = Object.keys(obj).length;
-        var extraCount = keyCount - 5;
-        if (keyCount > 5) {
-          // Sort the keys array in ascending order,
-          // smallest (oldest) at the top
-          keys.sort(function compareNumbers(a, b) {
-            return a - b;
-          });
-          // Cut off the array after the extra keys, leaving only
-          // the keys that we want to remove from the data store.
-          keys.length = extraCount;
-          // Remove the extra keys.
-          keys.some(
-            function (key) {
-              //console.log(key);
-              // Clone the objectPath array to a temp keyPath array.
-              var keyPath = bundle.objectPath.slice();
-              //console.log(keyPath);
-              keyPath.push(key);
-              //console.log(keyPath);
-              bundle.db.del(keyPath, function (err) {
-                if (err) {
-                  console.log(`ERROR: ${err}`);
-                } else {
-                  //callback();
-                }
-              });
-            }
-          );
+    let err = null;
+    let allKeys = [];
+    bundle.dbp.createReadStream({
+        keys: true,
+        values: false
+      })
+      .on('data', function (key) {
+        if (key.startsWith("slack::activity")) {
+          allKeys.push(key);
         }
-      }
-    });
+      })
+      .on("error", function (e) {
+        err = e;
+      })
+      .on("close", function () {})
+      .on("end", function () {
+        allKeys.sort().reverse();
+        Object.keys(allKeys).forEach(function (unique_key_name) {
+          if (unique_key_name > 4) {
+            bundle.dbp.del(allKeys[unique_key_name]);
+          }
+        });
+        if (typeof callback === "function") {
+          callback(err, bundle);
+        }
+      });
   }
 
 };
