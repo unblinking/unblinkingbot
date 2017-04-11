@@ -1,0 +1,25 @@
+doctype html(lang='en')
+head
+  include head
+body
+  include mixins
+  include navbar
+  // Showcase container begin
+  br
+  .container.theme-showcase(role='main')
+    br
+    .page-header.clearfix
+      h1=title
+    .row
+      .col-md-12
+        .panel.panel-primary
+          .panel-heading
+            h2=message
+          .panel-body(style={background: 'black'})
+            p!=error
+          .panel-footer
+            .small|This is the error
+    include footer
+
+  // Place JavaScript at the end of the document so the pages load faster
+  include js

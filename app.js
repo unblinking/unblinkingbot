@@ -16,19 +16,24 @@
 /**
  * Require the 3rd party modules that will be used.
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
+ * @see {@link https://github.com/rburns/ansi-to-html ansi-to-html}
  * @see {@link https://github.com/expressjs/express express}
  * @see {@link https://nodejs.org/api/http.html http}
  * @see {@link https://github.com/socketio/socket.io socket.io}
  * @see {@link https://github.com/Level/level level}
  * @see {@link https://nodejs.org/api/path.html path}
+ * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
+ * @see {@link https://github.com/then/then-levelup then-levelup}
  */
 const bluebird = require("bluebird");
+const ansi_to_html = require('ansi-to-html');
 const express = require("express");
 const http = require("http");
 const io = require("socket.io");
 const level = require("levelup");
 const path = require("path");
+const pretty_error = require('pretty-error');
 const slackClient = require("@slack/client");
 const thenLevel = require("then-levelup");
 
@@ -64,6 +69,15 @@ server.listen(port, function () {
 });
 
 /**
+ * Using pretty-error along with ansi-to-html to display error messages to the user in a nice format.
+ */
+const prettyError = new pretty_error()
+  .skipNodeFiles();
+const ansiConvert = new ansi_to_html({
+  newline: true
+});
+
+/**
  * Create the main bundle object, copies of references that will be passed to other functions. Holds references to the LevelDB data store, Slack RTM Client, and Socket.io server.
  */
 var bundle = {};
@@ -94,11 +108,13 @@ app.use(function (req, res, next) {
 });
 app.use(function (err, req, res, next) {
   if (err) {
-    console.log(`Express error`);
-    console.log(err.message);
-    console.error(err.stack);
+    let params = {
+      title: "Error",
+      message: err.message,
+      error: ansiConvert.toHtml(prettyError.render(err))
+    };
+    res.render("error", params);
   }
-  res.status(500).send("Something broke!");
 });
 
 /**

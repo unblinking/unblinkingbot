@@ -119,7 +119,7 @@ const sockets = {
         let success = true;
         let err = null;
         try {
-          bundle.dbp.put("slack::credentials::token", token);
+          bundle.dbp.put("slack::settings::token", token);
         } catch (e) {
           success = false;
           err = e;
@@ -169,9 +169,9 @@ const sockets = {
               }
             });
           }
-          bundle.dbp.put("slack::credentials::notify", notify);
-          bundle.dbp.put("slack::credentials::notifyId", notifyId);
-          bundle.dbp.put("slack::credentials::notifyType", notifyType);
+          bundle.dbp.put("slack::settings::notify", notify);
+          bundle.dbp.put("slack::settings::notifyId", notifyId);
+          bundle.dbp.put("slack::settings::notifyType", notifyType);
         } catch (e) {
           success = false;
           err = e;
@@ -191,7 +191,13 @@ const sockets = {
         // The disconnectRtm and startRtmInstance functions will do their own
         // socket.emit messages when they have completed.
         disconnectRtm(bundle)
-          .then(addTokenToBundle)
+          .then(function () {
+            return bundle.dbp.get("slack::settings::token");
+          })
+          .then(function (token) {
+            bundle.token = token;
+            return bundle;
+          })
           .then(getRtmInstance)
           .then(startRtmInstance)
           .then(listenForRtmEvents)

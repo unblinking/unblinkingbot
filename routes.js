@@ -15,16 +15,19 @@
 
 /**
  * Require the 3rd party modules that will be used.
+ * @see {@link https://github.com/rburns/ansi-to-html ansi-to-html}
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
+ * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
  */
+const ansi_to_html = require('ansi-to-html');
 const bluebird = require("bluebird");
+const pretty_error = require('pretty-error');
 
-/**
- * Promisify the unblinkingdb.js callback functions.
- */
-//const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
-//const addNotifyToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyToBundle);
-//const addNotifyTypeToBundle = bluebird.promisify(require("./unblinkingslack.js").addNotifyTypeToBundle);
+const ansiConvert = new ansi_to_html({
+  newline: true
+});
+const prettyError = new pretty_error()
+  .skipNodeFiles();
 
 /**
  * @public
@@ -49,34 +52,42 @@ const router = function (app, bundle) {
       title: "Settings",
       rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
     };
-    bundle.dbp.get("slack::credentials::token")
+    bundle.dbp.get("slack::settings::token")
       .then(function (token) {
         params.token = token;
       })
-      .then(function () {
-        return bundle.dbp.get("slack::credentials::notify");
+      .catch(function (err) {
+        if (!err.notFound) throw err;
+        console.log("this got run!");
       })
-      .then(function (err, notify) {
-        if (err) throw err;
+      .then(function () {
+        return bundle.dbp.get("slack::settings::notify");
+      })
+      .then(function (notify) {
         params.notify = notify;
       })
+      .catch(function (err) {
+        if (!err.notFound) throw err;
+      })
       .then(function () {
-        return bundle.dbp.get("slack::credentials::notifyType");
+        return bundle.dbp.get("slack::settings::notifyType");
       })
       .then(function (notifyType) {
         params.notifyType = notifyType;
+      })
+      .catch(function (err) {
+        if (!err.notFound) throw err;
       })
       .then(function () {
         res.render("settings", params);
       })
       .catch(function (err) {
-        if (err.notFound) {
-          // Common expected error, continue normally.
-          console.log(err.message);
-          res.render("settings", params);
-        } else {
-          res.status(500).send(err.message);
-        }
+        let params = {
+          title: "Error",
+          message: err.message,
+          error: ansiConvert.toHtml(prettyError.render(err))
+        };
+        res.render("error", params);
       });
   });
 
