@@ -15,14 +15,24 @@
 
 /**
  * Require the 3rd party modules that will be used.
+ * @see {@link https://github.com/rburns/ansi-to-html ansi-to-html}
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
+ * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
  */
+const ansi_to_html = require('ansi-to-html');
 const bluebird = require("bluebird");
+const pretty_error = require('pretty-error');
+
+const ansiConvert = new ansi_to_html({
+  newline: true
+});
+const prettyError = new pretty_error()
+  .skipNodeFiles();
 
 /**
  * Promisify some local module callback functions.
  */
-const getFullDataStore = bluebird.promisify(require("./unblinkingdb.js").getFullDataStore);
+const getAllData = bluebird.promisify(require("./datastore.js").getAllData);
 //const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
 
 const getRtmInstance = bluebird.promisify(require("./unblinkingslack.js").getRtmInstance);
@@ -42,10 +52,11 @@ const sockets = {
         // console.log("Socket.io disconnection.");
       });
 
+      // TODO: Do a pretty error here
       socket.on("readFullDbReq", function () {
-        getFullDataStore(bundle)
-          .then(function (fullDataStore) {
-            socket.emit("readFullDbRes", fullDataStore);
+        getAllData(bundle.db)
+          .then(function (allData) {
+            socket.emit("readFullDbRes", allData);
           })
           .catch(function (err) {
             socket.emit("readFullDbRes", err.message);
@@ -119,7 +130,7 @@ const sockets = {
         let success = true;
         let err = null;
         try {
-          bundle.dbp.put("slack::settings::token", token);
+          bundle.db.put("slack::settings::token", token);
         } catch (e) {
           success = false;
           err = e;
@@ -128,7 +139,7 @@ const sockets = {
           socket.emit("saveSlackTokenRes", {
             token: token,
             success: success,
-            err: err
+            err: undefined //ansiConvert.toHtml(prettyError.render(err))
           });
         }
       });
@@ -169,9 +180,9 @@ const sockets = {
               }
             });
           }
-          bundle.dbp.put("slack::settings::notify", notify);
-          bundle.dbp.put("slack::settings::notifyId", notifyId);
-          bundle.dbp.put("slack::settings::notifyType", notifyType);
+          bundle.db.put("slack::settings::notify", notify);
+          bundle.db.put("slack::settings::notifyId", notifyId);
+          bundle.db.put("slack::settings::notifyType", notifyType);
         } catch (e) {
           success = false;
           err = e;
@@ -192,7 +203,7 @@ const sockets = {
         // socket.emit messages when they have completed.
         disconnectRtm(bundle)
           .then(function () {
-            return bundle.dbp.get("slack::settings::token");
+            return bundle.db.get("slack::settings::token");
           })
           .then(function (token) {
             bundle.token = token;
@@ -222,10 +233,10 @@ const sockets = {
         process.exit(1);
       });
 
-    }); // on connection
+    });
 
-  } // events function
+  }
 
-}; // const sockets
+};
 
 module.exports = sockets;

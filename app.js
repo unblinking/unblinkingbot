@@ -69,22 +69,10 @@ server.listen(port, function () {
 });
 
 /**
- * Using pretty-error along with ansi-to-html to display error messages to the user in a nice format.
- */
-const prettyError = new pretty_error()
-  .skipNodeFiles();
-const ansiConvert = new ansi_to_html({
-  newline: true
-});
-
-/**
  * Create the main bundle object, copies of references that will be passed to other functions. Holds references to the LevelDB data store, Slack RTM Client, and Socket.io server.
  */
 var bundle = {};
-bundle.db = level("db", {
-  valueEncoding: 'json'
-});
-bundle.dbp = thenLevel(level("dbp", {
+bundle.db = thenLevel(level("db", {
   valueEncoding: 'json'
 }));
 bundle.rtm = undefined;
@@ -99,6 +87,15 @@ sockets.events(bundle);
  * Define route configurations after other app configurations.
  */
 routes(app, bundle);
+
+/**
+ * Using pretty-error along with ansi-to-html to display error messages to the user in a nice format.
+ */
+const ansiConvert = new ansi_to_html({
+  newline: true
+});
+const prettyError = new pretty_error()
+  .skipNodeFiles();
 
 /**
  * Define error-handling middleware after app and route configurations.

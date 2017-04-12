@@ -20,7 +20,7 @@
 const slackClient = require("@slack/client");
 
 // TODO: Get rid of this, maybe move to a utility
-var unblinking_db = require('./unblinkingdb.js');
+var unblinking_db = require('./datastore.js');
 
 const slacking = {
 
@@ -74,11 +74,7 @@ const slacking = {
         bundle.rtm.disconnect('User request', '1');
       } else {
         // Nothing to be disconnected. Emit socket.io response immediately.
-        // TODO: Handle this better.
-        console.log(`RTM already disconnected`);
-        setTimeout(function () {
-          bundle.socket.emit('slackStopRes');
-        }, 3000);
+        bundle.socket.emit('slackStopRes');
       }
     } catch (e) {
       err = e;

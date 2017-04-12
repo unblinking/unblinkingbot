@@ -40,19 +40,27 @@ const prettyError = new pretty_error()
 const router = function (app, bundle) {
 
   app.get("/", function (req, res) {
-    let params = {
+    res.render("index", {
       title: "Dashboard",
       rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected
-    };
-    res.render("index", params);
+    });
   });
 
   app.get("/settings", function (req, res) {
+
+    /*
+    res.render("settings", {
+      title: "Settings",
+      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
+    });
+    */
+
+    
     let params = {
       title: "Settings",
       rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
     };
-    bundle.dbp.get("slack::settings::token")
+    bundle.db.get("slack::settings::token")
       .then(function (token) {
         params.token = token;
       })
@@ -61,7 +69,7 @@ const router = function (app, bundle) {
         console.log("this got run!");
       })
       .then(function () {
-        return bundle.dbp.get("slack::settings::notify");
+        return bundle.db.get("slack::settings::notify");
       })
       .then(function (notify) {
         params.notify = notify;
@@ -70,7 +78,7 @@ const router = function (app, bundle) {
         if (!err.notFound) throw err;
       })
       .then(function () {
-        return bundle.dbp.get("slack::settings::notifyType");
+        return bundle.db.get("slack::settings::notifyType");
       })
       .then(function (notifyType) {
         params.notifyType = notifyType;
@@ -89,14 +97,14 @@ const router = function (app, bundle) {
         };
         res.render("error", params);
       });
+    
   });
 
   app.get("/datastore", function (req, res) {
-    let params = {
+    res.render("datastore", {
       title: "Data Store",
       rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
-    };
-    res.render("datastore", params);
+    });
   });
 
 };

@@ -1,6 +1,41 @@
 var socket = io.connect();
 
 function alertDisplay(bundle) {
+  (new Promise(function (resolve, reject) {
+    bundle.alert.fadeTo(0, 0, function () {
+      bundle.alert[0].innerHTML = bundle.alertHtml;
+      bundle.alert.slideUp(1, function () {
+        resolve();
+      });
+    });
+  })).then(new Promise(function (resolve, reject) {
+    alert("sliding down");
+    bundle.alert.slideDown(2000, function () {
+      alert("done sliding down");
+      resolve();
+    });
+  })).then(new Promise(function (resolve, reject) {
+    alert("fading in");
+    bundle.alert.fadeTo(2000, 1, function () {
+      alert("done fading in");
+      resolve();
+    });
+  })).then(new Promise(function (resolve, reject) {
+    alert("timing out");
+    setTimeout(function () {
+      alert("done timing out");
+      resolve();
+    }, 2000);
+  })).then(new Promise(function (resolve, reject) {
+    var alertHeight = bundle.alert[0].clientHeight;
+    if (alertHeight > 0) {
+      bundle.alert.fadeTo(500, 0).slideUp(500, function () {
+        resolve();
+      });
+    }
+  }));
+
+  /*
   bundle.alert.fadeTo(0, 0).slideUp(0, function () {
     bundle.alert[0].innerHTML = bundle.alertHtml;
     bundle.alert.slideDown(250, function () {
@@ -14,6 +49,7 @@ function alertDisplay(bundle) {
       });
     });
   });
+  */
 }
 
 function bindSetupSlackIntegration() {
@@ -60,7 +96,7 @@ socket.on('slackRestartRes', function () {
     button: $('#restartSlackIntegration'),
     buttonHtml: '<span class=\"glyphicon glyphicon-refresh\"></span> Restart Slack Integration',
     alert: $("#restartSlackIntegrationAlert"),
-    alertHtml: '<div class=\"alert alert-warning\" style=\"margin:0px; border-radius:0px;\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Warning!</strong> Slack integration was restarted.</div>'
+    alertHtml: '<div class=\"alert alert-warning fade in\" style=\"margin:0px; border-radius:0px;\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Warning!</strong> Slack integration was restarted.</div>'
   });
 });
 
@@ -83,7 +119,7 @@ socket.on('slackStopRes', function () {
     button: $('#stopSlackIntegration'),
     buttonHtml: '<span class=\"glyphicon glyphicon-off\"></span> Stop Slack Integration',
     alert: $("#stopSlackIntegrationAlert"),
-    alertHtml: '<div class=\"alert alert-danger\" style=\"margin:0px; border-radius:0px;\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Danger!</strong> Slack integration was stopped.</div>'
+    alertHtml: '<div class=\"alert alert-danger fade in\" style=\"margin:0px; border-radius:0px;\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Danger!</strong> Slack integration was stopped.</div>'
   });
 });
 
@@ -110,12 +146,15 @@ socket.on('saveSlackTokenRes', function (bundle) {
     document.getElementById("defaultNotifyPanel").classList.remove('hidden');
     alertDisplay({
       alert: $("#saveSlackTokenAlert"),
-      alertHtml: '<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Success!</strong> Slack token saved successfully. Slack integration is being restarted to use the new token.</div>'
+      alertHtml: '<div class=\"alert alert-success fade in\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Success!</strong> Slack token saved successfully. Slack integration is being restarted to use the new token.</div>'
     });
     // Restart Slack integration
     socket.emit('slackRestartReq');
   } else {
-    document.getElementById("saveSlackTokenAlert").innerHTML = "<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Error!</strong> There was an error. Slack token was not saved.</div>";
+    document.getElementById("saveSlackTokenAlert").innerHTML = "<div class=\"alert alert-danger fade in\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Error!</strong> There was an error. Slack token was not saved. &nbsp; <a class=\"label label-default small\" type=\"button\" data-toggle=\"collapse\" data-target=\"#errorDetails\" aria-expanded=\"false\" aria-controls=\"errorDetails\">Details</a><br><br><div class=\"well collapse\" id=\"errorDetails\" style=\"background-color:#000; overflow:hidden\">" + bundle.err + "</div></div>";
+    /*
+    document.getElementById("saveSlackTokenAlert").innerHTML = "<div class=\"alert alert-danger fade in\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Error!</strong> There was an error. Slack token was not saved.</div>";
+    */
   }
 });
 
@@ -143,12 +182,12 @@ function alertSaveSlackNotifyResponse(bundle) {
     }
     alertDisplay({
       alert: $("#saveSlackNotifyAlert"),
-      alertHtml: '<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Success!</strong> Default notification recipient saved successfully. Slack integration is being restarted to use the new setting.</div>'
+      alertHtml: '<div class=\"alert alert-success fade in\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Success!</strong> Default notification recipient saved successfully. Slack integration is being restarted to use the new setting.</div>'
     });
     // Restart Slack integration
     socket.emit('slackRestartReq');
   } else {
-    document.getElementById("saveSlackNotifyAlert").innerHTML = "<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Error!</strong> There was an error. Default notification recipient was not saved.</div>";
+    document.getElementById("saveSlackNotifyAlert").innerHTML = "<div class=\"alert alert-danger fade in\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Error!</strong> There was an error. Default notification recipient was not saved.</div>";
   }
 }
 
