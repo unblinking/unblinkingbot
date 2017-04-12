@@ -18,9 +18,17 @@
  * @namespace database
  * @memberof databases
  */
-const unblinkingdb = {
+const datastore = {
 
-  getFullDataStore: function (bundle, callback) {
+  /**
+   * Obtain and return all data from the datastore via a ReadStream.
+   * 
+   * @method getAllData
+   * @async
+   * @param {Object} bundle The main bundle of references to the LevelDB data store, Slack RTM Client, and Socket.io server.
+   * @param {Function} callback A callback function
+   */
+  getAllData: function (bundle, callback) {
     let err = null;
     let fullDataStore = {};
     bundle.dbp.createReadStream()
@@ -38,7 +46,10 @@ const unblinkingdb = {
       });
   },
 
-  trimObjKeys: function (bundle, callback) {
+  /**
+   * 
+   */
+  trimByPrefix: function (bundle, callback) {
     let err = null;
     let allKeys = [];
     bundle.dbp.createReadStream({
@@ -69,4 +80,4 @@ const unblinkingdb = {
 
 };
 
-module.exports = unblinkingdb;
+module.exports = datastore;

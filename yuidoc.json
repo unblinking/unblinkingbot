@@ -1,0 +1,15 @@
+{
+  "name": "unblinkingbot",
+  "description": "Another Slack bot.",
+  "version": "0.0.1",
+  "url": "http://www.UnblinkingBot.com/",
+  "logo": "./public/images/favicon.ico",
+  "options": {
+    "outdir": "docs",
+    "paths": [
+      "*"
+    ],
+    "linkNatives": true,
+    "tabtospace": 2
+  }
+}
