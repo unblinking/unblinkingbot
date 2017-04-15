@@ -33,9 +33,7 @@ const prettyError = new pretty_error()
  * Promisify some local module callback functions.
  */
 const getAllData = bluebird.promisify(require("./datastore.js").getAllData);
-//const addTokenToBundle = bluebird.promisify(require("./unblinkingslack.js").addTokenToBundle);
-
-const getRtmInstance = bluebird.promisify(require("./unblinkingslack.js").getRtmInstance);
+const getNewRtmInstance = bluebird.promisify(require("./unblinkingslack.js").getNewRtmInstance);
 const startRtmInstance = bluebird.promisify(require("./unblinkingslack.js").startRtmInstance);
 const listenForRtmEvents = bluebird.promisify(require("./unblinkingslack.js").listenForEvents);
 const disconnectRtm = bluebird.promisify(require("./unblinkingslack.js").disconnectRtmInstance);
@@ -203,13 +201,14 @@ const sockets = {
         // socket.emit messages when they have completed.
         disconnectRtm(bundle)
           .then(function () {
+            bundle.socket.emit('slackStopRes');
             return bundle.db.get("slack::settings::token");
           })
           .then(function (token) {
             bundle.token = token;
             return bundle;
           })
-          .then(getRtmInstance)
+          .then(getNewRtmInstance)
           .then(startRtmInstance)
           .then(listenForRtmEvents)
           .catch(function (err) {
@@ -222,6 +221,10 @@ const sockets = {
         // The disconnectRtm function will do its own socket.emit message when
         // it has completed.
         disconnectRtm(bundle)
+          .then(function() {
+            console.log("disconnect done");
+            bundle.socket.emit('slackStopRes');
+          })
           .catch(function (err) {
             console.log(`Error: ${err.message}`);
           });

@@ -1,72 +1,77 @@
 var socket = io.connect();
 
-function alertDisplay(bundle) {
-  (new Promise(function (resolve, reject) {
-    bundle.alert.fadeTo(0, 0, function () {
-      bundle.alert[0].innerHTML = bundle.alertHtml;
-      bundle.alert.slideUp(1, function () {
-        resolve();
-      });
-    });
-  })).then(new Promise(function (resolve, reject) {
-    alert("sliding down");
-    bundle.alert.slideDown(2000, function () {
-      alert("done sliding down");
-      resolve();
-    });
-  })).then(new Promise(function (resolve, reject) {
-    alert("fading in");
-    bundle.alert.fadeTo(2000, 1, function () {
-      alert("done fading in");
-      resolve();
-    });
-  })).then(new Promise(function (resolve, reject) {
-    alert("timing out");
-    setTimeout(function () {
-      alert("done timing out");
-      resolve();
-    }, 2000);
-  })).then(new Promise(function (resolve, reject) {
-    var alertHeight = bundle.alert[0].clientHeight;
-    if (alertHeight > 0) {
-      bundle.alert.fadeTo(500, 0).slideUp(500, function () {
-        resolve();
-      });
-    }
-  }));
+attachHandlerChangeSettings();
 
-  /*
-  bundle.alert.fadeTo(0, 0).slideUp(0, function () {
-    bundle.alert[0].innerHTML = bundle.alertHtml;
-    bundle.alert.slideDown(250, function () {
-      bundle.alert.fadeTo(200, 1, function () {
-        window.setTimeout(function () {
-          var alertHeight = bundle.alert[0].clientHeight;
-          if (alertHeight > 0) {
-            bundle.alert.fadeTo(200, 0).slideUp(500);
-          }
-        }, 5000);
-      });
-    });
+/**
+ * Alert element animation.
+ * First, fade to zero opacity and slide up out of view just in case it is
+ * visible. Next, set html content, slide down, fade to full opacity, and sleep
+ * while the alert is visible. Last, fade to zero opacity and slide up out of
+ * view.
+ * 
+ * @param {Object} bundle
+ */
+function alertAnim(bundle) {
+  fade(0, 0).then(() => {
+    return up(0);
+  }).then(() => {
+    return setHtml(bundle.alertHtml);
+  }).then(() => {
+    return down(500);
+  }).then(() => {
+    return fade(500, 1);
+  }).then(() => {
+    return sleep(5000);
+  }).then(() => {
+    return fade(500, 0);
+  }).then(() => {
+    return up(500);
   });
-  */
+  function fade(speed, opacity) {
+    return new Promise(function (resolve) {
+      bundle.alert.fadeTo(speed, opacity, resolve);
+    });
+  }
+  function up(speed) {
+    return new Promise(function (resolve) {
+      bundle.alert.slideUp(speed, resolve);
+    });
+  }
+  function setHtml(html) {
+    return new Promise(function (resolve) {
+      bundle.alert[0].innerHTML = html;
+      resolve();
+    });
+  }
+  function down(speed) {
+    return new Promise(function (resolve) {
+      bundle.alert.slideDown(speed, resolve);
+    });
+  }
+  function sleep(speed) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve, speed);
+    });
+  }
 }
 
-function bindSetupSlackIntegration() {
-  $("#setupSlackIntegration").unbind().click(function () {
-    document.getElementById("setupSlackIntegration").classList.add('hidden');
-    document.getElementById("tokenPanel").classList.remove('hidden');
-    var inputValue = document.getElementById("slackToken").value;
-    if (inputValue) {
-      document.getElementById("defaultNotifyPanel").classList.remove('hidden');
+/**
+ * Attach a handler to the click event for the changeSettings element.
+ * When clicked; hide the button, un-hide the token panel, un-hide the notify
+ * panel (if the token element is populated), and scroll the un-hidden panels
+ * into view.
+ */
+function attachHandlerChangeSettings() {
+  $("#changeSettings").one("click", function () {
+    $(this).addClass('hidden');
+    $("#tokenPanel").removeClass('hidden');
+    let value = $("#slackToken").val();
+    if (value) {
+      $("#defaultNotifyPanel").removeClass('hidden');
     }
-    // Scroll down to the newly visible settings
-    var element = document.getElementById("tokenPanel");
-    var alignWithTop = true;
-    element.scrollIntoView(alignWithTop);
+    $("#tokenPanel")[0].scrollIntoView();
   });
 }
-bindSetupSlackIntegration();
 
 function slackRestartOrStopRes(bundle) {
   var statusElement = document.getElementById('slackIntegrationStatus');
@@ -74,7 +79,7 @@ function slackRestartOrStopRes(bundle) {
   statusElement.classList.remove(bundle.remove);
   statusElement.classList.add(bundle.add);
   bundle.button[0].innerHTML = bundle.buttonHtml;
-  alertDisplay(bundle);
+  alertAnim(bundle);
 }
 
 function bindRestartSlackIntegration() {
@@ -144,7 +149,7 @@ socket.on('saveSlackTokenRes', function (bundle) {
     document.getElementById("restartSlackIntegration").classList.remove('hidden');
     document.getElementById("stopSlackIntegration").classList.remove('hidden');
     document.getElementById("defaultNotifyPanel").classList.remove('hidden');
-    alertDisplay({
+    alertAnim({
       alert: $("#saveSlackTokenAlert"),
       alertHtml: '<div class=\"alert alert-success fade in\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Success!</strong> Slack token saved successfully. Slack integration is being restarted to use the new token.</div>'
     });
@@ -180,7 +185,7 @@ function alertSaveSlackNotifyResponse(bundle) {
     if (bundle.defaultNotifyType === 'user') {
       document.getElementById("inputUsers").classList.add('has-success');
     }
-    alertDisplay({
+    alertAnim({
       alert: $("#saveSlackNotifyAlert"),
       alertHtml: '<div class=\"alert alert-success fade in\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Success!</strong> Default notification recipient saved successfully. Slack integration is being restarted to use the new setting.</div>'
     });
