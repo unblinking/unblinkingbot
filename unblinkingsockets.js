@@ -124,21 +124,21 @@ const sockets = {
       });
 
       // Save Slack token
-      socket.on("saveSlackTokenReq", function (token) {
+      socket.on("saveSlackTokenReq", (token) => {
         let success = true;
         let err = null;
         try {
           bundle.db.put("slack::settings::token", token);
         } catch (e) {
           success = false;
-          err = e;
-          console.log(err.message);
+          err = ansiConvert.toHtml(prettyError.render(e));
         } finally {
-          socket.emit("saveSlackTokenRes", {
-            token: token,
-            success: success,
-            err: undefined //ansiConvert.toHtml(prettyError.render(err))
-          });
+          socket.emit(
+            "saveSlackTokenRes",
+            token,
+            success,
+            err
+          );
         }
       });
 
@@ -197,11 +197,8 @@ const sockets = {
 
       // Restart Slack integration
       socket.on("slackRestartReq", function () {
-        // The disconnectRtm and startRtmInstance functions will do their own
-        // socket.emit messages when they have completed.
         disconnectRtm(bundle)
           .then(function () {
-            bundle.socket.emit('slackStopRes');
             return bundle.db.get("slack::settings::token");
           })
           .then(function (token) {
@@ -218,13 +215,7 @@ const sockets = {
 
       // Stop Slack integration
       socket.on("slackStopReq", function () {
-        // The disconnectRtm function will do its own socket.emit message when
-        // it has completed.
         disconnectRtm(bundle)
-          .then(function() {
-            console.log("disconnect done");
-            bundle.socket.emit('slackStopRes');
-          })
           .catch(function (err) {
             console.log(`Error: ${err.message}`);
           });

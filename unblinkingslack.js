@@ -20,7 +20,7 @@
 const slackClient = require("@slack/client");
 
 // TODO: Get rid of this, maybe move to a utility
-var unblinking_db = require('./datastore.js');
+var unblinking_db = require("./datastore.js");
 
 const slacking = {
 
@@ -29,7 +29,7 @@ const slacking = {
     let rtmExists = bundle.rtm !== undefined && Object.keys(bundle.rtm).length !== 0;
     try {
       bundle.rtm = new slackClient.RtmClient(bundle.token, {
-        logLevel: 'verbose',
+        // logLevel: "verbose",
         dataStore: new slackClient.MemoryDataStore()
       });
     } catch (e) {
@@ -64,7 +64,9 @@ const slacking = {
     try {
       if (rtmConnected) {
         bundle.rtm.autoReconnect = false;
-        bundle.rtm.disconnect('User request', '1');
+        bundle.rtm.disconnect("User request", "1");
+      } else {
+        bundle.socket.emit("slackDisconnection", "Disconnect requested but the Slack RTM Client was already disconnected.");
       }
     } catch (e) {
       err = e;
@@ -100,7 +102,7 @@ const slacking = {
       if (rtmExists && text !== undefined && id !== undefined) {
         bundle.rtm.sendMessage(text, id);
       } else {
-        // No RTM instance exists to send a message
+        err = new Error("Message not sent.");
       }
     } catch (e) {
       err = e;
@@ -118,17 +120,15 @@ const slacking = {
     });
 
     bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function () {
-      // var user = bundle.rtm.dataStore.getUserById(bundle.rtm.activeUserId);
-      // var team = bundle.rtm.dataStore.getTeamById(bundle.rtm.activeTeamId);
-      // console.log(`RTM connection opened. RTM hello event received.`);
-      // console.log(`Slack RTM Client connected to ${team.name} as user ${user.name}.`);
-      console.log("slack RTM connection OPENED event");
-      bundle.socket.emit('slackRestartRes');
+      var user = bundle.rtm.dataStore.getUserById(bundle.rtm.activeUserId);
+      var team = bundle.rtm.dataStore.getTeamById(bundle.rtm.activeTeamId);
+      let message = `Slack RTM Client connected to ${team.name} as user ${user.name}.`;
+      bundle.socket.emit("slackConnectionOpened", message);
     });
 
     bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.DISCONNECT, function (message) {
-      console.log(`RTM Disconnect Event: ${message}`);
-      //bundle.socket.emit('slackStopRes');
+      //console.log(`RTM Disconnect Event: ${message}`);
+      bundle.socket.emit("slackDisconnection", message);
     });
 
     bundle.rtm.on(slackClient.RTM_EVENTS.MESSAGE, function (message) {
@@ -140,7 +140,7 @@ const slacking = {
       // See whats in the message text, if there is any
       if (bundle.event.text) {
         // If the unblinkingbot name or user ID is mentioned ...
-        var re = new RegExp(bundle.rtm.activeUserId, 'g');
+        var re = new RegExp(bundle.rtm.activeUserId, "g");
         if (bundle.event.text.match(/unblinkingbot/gi) || bundle.event.text.match(re)) {
           // Reply to the message
           bundle.sending = {};

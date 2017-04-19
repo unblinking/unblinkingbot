@@ -1,4 +1,4 @@
-doctype html(lang='en')
+doctype html(lang="en")
 head
   include head
 body
@@ -6,7 +6,7 @@ body
   include navbar
   // Showcase container begin
   br
-  .container.theme-showcase(role='main')
+  .container.theme-showcase(role="main")
     br
     .page-header.clearfix
       h4=title
@@ -51,28 +51,27 @@ body
                             |#{notifyType}  #{notify}
                           else
                             |undefined
-                        .alert-fixed
-                          // TODO: These should be named more like warningAlert and errorAlert
-                          #restartSlackIntegrationAlert
-                          #stopSlackIntegrationAlert
+                        br
+                        #restartSlackIntegrationAlert
+                        #stopSlackIntegrationAlert
                       .panel-footer
-                        #changeSettings.btn.btn-xs.btn-primary(style="margin-bottom: 5px;")
+                        #changeSettings.btn.btn-xs.btn-default(style="margin-bottom: 5px;")
                           span.glyphicon.glyphicon-wrench
                           +space
                           |Change Settings
                         +space
-                        #restartSlackIntegration.btn.btn-xs.btn-warning.hidden(style="margin-bottom: 5px;")
+                        #slackRestartBtn.btn.btn-xs.btn-primary.hidden(style="margin-bottom: 5px;")
                           if token
                             script.
-                              document.getElementById("restartSlackIntegration").classList.remove('hidden');
+                              document.getElementById("slackRestartBtn").classList.remove("hidden");
                           span.glyphicon.glyphicon-refresh
                           +space
                           |Restart Slack Integration
                         +space
-                        #stopSlackIntegration.btn.btn-xs.btn-danger.hidden(style="margin-bottom: 5px;")
+                        #stopSlack.btn.btn-xs.btn-danger.hidden(style="margin-bottom: 5px;")
                           if token
                             script.
-                              document.getElementById("stopSlackIntegration").classList.remove('hidden');
+                              document.getElementById("stopSlack").classList.remove("hidden");
                           span.glyphicon.glyphicon-off
                           +space
                           |Stop Slack Integration
@@ -85,8 +84,8 @@ body
                           |Enter the Slack bot-user token here. If a token has been previously saved, it will be automatically populated here to allow for changes.
                         br
                         #slackTokenInputGroup.input-group
-                          input#slackToken.form-control(type='text', placeholder='e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX' value=token)
-                          #saveSlackTokenButton.input-group-addon.btn.btn-default
+                          input#slackToken.form-control(type="text", placeholder="e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX" value=token)
+                          #saveToken.input-group-addon.btn.btn-default
                             span.glyphicon.glyphicon-save
                             +space
                             |Save
@@ -118,22 +117,22 @@ body
                         br
                         .btn-group(data-toggle="buttons")
                           label#radioChannel.btn.btn-default
-                            input(type='radio')
+                            input(type="radio")
                             |Channel
                           label#radioGroup.btn.btn-default
-                            input(type='radio')
+                            input(type="radio")
                             |Group
                           label#radioUser.btn.btn-default
-                            input(type='radio')
+                            input(type="radio")
                             |User
                         br
                         br
                         #progressDefaultNotifications.progress.hidden
-                          .progress-bar.progress-bar-striped.active(role='progressbar', aria-valuenow="100", aria-valuemin="0", aria-valuemax="100", style="width: 100%")
+                          .progress-bar.progress-bar-striped.active(role="progressbar", aria-valuenow="100", aria-valuemin="0", aria-valuemax="100", style="width: 100%")
                         #inputChannels.input-group.hidden
                           .input-group-addon
                             |Channels
-                          select#defaultChannelSelect.form-control(type='text')
+                          select#defaultChannelSelect.form-control(type="text")
                           #saveSlackDefaultNotifyChannel.input-group-addon.btn.btn-default
                             span.glyphicon.glyphicon-save
                             +space
@@ -141,7 +140,7 @@ body
                         #inputGroups.input-group.hidden
                           .input-group-addon
                             |Groups
-                          select#defaultGroupSelect.form-control(type='text')
+                          select#defaultGroupSelect.form-control(type="text")
                           #saveSlackDefaultNotifyGroup.input-group-addon.btn.btn-default
                             span.glyphicon.glyphicon-save
                             +space
@@ -149,20 +148,20 @@ body
                         #inputUsers.input-group.hidden
                           .input-group-addon
                             |Users
-                          select#defaultUserSelect.form-control(type='text')
+                          select#defaultUserSelect.form-control(type="text")
                           #saveSlackDefaultNotifyUser.input-group-addon.btn.btn-default
                             span.glyphicon.glyphicon-save
                             +space
                             |Save
                         br
-                        #saveSlackNotifyAlert(style="min-height:1px;")
-                        #restartSlackNotifyAlert
+                        #saveSlackNotifyAlert
           .panel-footer.clearfix
-            a.label.label-info.pull-right(href='https://api.slack.com/bot-users', target='_blank')
+            a.label.label-info.pull-right(href="https://api.slack.com/bot-users", target="_blank")
               span.glyphicon.glyphicon-link
               +space
               |About Slack bot users
     include footer
   // Place JavaScript at the end of the document so the pages load faster
   include js
-  script(src='/js/settings.js')
+  script(src="/js/settings-templates.js")
+  script(src="/js/settings.js")
