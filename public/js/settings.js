@@ -1,7 +1,7 @@
 /**
  * The unblinking bot.
+ * Javascript for the unblinkingbot web UI settings page.
  * @namespace settings.js
- * @public
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
 
@@ -10,38 +10,13 @@
  */
 var socket = io.connect();
 
+/**
+ * Enable buttons appropriately.
+ */
 enableChangeSettingsBtn();
 enableRestartSlackBtn();
 enableStopSlackBtn();
 enableSaveTokenBtn();
-
-socket.on("saveSlackTokenRes", (token, success, err) => {
-  enableSaveTokenBtn()
-    .then(() => {
-      if (success) {
-        $("#currentSettingsToken").html(token);
-        $("#slackTokenInputGroup").addClass("has-success");
-        $("#slackRestartBtn").removeClass("hidden");
-        $("#stopSlack").removeClass("hidden");
-        $("#defaultNotifyPanel").removeClass("hidden");
-        socket.emit("slackRestartReq");
-        return alertSuccessAnimation($("#saveSlackTokenAlert"), `<div class=\"alert alert-success\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Success!</strong> Slack token saved successfully. Slack integration is being restarted to use the new token.</div>`);
-      } else if (!success) {
-        $("#slackTokenInputGroup").addClass("has-error");
-        return alertErrorAnimation($("#saveSlackTokenAlert"), `<div class=\"alert alert-danger\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><strong>Error!</strong> There was an error. Slack token was not saved. &nbsp; <a class=\"label label-default small\" type=\"button\" data-toggle=\"collapse\" data-target=\"#errorDetails\" aria-expanded=\"false\" aria-controls=\"errorDetails\">Details</a><br><br><div class=\"well collapse\" id=\"errorDetails\" style=\"background-color:#000; overflow:hidden\"> ${err} </div></div>`);
-      }
-    });
-});
-
-// Methods for setting the default notifications target
-
-// Hide all drop down selectors for default notifications
-function hideDefaultNotifySelectors() {
-  "use strict";
-  document.getElementById("inputChannels").classList.add("hidden");
-  document.getElementById("inputGroups").classList.add("hidden");
-  document.getElementById("inputUsers").classList.add("hidden");
-}
 
 // Success and error messages on save default notify requests
 function alertSaveSlackNotifyResponse(bundle) {
@@ -223,6 +198,18 @@ socket.on("slackDisconnection", message =>
   .then(() => alertSlackDisconnection(message))
 );
 
+socket.on("saveSlackTokenRes", (token, success, err) => {
+  enableSaveTokenBtn()
+    .then(() => {
+      if (success) handleSaveTokenSuccess(token)
+        .then(() => renderHtmlAlertTokenSavedSuccess())
+        .then(alert => alertSuccessAnimation(alert.element, alert.html));
+      if (!success) handleSaveTokenError(err)
+        .then(() => renderHtmlAlertTokenSavedError(err))
+        .then(alert => alertErrorAnimation(alert.element, alert.html));
+    });
+});
+
 /**
  * Show the Slack RTM Connection alert.
  * @param {String} message A message from the Slack RTM Connection event.
@@ -291,12 +278,16 @@ function alertErrorAnimation(element, html) {
  */
 function enableChangeSettingsBtn() {
   return new P(resolve => {
-    $("#changeSettings").one("click", () => {
-      $("#changeSettings").off("click");
-      $("#changeSettings").addClass("hidden");
-      $("#tokenPanel").removeClass("hidden");
-      if ($("#slackToken").val()) $("#defaultNotifyPanel").removeClass("hidden");
-      $("#tokenPanel")[0].scrollIntoView();
+    let btn = $("#changeSettings");
+    btn.one("click", () => {
+      let btn = $("#changeSettings");
+      let tokenPanel = $("#tokenPanel");
+      let notifyPanel = $("#defaultNotifyPanel");
+      btn.off("click");
+      btn.addClass("hidden");
+      tokenPanel.removeClass("hidden");
+      if ($("#slackToken").val()) notifyPanel.removeClass("hidden");
+      tokenPanel[0].scrollIntoView();
     });
     resolve();
   });
@@ -309,11 +300,12 @@ function enableChangeSettingsBtn() {
  */
 function enableRestartSlackBtn() {
   return new P(resolve => {
-    $("#slackRestartBtn").off("click"); // Remove previous handler to start with none.
-    renderHtmlBtnSlackRestart().then(html => $("#slackRestartBtn").html(html));
-    $("#slackRestartBtn").one("click", () => { // Add new handler.
-      $("#slackRestartBtn").off("click"); // When clicked, remove handler.
-      renderHtmlBtnSlackRestarting().then(html => $("#slackRestartBtn").html(html));
+    let btn = $("#slackRestartBtn");
+    btn.off("click"); // Start with no click handler, prevent duplicates.
+    renderHtmlBtnSlackRestart().then(html => btn.html(html));
+    btn.one("click", () => { // Add new click handler.
+      btn.off("click"); // When clicked, remove handler.
+      renderHtmlBtnSlackRestarting().then(html => btn.html(html));
       socket.emit("slackRestartReq");
     });
     resolve();
@@ -327,12 +319,13 @@ function enableRestartSlackBtn() {
  * slackToken input element.
  */
 function enableSaveTokenBtn() {
-  return new P((resolve) => {
-    $("#saveToken").off("click"); // Remove previous handler to start with none.
-    $("#saveToken").html(`<span class=\"glyphicon glyphicon-save\"></span> Save`);
-    $("#saveToken").one("click", () => { // Add new handler.
-      $("#saveToken").off("click"); // When clicked, remove handler.
-      $("#saveToken").html("<div class=\"loader pull-left\"></div>");
+  return new P(resolve => {
+    let btn = $("#saveToken");
+    btn.off("click"); // Remove previous handler to start with none.
+    renderHtmlBtnSaveToken().then(html => btn.html(html));
+    btn.one("click", () => { // Add new handler.
+      btn.off("click"); // When clicked, remove handler.
+      renderHtmlBtnSavingToken().then(html => btn.html(html));
       socket.emit("saveSlackTokenReq", $("input[id=slackToken]").val());
     });
     resolve();
@@ -345,14 +338,49 @@ function enableSaveTokenBtn() {
  * stopping message, and then emit a slackStopReq event via Socket.io.
  */
 function enableStopSlackBtn() {
-  return new P((resolve) => {
-    $("#stopSlack").off("click"); // Remove previous handler to start with none.
-    $("#stopSlack").html(`<span class=\"glyphicon glyphicon-off\"></span> Stop Slack Integration`);
-    $("#stopSlack").one("click", () => { // Add new handler.
-      $("#stopSlack").off("click"); // When clicked, remove handler.
-      $("#stopSlack").html("<div class=\"loader pull-left\"></div> &nbsp; Stopping Slack Integration");
+  return new P(resolve => {
+    let btn = $("#stopSlack");
+    btn.off("click"); // Remove previous handler to start with none.
+    renderHtmlBtnSlackStop().then(html => btn.html(html));
+    btn.one("click", () => { // Add new handler.
+      btn.off("click"); // When clicked, remove handler.
+      renderHtmlBtnSlackStopping().then(html => btn.html(html));
       socket.emit("slackStopReq");
     });
+    resolve();
+  });
+}
+
+/**
+ * 
+ */
+function handleSaveTokenSuccess(token) {
+  return new P(resolve => {
+    $("#currentSettingsToken").html(token);
+    $("#slackTokenInputGroup").addClass("has-success");
+    $("#slackRestartBtn").removeClass("hidden");
+    $("#stopSlack").removeClass("hidden");
+    $("#defaultNotifyPanel").removeClass("hidden");
+    socket.emit("slackRestartReq");
+    resolve();
+  });
+}
+
+/**
+ * 
+ */
+function handleSaveTokenError() {
+  return new P.resolve($("#slackTokenInputGroup").addClass("has-error"));
+}
+
+/**
+ * Hide all drop down selectors for default notifications
+ */
+function hideDefaultNotifySelectors() {
+  return new P(resolve => {
+    $("#inputChannels").addClass("hidden");
+    $("#inputGroups").addClass("hidden");
+    $("#inputUsers").addClass("hidden");
     resolve();
   });
 }
@@ -371,9 +399,7 @@ function countTo(seconds) {
  * @param {Number} speed Duration of the animation in milliseconds.
  */
 function downSlide(element, speed) {
-  return new P((resolve) => {
-    element.slideDown(speed, resolve);
-  });
+  return new P(resolve => element.slideDown(speed, resolve));
 }
 
 /**
@@ -383,21 +409,16 @@ function downSlide(element, speed) {
  * @param {Number} opacity Target opacity, a number between 0 and 1.
  */
 function fade(element, speed, opacity) {
-  return new P((resolve) => {
-    element.fadeTo(speed, opacity, resolve);
-  });
+  return new P(resolve => element.fadeTo(speed, opacity, resolve));
 }
 
 /**
  * Set the HTML contents of matched elements.
  * @param {JQuery} element The JQuery element selector to be manipulated.
- * @param {String} html HTML string to set as the content of each matched element.
+ * @param {String} html HTML string to set as the content of matched elements.
  */
 function htmlSet(element, html) {
-  return new P((resolve) => {
-    element.html(html);
-    resolve();
-  });
+  return new P.resolve(element.html(html));
 }
 
 /**
@@ -405,7 +426,7 @@ function htmlSet(element, html) {
  * @param {Boolean} connected True if connected, false if disconnected.
  */
 function slackConnectionStatusUpdate(connected) {
-  return new P((resolve) => {
+  return new P(resolve => {
     let element = $("#slackIntegrationStatus");
     if (connected) {
       element.html("connected");
@@ -426,7 +447,5 @@ function slackConnectionStatusUpdate(connected) {
  * @param {Number} speed Duration of the animation in milliseconds.
  */
 function upSlide(element, speed) {
-  return new P((resolve) => {
-    element.slideUp(speed, resolve);
-  });
+  return new P(resolve => element.slideUp(speed, resolve));
 }
