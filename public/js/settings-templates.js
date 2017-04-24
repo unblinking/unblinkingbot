@@ -48,6 +48,20 @@ function renderHtmlAlertTokenSavedError(err) {
   });
 }
 
+function renderHtmlAlertNotifySavedSuccess() {
+  return new P.resolve({
+    element: $("#saveSlackNotifyAlert"),
+    html: `<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Default notification recipient saved successfully.</div>`
+  });
+}
+
+function renderHtmlAlertNotifySavedError(err) {
+  return new P.resolve({
+    element: $("#saveSlackNotifyAlert"),
+    html: `<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> There was an error. Default notification recipient was not saved. &nbsp; <a class="label label-default small" type="button" data-toggle="collapse" data-target="#errorDetails" aria-expanded="false" aria-controls="errorDetails">Details</a><br><br><div class="well collapse" id="errorDetails" style="background-color:#000; overflow:hidden"> ${err} </div></div>`
+  });
+}
+
 /**
  * Render the HTML for the Slack restart button when it is available to click.
  */
@@ -90,3 +104,13 @@ function renderHtmlBtnSavingToken() {
   return new P.resolve(`<div class="loader pull-left"></div>`);
 }
 
+/**
+ * Render the HTML for the Slack save notify button when it is available to click.
+ */
+function renderHtmlBtnSaveNotify() {
+  return new P.resolve(`<span class="glyphicon glyphicon-save"></span> &nbsp; Save`);
+}
+
+function renderHtmlBtnSavingNotify() {
+  return new P.resolve(`<div class="loader pull-left"></div>`);
+}

@@ -143,13 +143,11 @@ const sockets = {
       });
 
       // Save Slack default-notify
-      socket.on("saveSlackNotifyReq", function (defaults) {
+      socket.on("saveSlackNotifyReq", function (notify, notifyType) {
         let success = true;
         let err = null;
         let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
-        let notify = defaults.notify;
         let notifyId = null;
-        let notifyType = defaults.type;
         try {
           if (rtmConnected && notifyType === "channel") {
             let channels = bundle.rtm.dataStore.channels;
@@ -186,12 +184,13 @@ const sockets = {
           err = e;
           console.log(err.message);
         } finally {
-          socket.emit("saveSlackNotifyRes", {
-            defaultNotifyType: notifyType,
-            defaultNotify: notify,
-            success: success,
-            err: err
-          });
+          socket.emit(
+            "saveSlackNotifyRes",
+            notify,
+            notifyType,
+            success,
+            err
+          );
         }
       });
 

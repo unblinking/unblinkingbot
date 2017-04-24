@@ -66,7 +66,6 @@ const router = function (app, bundle) {
       })
       .catch(function (err) {
         if (!err.notFound) throw err;
-        console.log("this got run!");
       })
       .then(function () {
         return bundle.db.get("slack::settings::notify");
