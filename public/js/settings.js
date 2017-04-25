@@ -11,19 +11,15 @@
 var socket = io.connect();
 
 /**
- * Enable buttons.
+ * Setup the page buttons.
  */
 enableChangeSettingsBtn();
 enableRestartSlackBtn();
 enableStopSlackBtn();
 enableSaveTokenBtn();
 enableSaveNotifyBtn();
-
-// Remove has-success from inputs when modified
-$("#slackToken").focus(() => $("#slackTokenInputGroup").removeClass("has-success"));
-$("#defaultChannelSelect").focus(() => $("#inputChannels").removeClass("has-success"));
-$("#defaultGroupSelect").focus(() => $("#inputGroups").removeClass("has-success"));
-$("#defaultUserSelect").focus(() => $("#inputUsers").removeClass("has-success"));
+removeSuccessOnFocus();
+enableNotifyTypeRadioBtn();
 
 function readSlackChannelsGroupsUsersRes(bundle) {
   // Show the input drop down
@@ -40,6 +36,7 @@ function readSlackChannelsGroupsUsersRes(bundle) {
   document.getElementById("progressDefaultNotifications").classList.add("hidden");
 }
 
+/*
 function bindDefaultNotifyTypeRadioButton(bundle) {
   bundle.radioElement.unbind().click(function () {
     // Start with all options hidden and an empty select element.
@@ -51,13 +48,17 @@ function bindDefaultNotifyTypeRadioButton(bundle) {
     socket.emit(bundle.socketReq);
   });
 }
+*/
 
+/*
 // Channels - Define behavior when the Channel radio button is selected
 bindDefaultNotifyTypeRadioButton({
   radioElement: $("#radioChannel"),
   selectElement: document.getElementById("defaultChannelSelect"),
   socketReq: "readSlackChannelsReq"
 });
+*/
+
 socket.on("readSlackChannelsRes", function (channelNames) {
   readSlackChannelsGroupsUsersRes({
     inputDropdown: document.getElementById("inputChannels"),
@@ -66,12 +67,15 @@ socket.on("readSlackChannelsRes", function (channelNames) {
   });
 });
 
+/*
 // Groups - Define behavior when the Groups radio button is selected
 bindDefaultNotifyTypeRadioButton({
   radioElement: $("#radioGroup"),
   selectElement: document.getElementById("defaultGroupSelect"),
   socketReq: "readSlackGroupsReq"
 });
+*/
+
 socket.on("readSlackGroupsRes", function (groupNames) {
   readSlackChannelsGroupsUsersRes({
     inputDropdown: document.getElementById("inputGroups"),
@@ -80,12 +84,15 @@ socket.on("readSlackGroupsRes", function (groupNames) {
   });
 });
 
+/*
 // Users - Define behavior when the Direct Messages radio button is selected
 bindDefaultNotifyTypeRadioButton({
   radioElement: $("#radioUser"),
   selectElement: document.getElementById("defaultUserSelect"),
   socketReq: "readSlackUsersReq"
 });
+*/
+
 socket.on("readSlackUsersRes", function (userNames) {
   readSlackChannelsGroupsUsersRes({
     inputDropdown: document.getElementById("inputUsers"),
@@ -146,14 +153,14 @@ socket.on("saveSlackTokenRes", (token, success, err) => {
  */
 socket.on("saveSlackNotifyRes", (notify, notifyType, success, err) =>
   enableSaveNotifyBtn()
-    .then(() => {
-      if (success) handleSaveNotifySuccess(notify, notifyType)
-        .then(() => renderHtmlAlertNotifySavedSuccess())
-        .then(alert => alertSuccessAnimation(alert.element, alert.html));
-      if (!success) handleSaveNotifyError(err)
-        .then(() => renderHtmlAlertNotifySavedError(err))
-        .then(alert => alertErrorAnimation(alert.element, alert.html));
-    })
+  .then(() => {
+    if (success) handleSaveNotifySuccess(notify, notifyType)
+      .then(() => renderHtmlAlertNotifySavedSuccess())
+      .then(alert => alertSuccessAnimation(alert.element, alert.html));
+    if (!success) handleSaveNotifyError(err)
+      .then(() => renderHtmlAlertNotifySavedError(err))
+      .then(alert => alertErrorAnimation(alert.element, alert.html));
+  })
 );
 
 /**
@@ -278,6 +285,38 @@ function enableSaveTokenBtn() {
   });
 }
 
+function enableNotifyTypeRadioBtn() {
+  return new P(resolve => {
+    $("#radioChannel").off("click"); // Remove previous handler to start with none.
+    $("#radioChannel").one("click", () => { // Add new handler.
+      $("#radioChannel").off("click"); // When clicked, remove handler.
+      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
+      $("#defaultChannelSelect").options.length = 0;
+      $("#progressDefaultNotifications").removeClass("hidden");
+      socket.emit("readSlackChannelsReq");
+    });
+
+    $("#radioGroup").off("click"); // Remove previous handler to start with none.
+    $("#radioGroup").one("click", () => { // Add new handler.
+      $("#radioGroup").off("click"); // When clicked, remove handler.
+      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
+      $("#defaultGroupSelect").options.length = 0;
+      $("#progressDefaultNotifications").removeClass("hidden");
+      socket.emit("readSlackGroupsReq");
+    });
+
+    $("#radioUser").off("click"); // Remove previous handler to start with none.
+    $("#radioUser").one("click", () => { // Add new handler.
+      $("#radioUser").off("click"); // When clicked, remove handler.
+      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
+      $("#defaultUserSelect").options.length = 0;
+      $("#progressDefaultNotifications").removeClass("hidden");
+      socket.emit("readSlackUsersReq");
+    });
+
+  });
+}
+
 /**
  * 
  */
@@ -297,17 +336,29 @@ function enableSaveNotifyBtn() {
     btnC.one("click", () => { // Add new handler.
       btnC.off("click"); // When clicked, remove handler.
       renderHtmlBtnSavingNotify().then(html => btnC.html(html));
-      socket.emit("saveSlackNotifyReq", $("select[id=defaultChannelSelect]").val(), "channel");
+      socket.emit(
+        "saveSlackNotifyReq",
+        $("select[id=defaultChannelSelect]").val(),
+        "channel"
+      );
     });
     btnG.one("click", () => { // Add new handler.
       btnG.off("click"); // When clicked, remove handler.
       renderHtmlBtnSavingNotify().then(html => btnG.html(html));
-      socket.emit("saveSlackNotifyReq", $("select[id=defaultGroupSelect]").val(), "group");
+      socket.emit(
+        "saveSlackNotifyReq",
+        $("select[id=defaultGroupSelect]").val(),
+        "group"
+      );
     });
     btnU.one("click", () => { // Add new handler.
       btnU.off("click"); // When clicked, remove handler.
       renderHtmlBtnSavingNotify().then(html => btnU.html(html));
-      socket.emit("saveSlackNotifyReq", $("select[id=defaultUserSelect]").val(), "user");
+      socket.emit(
+        "saveSlackNotifyReq",
+        $("select[id=defaultUserSelect]").val(),
+        "user"
+      );
     });
     resolve();
   });
@@ -416,6 +467,19 @@ function fade(element, speed, opacity) {
  */
 function htmlSet(element, html) {
   return new P.resolve(element.html(html));
+}
+
+/**
+ * Remove the has-success class from inputs on focus events.
+ */
+function removeSuccessOnFocus() {
+  return new P(resolve => {
+    $("#slackToken").focus(() => $("#slackTokenInputGroup").removeClass("has-success"));
+    $("#defaultChannelSelect").focus(() => $("#inputChannels").removeClass("has-success"));
+    $("#defaultGroupSelect").focus(() => $("#inputGroups").removeClass("has-success"));
+    $("#defaultUserSelect").focus(() => $("#inputUsers").removeClass("has-success"));
+    resolve();
+  });
 }
 
 /**
