@@ -22,6 +22,11 @@ removeSuccessOnFocus();
 enableNotifyTypeRadioBtn();
 
 /**
+ * Request the current Slack connection status.
+ */
+slackConnectionStatusRequest();
+
+/**
  * 
  */
 socket.on("readSlackChannelsRes", channelNames =>
@@ -65,6 +70,10 @@ socket.on("slackConnectionOpened", message =>
   enableRestartSlackBtn()
   .then(() => slackConnectionStatusUpdate(true))
   .then(() => alertSlackConnection(message))
+);
+
+socket.on("slackConnectionStatusRes", connected =>
+  slackConnectionStatusUpdate(connected)
 );
 
 /**
@@ -144,6 +153,7 @@ function alertAnimationSuccess(element, html) {
     .then(() => countTo(5))
     .then(() => fade(element, 500, 0))
     .then(() => upSlide(element, 500))
+    .catch((err) => alert(err))
     .then(() => resolve()));
 }
 
@@ -194,16 +204,14 @@ function downSlide(element, speed) {
  */
 function enableChangeSettingsBtn() {
   return new P(resolve => {
-    let btn = $("#changeSettings");
-    btn.one("click", () => {
-      let btn = $("#changeSettings");
-      let tokenPanel = $("#tokenPanel");
-      let notifyPanel = $("#defaultNotifyPanel");
-      btn.off("click");
-      btn.addClass("hidden");
-      tokenPanel.removeClass("hidden");
-      if ($("#slackToken").val()) notifyPanel.removeClass("hidden");
-      tokenPanel[0].scrollIntoView();
+    $("#changeSettings").off("click"); // Start with no click handler, prevent duplicates.
+    renderHtmlBtnChangeSettings().then(html => $("#changeSettings").html(html));
+    $("#changeSettings").one("click", () => { // Add new click handler.
+      $("#changeSettings").off("click"); // When clicked, remove handler.
+      $("#changeSettings").addClass("hidden-xs-up");
+      $("#tokenPanel").removeClass("hidden-xs-up");
+      if ($("#slackToken").val()) $("#defaultNotifyPanel").removeClass("hidden-xs-up");
+      $("#tokenPanel")[0].scrollIntoView();
     });
     resolve();
   });
@@ -219,7 +227,7 @@ function enableNotifyTypeRadioBtn() {
       $("#radioChannel").off("click"); // When clicked, remove handler.
       hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
       $("#defaultChannelSelect")[0].options.length = 0;
-      $("#progressDefaultNotifications").removeClass("hidden"); // Show progress bar.
+      $("#progressDefaultNotifications").removeClass("hidden-xs-up"); // Show progress bar.
       socket.emit("readSlackChannelsReq");
     });
     $("#radioGroup").off("click"); // Remove previous handler to start with none.
@@ -227,7 +235,7 @@ function enableNotifyTypeRadioBtn() {
       $("#radioGroup").off("click"); // When clicked, remove handler.
       hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
       $("#defaultGroupSelect")[0].options.length = 0;
-      $("#progressDefaultNotifications").removeClass("hidden"); // Show progress bar.
+      $("#progressDefaultNotifications").removeClass("hidden-xs-up"); // Show progress bar.
       socket.emit("readSlackGroupsReq");
     });
     $("#radioUser").off("click"); // Remove previous handler to start with none.
@@ -235,7 +243,7 @@ function enableNotifyTypeRadioBtn() {
       $("#radioUser").off("click"); // When clicked, remove handler.
       hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
       $("#defaultUserSelect")[0].options.length = 0;
-      $("#progressDefaultNotifications").removeClass("hidden"); // Show progress bar.
+      $("#progressDefaultNotifications").removeClass("hidden-xs-up"); // Show progress bar.
       socket.emit("readSlackUsersReq");
     });
     resolve();
@@ -249,12 +257,11 @@ function enableNotifyTypeRadioBtn() {
  */
 function enableRestartSlackBtn() {
   return new P(resolve => {
-    let btn = $("#slackRestartBtn");
-    btn.off("click"); // Start with no click handler, prevent duplicates.
-    renderHtmlBtnSlackRestart().then(html => btn.html(html));
-    btn.one("click", () => { // Add new click handler.
-      btn.off("click"); // When clicked, remove handler.
-      renderHtmlBtnSlackRestarting().then(html => btn.html(html));
+    $("#slackRestartBtn").off("click"); // Start with no click handler, prevent duplicates.
+    renderHtmlBtnSlackRestart().then(html => $("#slackRestartBtn").html(html));
+    $("#slackRestartBtn").one("click", () => { // Add new click handler.
+      $("#slackRestartBtn").off("click"); // When clicked, remove handler.
+      renderHtmlBtnSlackRestarting().then(html => $("#slackRestartBtn").html(html));
       socket.emit("slackRestartReq");
     });
     resolve();
@@ -401,9 +408,9 @@ function handleSaveTokenSuccess(token) {
   return new P(resolve => {
     $("#currentSettingsToken").html(token);
     $("#slackTokenInputGroup").addClass("has-success");
-    $("#slackRestartBtn").removeClass("hidden");
-    $("#stopSlack").removeClass("hidden");
-    $("#defaultNotifyPanel").removeClass("hidden");
+    $("#slackRestartBtn").removeClass("hidden-xs-up");
+    $("#stopSlack").removeClass("hidden-xs-up");
+    $("#defaultNotifyPanel").removeClass("hidden-xs-up");
     socket.emit("slackRestartReq");
     resolve();
   });
@@ -414,9 +421,9 @@ function handleSaveTokenSuccess(token) {
  */
 function hideDefaultNotifySelectors() {
   return new P(resolve => {
-    $("#inputChannels").addClass("hidden");
-    $("#inputGroups").addClass("hidden");
-    $("#inputUsers").addClass("hidden");
+    $("#inputChannels").addClass("hidden-xs-up");
+    $("#inputGroups").addClass("hidden-xs-up");
+    $("#inputUsers").addClass("hidden-xs-up");
     resolve();
   });
 }
@@ -432,14 +439,14 @@ function htmlSet(element, html) {
 
 function populateDropDown(element, array, selector) {
   return new P(resolve => {
-    element.removeClass("hidden");
+    element.removeClass("hidden-xs-up");
     for (let i = 0; i < array.length; i++) {
       let name = array[i];
       let option = document.createElement("option");
       option.text = name;
       selector[0].add(option);
     }
-    $("#progressDefaultNotifications").addClass("hidden"); // Hide progress bar.
+    $("#progressDefaultNotifications").addClass("hidden-xs-up"); // Hide progress bar.
     resolve();
   });
 }
@@ -453,6 +460,13 @@ function removeSuccessOnFocus() {
     $("#defaultChannelSelect").focus(() => $("#inputChannels").removeClass("has-success"));
     $("#defaultGroupSelect").focus(() => $("#inputGroups").removeClass("has-success"));
     $("#defaultUserSelect").focus(() => $("#inputUsers").removeClass("has-success"));
+    resolve();
+  });
+}
+
+function slackConnectionStatusRequest() {
+  return new P(resolve => {
+    socket.emit("slackConnectionStatusReq");
     resolve();
   });
 }

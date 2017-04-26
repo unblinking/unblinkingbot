@@ -194,6 +194,11 @@ const sockets = {
         }
       });
 
+      socket.on("slackConnectionStatusReq", function () {
+        let connected = bundle.rtm !== undefined && bundle.rtm.connected === true;
+        socket.emit("slackConnectionStatusRes", connected);
+      });
+
       // Restart Slack integration
       socket.on("slackRestartReq", function () {
         disconnectRtm(bundle)

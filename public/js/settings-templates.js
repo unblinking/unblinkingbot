@@ -63,10 +63,17 @@ function renderHtmlAlertNotifySavedError(err) {
 }
 
 /**
+ * Render the HTML for the Change Settings button.
+ */
+function renderHtmlBtnChangeSettings() {
+  return new P.resolve(`Change Settings`);
+}
+
+/**
  * Render the HTML for the Slack restart button when it is available to click.
  */
 function renderHtmlBtnSlackRestart() {
-  return new P.resolve(`<span class="glyphicon glyphicon-refresh"></span> &nbsp; Restart Slack Integration`);
+  return new P.resolve(`Restart`);
 }
 
 /**

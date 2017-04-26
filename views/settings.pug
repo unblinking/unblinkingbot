@@ -4,154 +4,120 @@ head
 body
   include mixins
   include navbar
-  // Showcase container begin
   br
   .container
-    br
-    .page-header
-      h1=title
-  .container
-    form#slackSettings
-      fieldset.form-group.row
-        #currentSettingsPanel.form-group
-          .panel.panel-default
-            .panel-heading
-              |Slack Settings
-            .panel-body
-              .small|Slack integration is currently
-                if rtmConnected
-                  +space
-                  b#slackIntegrationStatus.text-success connected
-                  |.
-                else
-                  +space
-                  b#slackIntegrationStatus.text-danger disconnected
-                  |.
-              br
-              b.small|Token:
-              br
-              .text-info.small#currentSettingsToken
-                if token
-                  |#{token}
-                else
-                  |undefined
-              br
-              b.small|Notifications:
-              br
-              .text-info.small#currentSettingsNotify
-                if notify
-                  |#{notifyType}  #{notify}
-                else
-                  |undefined
-              br
-              #restartSlackIntegrationAlert
-              #stopSlackIntegrationAlert
-            .panel-footer
-              #changeSettings.btn.btn-xs.btn-default(style="margin-bottom: 5px;")
-                span.glyphicon.glyphicon-wrench
-                |
-                |Change Settings
+    form(id="slackSettings")
+      .form-group(id="currentSettingsPanel")
+        .card
+          .card-header
+            |#{title}
+            a.badge.badge-info.float-right(
+              href="https://api.slack.com/bot-users", target="_blank"
+            )
+              |About Slack bot users
+          .card-block
+            .small|Slack integration is currently 
+                span(id="slackIntegrationStatus")
+                |.
+            br
+            b.small|Token:
+            br
+            .text-info.small(id="currentSettingsToken")
+            br
+            b.small|Notifications:
+            br
+            .text-info.small(id="currentSettingsNotify")
+            //span(id="restartSlackIntegrationAlert")
+            #restartSlackIntegrationAlert
+            span(id="stopSlackIntegrationAlert")
+          .card-footer
+            .btn.btn-sm.btn-outline-primary(
+              id="changeSettings", style="margin-bottom: 5px;"
+            )
+            .btn.btn-sm.btn-outline-success.hidden-xs-up(
+              id="slackRestartBtn", style="margin-bottom: 5px;"
+            )
+              if token
+                script.
+                  document.getElementById("slackRestartBtn").classList.remove("hidden");
+            .btn.btn-sm.btn-outline-danger.hidden-xs-up(id="stopSlack", style="margin-bottom: 5px;")
+              if token
+                script.
+                  document.getElementById("stopSlack").classList.remove("hidden");
+      .form-group.hidden-xs-up(id="tokenPanel")
+        .card
+          .card-header
+            |Enter or change the token
+          .card-block
+            .small
+              |Enter the Slack bot-user token here. If a token has been previously saved, it will be automatically populated here to allow for changes.
+            br
+            .input-group(id="slackTokenInputGroup")
+              input.form-control(id="slackToken", type="text", placeholder="e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX" value=token)
+              .input-group-addon.btn.btn-outline-success(id="saveToken")
+                |Save
+            br
+            span(id="saveSlackTokenAlert")
+            span(id="restartSlackTokenAlert")
+      .form-group.hidden-xs-up(id="defaultNotifyPanel")
+        .card
+          .card-header
+            |Choose where to send notifications
+          .card-block
+            .small
+              |Choose where you would like the Slack bot user to send default notifications. Choose between a channel, a group, or a direct message to a user. Add the bot user to the desired channel or direct message in Slack first.
+            br
+            .small
+              b Channels
               +space
-              #slackRestartBtn.btn.btn-xs.btn-success.hidden(style="margin-bottom: 5px;")
-                if token
-                  script.
-                    document.getElementById("slackRestartBtn").classList.remove("hidden");
-                span.glyphicon.glyphicon-refresh
-                +space
-                |Restart Slack Integration
+              |include non-private channels where the bot user has already been invited (is a member of the channel).
+            br
+            .small
+              b Groups
               +space
-              #stopSlack.btn.btn-xs.btn-outline-danger.hidden(style="margin-bottom: 5px;")
-                if token
-                  script.
-                    document.getElementById("stopSlack").classList.remove("hidden");
-                span.glyphicon.glyphicon-off
-                +space
-                |Stop Slack Integration
-        #tokenPanel.form-group.hidden
-          .panel.panel-default
-            .panel-heading
-              |Enter or change the token
-            .panel-body
-              .small
-                |Enter the Slack bot-user token here. If a token has been previously saved, it will be automatically populated here to allow for changes.
-              br
-              #slackTokenInputGroup.input-group
-                input#slackToken.form-control(type="text", placeholder="e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX" value=token)
-                #saveToken.input-group-addon.btn.btn-default
-                  span.glyphicon.glyphicon-save
-                  +space
-                  |Save
-              br
-              #saveSlackTokenAlert
-              #restartSlackTokenAlert
-        #defaultNotifyPanel.form-group.hidden
-          .panel.panel-default
-            .panel-heading
-              |Choose where to send notifications
-            .panel-body
-              .small
-                |Choose where you would like the Slack bot user to send default notifications. Choose between a channel, a group, or a direct message to a user. Add the bot user to the desired channel or direct message in Slack first.
-              br
-              .small
-                b Channels
-                +space
-                |include non-private channels where the bot user has already been invited (is a member of the channel).
-              br
-              .small
-                b Groups
-                +space
-                |include private channels where the bot user has already been invited (is a member of the channel).
-              br
-              .small
-                b Users
-                +space
-                |include direct messages already open between users and the bot.
-              br
-              .btn-group(data-toggle="buttons")
-                label#radioChannel.btn.btn-default
-                  input(type="radio")
-                  |Channel
-                label#radioGroup.btn.btn-default
-                  input(type="radio")
-                  |Group
-                label#radioUser.btn.btn-default
-                  input(type="radio")
-                  |User
-              br
-              br
-              #progressDefaultNotifications.progress.hidden
-                .progress-bar.progress-bar-striped.active(role="progressbar", aria-valuenow="100", aria-valuemin="0", aria-valuemax="100", style="width: 100%")
-              #inputChannels.input-group.hidden
-                .input-group-addon
-                  |Channels
-                select#defaultChannelSelect.form-control(type="text")
-                #saveSlackDefaultNotifyChannel.input-group-addon.btn.btn-default
-                  span.glyphicon.glyphicon-save
-                  +space
-                  |Save
-              #inputGroups.input-group.hidden
-                .input-group-addon
-                  |Groups
-                select#defaultGroupSelect.form-control(type="text")
-                #saveSlackDefaultNotifyGroup.input-group-addon.btn.btn-default
-                  span.glyphicon.glyphicon-save
-                  +space
-                  |Save
-              #inputUsers.input-group.hidden
-                .input-group-addon
-                  |Users
-                select#defaultUserSelect.form-control(type="text")
-                #saveSlackDefaultNotifyUser.input-group-addon.btn.btn-default
-                  span.glyphicon.glyphicon-save
-                  +space
-                  |Save
-              br
-              #saveSlackNotifyAlert
+              |include private channels where the bot user has already been invited (is a member of the channel).
+            br
+            .small
+              b Users
+              +space
+              |include direct messages already open between users and the bot.
+            br
+            .btn-group(data-toggle="buttons")
+              label.btn.btn-outline-primary(id="radioChannel")
+                input(type="radio")
+                |Channel
+              label.btn.btn-outline-primary(id="radioGroup")
+                input(type="radio")
+                |Group
+              label.btn.btn-outline-primary(id="radioUser")
+                input(type="radio")
+                |User
+            br
+            br
+            .progress.hidden-xs-up(id="progressDefaultNotifications")
+              .progress-bar.progress-bar-striped.active(role="progressbar", aria-valuenow="100", aria-valuemin="0", aria-valuemax="100", style="width: 100%")
+            .input-group.hidden-xs-up(id="inputChannels")
+              .input-group-addon
+                |Channels
+              select.form-control(id="defaultChannelSelect", type="text")
+              .input-group-addon.btn.btn-outline-primary(id="saveSlackDefaultNotifyChannel")
+                |Save
+            .input-group.hidden-xs-up(id="inputGroups")
+              .input-group-addon
+                |Groups
+              select.form-control(id="defaultGroupSelect", type="text")
+              .input-group-addon.btn.btn-outline-primary(id="saveSlackDefaultNotifyGroup")
+                |Save
+            .input-group.hidden-xs-up(id="inputUsers")
+              .input-group-addon
+                |Users
+              select.form-control(id="defaultUserSelect", type="text")
+              .input-group-addon.btn.btn-outline-primary(id="saveSlackDefaultNotifyUser")
+                |Save
+            br
+            span(id="saveSlackNotifyAlert")
   .container
-    a.label.label-info.pull-right(href="https://api.slack.com/bot-users", target="_blank")
-      span.glyphicon.glyphicon-link
-      +space
-      |About Slack bot users
+    
   .container
     include footer
 

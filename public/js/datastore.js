@@ -17,7 +17,11 @@ enableRefreshBtn();
 enableHideBtn();
 
 /**
- * 
+ * Attach a handler to the click event for the dataStoreRefreshBtn element.
+ * Start by removing any existing click handler to avoid assigning the click
+ * handler more than once at a time, and then add a new click handler. When
+ * clicked, first remove the existing handler to disable multiple clicks trying
+ * to happen at the same time, and then use Socket.io to emit readFullDbReq.
  */
 function enableRefreshBtn() {
   return new P(resolve => {
@@ -31,7 +35,12 @@ function enableRefreshBtn() {
 }
 
 /**
- * 
+ * Attach a handler to the click event for the dataStoreHideBtn element.
+ * Start by removing any existing click handler to avoid assigning the click
+ * handler more than once at a time, and then add a new click handler. When
+ * clicked, first remove the existing handler to disable multiple clicks trying
+ * to happen at the same time, and then set the html content of
+ * dataStoreCardBody to an empty string, and then enable the hide button again.
  */
 function enableHideBtn() {
   return new P(resolve => {
@@ -46,7 +55,9 @@ function enableHideBtn() {
 }
 
 /**
- * 
+ * Register the "readFullDbRes" event handler.
+ * Enable the refresh button, and then populate the datastore data into the 
+ * dataStoreCardBody element.
  */
 socket.on("readFullDbRes", data =>
   enableRefreshBtn()
