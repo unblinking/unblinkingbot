@@ -11,7 +11,7 @@
 var socket = io.connect();
 
 /**
- * Setup the page buttons.
+ * Setup the page buttons when this script is loaded.
  */
 enableChangeSettingsBtn();
 enableRestartSlackBtn();
@@ -21,95 +21,41 @@ enableSaveNotifyBtn();
 removeSuccessOnFocus();
 enableNotifyTypeRadioBtn();
 
-function readSlackChannelsGroupsUsersRes(bundle) {
-  // Show the input drop down
-  bundle.inputDropdown.classList.remove("hidden");
-  // Populate options in the selector
-  var length = bundle.dropDownOptions.length;
-  for (var i = 0; i < length; i++) {
-    var name = bundle.dropDownOptions[i];
-    var option = document.createElement("option");
-    option.text = name;
-    bundle.selector.add(option);
-  }
-  // Hide the progress bar
-  document.getElementById("progressDefaultNotifications").classList.add("hidden");
-}
+/**
+ * 
+ */
+socket.on("readSlackChannelsRes", channelNames =>
+  enableNotifyTypeRadioBtn()
+  .then(() => populateDropDown(
+    $("#inputChannels"),
+    channelNames,
+    $("#defaultChannelSelect")
+  ))
+);
 
-/*
-function bindDefaultNotifyTypeRadioButton(bundle) {
-  bundle.radioElement.unbind().click(function () {
-    // Start with all options hidden and an empty select element.
-    hideDefaultNotifySelectors();
-    bundle.selectElement.options.length = 0;
-    // Show the progress bar while the data is loaded.
-    document.getElementById("progressDefaultNotifications").classList.remove("hidden");
-    // Emit request for options.
-    socket.emit(bundle.socketReq);
-  });
-}
-*/
+/**
+ * 
+ */
+socket.on("readSlackGroupsRes", groupNames =>
+  enableNotifyTypeRadioBtn()
+  .then(() => populateDropDown(
+    $("#inputGroups"),
+    groupNames,
+    $("#defaultGroupSelect")
+  ))
+);
 
-/*
-// Channels - Define behavior when the Channel radio button is selected
-bindDefaultNotifyTypeRadioButton({
-  radioElement: $("#radioChannel"),
-  selectElement: document.getElementById("defaultChannelSelect"),
-  socketReq: "readSlackChannelsReq"
-});
-*/
-
-socket.on("readSlackChannelsRes", function (channelNames) {
-  readSlackChannelsGroupsUsersRes({
-    inputDropdown: document.getElementById("inputChannels"),
-    dropDownOptions: channelNames,
-    selector: document.getElementById("defaultChannelSelect")
-  });
-});
-
-/*
-// Groups - Define behavior when the Groups radio button is selected
-bindDefaultNotifyTypeRadioButton({
-  radioElement: $("#radioGroup"),
-  selectElement: document.getElementById("defaultGroupSelect"),
-  socketReq: "readSlackGroupsReq"
-});
-*/
-
-socket.on("readSlackGroupsRes", function (groupNames) {
-  readSlackChannelsGroupsUsersRes({
-    inputDropdown: document.getElementById("inputGroups"),
-    dropDownOptions: groupNames,
-    selector: document.getElementById("defaultGroupSelect")
-  });
-});
-
-/*
-// Users - Define behavior when the Direct Messages radio button is selected
-bindDefaultNotifyTypeRadioButton({
-  radioElement: $("#radioUser"),
-  selectElement: document.getElementById("defaultUserSelect"),
-  socketReq: "readSlackUsersReq"
-});
-*/
-
-socket.on("readSlackUsersRes", function (userNames) {
-  readSlackChannelsGroupsUsersRes({
-    inputDropdown: document.getElementById("inputUsers"),
-    dropDownOptions: userNames,
-    selector: document.getElementById("defaultUserSelect")
-  });
-});
-
-/* *****************************************************************************
-   *****************************************************************************
-   *****************************************************************************
-   Reworked versions of functions are being pasted below here as I complete
-   them. I'll remove this ugly comment block when I'm done.
-   *****************************************************************************
-   *****************************************************************************
-   *****************************************************************************
-*/
+/**
+ * 
+ */
+socket.on("readSlackUsersRes", userNames =>
+  enableNotifyTypeRadioBtn()
+  .then(() => populateDropDown(
+    $("#inputUsers"),
+    userNames,
+    $("#defaultUserSelect")
+  ))
+);
 
 /**
  * Register the "slackConnectionOpened" event handler.
@@ -132,22 +78,6 @@ socket.on("slackDisconnection", message =>
 );
 
 /**
- * Register the "saveSlackTokenRes" event handler.
- * Enable the save button, update token on-screen, and display an alert.
- */
-socket.on("saveSlackTokenRes", (token, success, err) => {
-  enableSaveTokenBtn()
-    .then(() => {
-      if (success) handleSaveTokenSuccess(token)
-        .then(() => renderHtmlAlertTokenSavedSuccess())
-        .then(alert => alertSuccessAnimation(alert.element, alert.html));
-      if (!success) handleSaveTokenError(err)
-        .then(() => renderHtmlAlertTokenSavedError(err))
-        .then(alert => alertErrorAnimation(alert.element, alert.html));
-    });
-});
-
-/**
  * Register the "saveSlackNotifyRes" event handler.
  * Enable the save button, update notify on-screen, and display an alert.
  */
@@ -156,33 +86,44 @@ socket.on("saveSlackNotifyRes", (notify, notifyType, success, err) =>
   .then(() => {
     if (success) handleSaveNotifySuccess(notify, notifyType)
       .then(() => renderHtmlAlertNotifySavedSuccess())
-      .then(alert => alertSuccessAnimation(alert.element, alert.html));
+      .then(alert => alertAnimationSuccess(alert.element, alert.html));
     if (!success) handleSaveNotifyError(err)
       .then(() => renderHtmlAlertNotifySavedError(err))
-      .then(alert => alertErrorAnimation(alert.element, alert.html));
+      .then(alert => alertAnimationError(alert.element, alert.html));
   })
 );
 
 /**
- * Show the Slack RTM Connection alert.
- * @param {String} message A message from the Slack RTM Connection event.
+ * Register the "saveSlackTokenRes" event handler.
+ * Enable the save button, update token on-screen, and display an alert.
  */
-function alertSlackConnection(message) {
-  return new P(resolve => renderHtmlAlertSlackConnection(message)
-    .then(alert => alertSuccessAnimation(alert.element, alert.html))
-    .then(() => resolve())
-  );
-}
+socket.on("saveSlackTokenRes", (token, success, err) => {
+  enableSaveTokenBtn()
+    .then(() => {
+      if (success) handleSaveTokenSuccess(token)
+        .then(() => renderHtmlAlertTokenSavedSuccess())
+        .then(alert => alertAnimationSuccess(alert.element, alert.html));
+      if (!success) handleSaveTokenError(err)
+        .then(() => renderHtmlAlertTokenSavedError(err))
+        .then(alert => alertAnimationError(alert.element, alert.html));
+    });
+});
 
 /**
- * Show the Slack RTM Disconnection alert.
- * @param {String} message A message from the Slack RTM Disconnection event.
+ * Alert error animation sequence.
+ * First, fade to zero opacity and slide up out of view just in case it is
+ * visible. Next, set html content, slide down, and fade to full opacity. Leave
+ * the error alert on the screen for the user to manually dismiss.
+ * @param {JQuery} element The JQuery element selector to be manipulated.
+ * @param {String} html HTML to set as the content of each matched element.
  */
-function alertSlackDisconnection(message) {
-  return new P(resolve => renderHtmlAlertSlackDisconnection(message)
-    .then(alert => alertSuccessAnimation(alert.element, alert.html))
-    .then(() => resolve())
-  );
+function alertAnimationError(element, html) {
+  return new P(resolve => fade(element, 0, 0)
+    .then(() => upSlide(element, 0))
+    .then(() => htmlSet(element, html))
+    .then(() => downSlide(element, 500))
+    .then(() => fade(element, 500, 1))
+    .then(() => resolve()));
 }
 
 /**
@@ -194,7 +135,7 @@ function alertSlackDisconnection(message) {
  * @param {JQuery} element The JQuery element selector to be manipulated.
  * @param {String} html HTML to set as the content of each matched element.
  */
-function alertSuccessAnimation(element, html) {
+function alertAnimationSuccess(element, html) {
   return new P(resolve => fade(element, 0, 0)
     .then(() => upSlide(element, 0))
     .then(() => htmlSet(element, html))
@@ -207,20 +148,42 @@ function alertSuccessAnimation(element, html) {
 }
 
 /**
- * Alert error animation sequence.
- * First, fade to zero opacity and slide up out of view just in case it is
- * visible. Next, set html content, slide down, and fade to full opacity. Leave
- * the error alert on the screen for the user to manually dismiss.
- * @param {JQuery} element The JQuery element selector to be manipulated.
- * @param {String} html HTML to set as the content of each matched element.
+ * Show the Slack RTM Connection alert.
+ * @param {String} message A message from the Slack RTM Connection event.
  */
-function alertErrorAnimation(element, html) {
-  return new P(resolve => fade(element, 0, 0)
-    .then(() => upSlide(element, 0))
-    .then(() => htmlSet(element, html))
-    .then(() => downSlide(element, 500))
-    .then(() => fade(element, 500, 1))
-    .then(() => resolve()));
+function alertSlackConnection(message) {
+  return new P(resolve => renderHtmlAlertSlackConnection(message)
+    .then(alert => alertAnimationSuccess(alert.element, alert.html))
+    .then(() => resolve())
+  );
+}
+
+/**
+ * Show the Slack RTM Disconnection alert.
+ * @param {String} message A message from the Slack RTM Disconnection event.
+ */
+function alertSlackDisconnection(message) {
+  return new P(resolve => renderHtmlAlertSlackDisconnection(message)
+    .then(alert => alertAnimationSuccess(alert.element, alert.html))
+    .then(() => resolve())
+  );
+}
+
+/**
+ * Count to a number of seconds and then continue.
+ * @param {number} seconds How many seconds to count to.
+ */
+function countTo(seconds) {
+  return new P(resolve => setTimeout(resolve, (seconds * 1000)));
+}
+
+/**
+ * Animated slide-down to hide the matched elements.
+ * @param {JQuery} element The JQuery element selector to be manipulated.
+ * @param {Number} speed Duration of the animation in milliseconds.
+ */
+function downSlide(element, speed) {
+  return new P(resolve => element.slideDown(speed, resolve));
 }
 
 /**
@@ -247,6 +210,39 @@ function enableChangeSettingsBtn() {
 }
 
 /**
+ * 
+ */
+function enableNotifyTypeRadioBtn() {
+  return new P(resolve => {
+    $("#radioChannel").off("click"); // Remove previous handler to start with none.
+    $("#radioChannel").one("click", () => { // Add new handler.
+      $("#radioChannel").off("click"); // When clicked, remove handler.
+      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
+      $("#defaultChannelSelect")[0].options.length = 0;
+      $("#progressDefaultNotifications").removeClass("hidden"); // Show progress bar.
+      socket.emit("readSlackChannelsReq");
+    });
+    $("#radioGroup").off("click"); // Remove previous handler to start with none.
+    $("#radioGroup").one("click", () => { // Add new handler.
+      $("#radioGroup").off("click"); // When clicked, remove handler.
+      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
+      $("#defaultGroupSelect")[0].options.length = 0;
+      $("#progressDefaultNotifications").removeClass("hidden"); // Show progress bar.
+      socket.emit("readSlackGroupsReq");
+    });
+    $("#radioUser").off("click"); // Remove previous handler to start with none.
+    $("#radioUser").one("click", () => { // Add new handler.
+      $("#radioUser").off("click"); // When clicked, remove handler.
+      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
+      $("#defaultUserSelect")[0].options.length = 0;
+      $("#progressDefaultNotifications").removeClass("hidden"); // Show progress bar.
+      socket.emit("readSlackUsersReq");
+    });
+    resolve();
+  });
+}
+
+/**
  * Attach a handler to the click event for the restartSlack button element.
  * When clicked; Replace the button html with a loader animation and a
  * restarting message, and then emit a slackRestartReq event via Socket.io.
@@ -262,58 +258,6 @@ function enableRestartSlackBtn() {
       socket.emit("slackRestartReq");
     });
     resolve();
-  });
-}
-
-/**
- * Attach a handler to the click event for the saveToken button element.
- * When clicked; Replace the button html with a loader animation, and then emit
- * a saveSlackTokenReq event via Socket.io containing the value from the
- * slackToken input element.
- */
-function enableSaveTokenBtn() {
-  return new P(resolve => {
-    let btn = $("#saveToken");
-    btn.off("click"); // Remove previous handler to start with none.
-    renderHtmlBtnSaveToken().then(html => btn.html(html));
-    btn.one("click", () => { // Add new handler.
-      btn.off("click"); // When clicked, remove handler.
-      renderHtmlBtnSavingToken().then(html => btn.html(html));
-      socket.emit("saveSlackTokenReq", $("input[id=slackToken]").val());
-    });
-    resolve();
-  });
-}
-
-function enableNotifyTypeRadioBtn() {
-  return new P(resolve => {
-    $("#radioChannel").off("click"); // Remove previous handler to start with none.
-    $("#radioChannel").one("click", () => { // Add new handler.
-      $("#radioChannel").off("click"); // When clicked, remove handler.
-      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
-      $("#defaultChannelSelect").options.length = 0;
-      $("#progressDefaultNotifications").removeClass("hidden");
-      socket.emit("readSlackChannelsReq");
-    });
-
-    $("#radioGroup").off("click"); // Remove previous handler to start with none.
-    $("#radioGroup").one("click", () => { // Add new handler.
-      $("#radioGroup").off("click"); // When clicked, remove handler.
-      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
-      $("#defaultGroupSelect").options.length = 0;
-      $("#progressDefaultNotifications").removeClass("hidden");
-      socket.emit("readSlackGroupsReq");
-    });
-
-    $("#radioUser").off("click"); // Remove previous handler to start with none.
-    $("#radioUser").one("click", () => { // Add new handler.
-      $("#radioUser").off("click"); // When clicked, remove handler.
-      hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
-      $("#defaultUserSelect").options.length = 0;
-      $("#progressDefaultNotifications").removeClass("hidden");
-      socket.emit("readSlackUsersReq");
-    });
-
   });
 }
 
@@ -364,6 +308,25 @@ function enableSaveNotifyBtn() {
   });
 }
 
+/**
+ * Attach a handler to the click event for the saveToken button element.
+ * When clicked; Replace the button html with a loader animation, and then emit
+ * a saveSlackTokenReq event via Socket.io containing the value from the
+ * slackToken input element.
+ */
+function enableSaveTokenBtn() {
+  return new P(resolve => {
+    let btn = $("#saveToken");
+    btn.off("click"); // Remove previous handler to start with none.
+    renderHtmlBtnSaveToken().then(html => btn.html(html));
+    btn.one("click", () => { // Add new handler.
+      btn.off("click"); // When clicked, remove handler.
+      renderHtmlBtnSavingToken().then(html => btn.html(html));
+      socket.emit("saveSlackTokenReq", $("input[id=slackToken]").val());
+    });
+    resolve();
+  });
+}
 
 /**
  * Attach a handler to the click event for the stopSlack button element.
@@ -385,16 +348,24 @@ function enableStopSlackBtn() {
 }
 
 /**
- * 
+ * Animated change in opacity of the matched elements.
+ * @param {JQuery} element The JQuery element selector to be manipulated.
+ * @param {Number} speed Duration of the animation in milliseconds.
+ * @param {Number} opacity Target opacity, a number between 0 and 1.
  */
-function handleSaveTokenSuccess(token) {
+function fade(element, speed, opacity) {
+  return new P(resolve => element.fadeTo(speed, opacity, resolve));
+}
+
+/**
+ * 
+ * @param {*} err 
+ */
+function handleSaveNotifyError(err) {
   return new P(resolve => {
-    $("#currentSettingsToken").html(token);
-    $("#slackTokenInputGroup").addClass("has-success");
-    $("#slackRestartBtn").removeClass("hidden");
-    $("#stopSlack").removeClass("hidden");
-    $("#defaultNotifyPanel").removeClass("hidden");
-    socket.emit("slackRestartReq");
+    $("#inputChannels").addClass("has-error");
+    $("#inputGroups").addClass("has-error");
+    $("#inputUsers").addClass("has-error");
     resolve();
   });
 }
@@ -416,9 +387,26 @@ function handleSaveNotifySuccess(notify, notifyType) {
 
 /**
  * 
+ * @param {*} err 
  */
-function handleSaveTokenError() {
+function handleSaveTokenError(err) {
   return new P.resolve($("#slackTokenInputGroup").addClass("has-error"));
+}
+
+/**
+ * 
+ * @param {*} token 
+ */
+function handleSaveTokenSuccess(token) {
+  return new P(resolve => {
+    $("#currentSettingsToken").html(token);
+    $("#slackTokenInputGroup").addClass("has-success");
+    $("#slackRestartBtn").removeClass("hidden");
+    $("#stopSlack").removeClass("hidden");
+    $("#defaultNotifyPanel").removeClass("hidden");
+    socket.emit("slackRestartReq");
+    resolve();
+  });
 }
 
 /**
@@ -434,39 +422,26 @@ function hideDefaultNotifySelectors() {
 }
 
 /**
- * Count to a number of seconds and then continue.
- * @param {number} seconds How many seconds to count to.
- */
-function countTo(seconds) {
-  return new P(resolve => setTimeout(resolve, (seconds * 1000)));
-}
-
-/**
- * Animated slide-down to hide the matched elements.
- * @param {JQuery} element The JQuery element selector to be manipulated.
- * @param {Number} speed Duration of the animation in milliseconds.
- */
-function downSlide(element, speed) {
-  return new P(resolve => element.slideDown(speed, resolve));
-}
-
-/**
- * Animated change in opacity of the matched elements.
- * @param {JQuery} element The JQuery element selector to be manipulated.
- * @param {Number} speed Duration of the animation in milliseconds.
- * @param {Number} opacity Target opacity, a number between 0 and 1.
- */
-function fade(element, speed, opacity) {
-  return new P(resolve => element.fadeTo(speed, opacity, resolve));
-}
-
-/**
  * Set the HTML contents of matched elements.
  * @param {JQuery} element The JQuery element selector to be manipulated.
  * @param {String} html HTML string to set as the content of matched elements.
  */
 function htmlSet(element, html) {
   return new P.resolve(element.html(html));
+}
+
+function populateDropDown(element, array, selector) {
+  return new P(resolve => {
+    element.removeClass("hidden");
+    for (let i = 0; i < array.length; i++) {
+      let name = array[i];
+      let option = document.createElement("option");
+      option.text = name;
+      selector[0].add(option);
+    }
+    $("#progressDefaultNotifications").addClass("hidden"); // Hide progress bar.
+    resolve();
+  });
 }
 
 /**

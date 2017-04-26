@@ -181,7 +181,7 @@ const sockets = {
           bundle.db.put("slack::settings::notifyType", notifyType);
         } catch (e) {
           success = false;
-          err = e;
+          err = ansiConvert.toHtml(prettyError.render(e));
           console.log(err.message);
         } finally {
           socket.emit(

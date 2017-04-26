@@ -15,7 +15,7 @@ body
       fieldset.form-group.row
         #currentSettingsPanel.form-group
           .panel.panel-default
-            .panel-heading.small
+            .panel-heading
               |Slack Settings
             .panel-body
               .small|Slack integration is currently
@@ -52,7 +52,7 @@ body
                 |
                 |Change Settings
               +space
-              #slackRestartBtn.btn.btn-xs.btn-primary.hidden(style="margin-bottom: 5px;")
+              #slackRestartBtn.btn.btn-xs.btn-success.hidden(style="margin-bottom: 5px;")
                 if token
                   script.
                     document.getElementById("slackRestartBtn").classList.remove("hidden");
@@ -60,7 +60,7 @@ body
                 +space
                 |Restart Slack Integration
               +space
-              #stopSlack.btn.btn-xs.btn-danger.hidden(style="margin-bottom: 5px;")
+              #stopSlack.btn.btn-xs.btn-outline-danger.hidden(style="margin-bottom: 5px;")
                 if token
                   script.
                     document.getElementById("stopSlack").classList.remove("hidden");
@@ -68,8 +68,8 @@ body
                 +space
                 |Stop Slack Integration
         #tokenPanel.form-group.hidden
-          .panel.panel-info
-            .panel-heading.small
+          .panel.panel-default
+            .panel-heading
               |Enter or change the token
             .panel-body
               .small
@@ -85,8 +85,8 @@ body
               #saveSlackTokenAlert
               #restartSlackTokenAlert
         #defaultNotifyPanel.form-group.hidden
-          .panel.panel-info
-            .panel-heading.small
+          .panel.panel-default
+            .panel-heading
               |Choose where to send notifications
             .panel-body
               .small

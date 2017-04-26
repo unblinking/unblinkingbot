@@ -1,72 +1,31 @@
-// Fixed top navbar begin
-nav.navbar.navbar-default.container-fluid.navbar-fixed-top
-    .container
-        // Brand and toggle get grouped for better mobile display
-        .navbar-header
-            button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
-                span.sr-only
-                    |Toggle navigation
-                span.icon-bar
-                span.icon-bar
-                span.icon-bar
-            .navbar-brand
-                span.glyphicon.glyphicon-eye-open
-                +space
-                |unblinkingbot
-        // Collect the nav links, forms, and other content for toggling
-        #navbar.navbar-collapse.collapse
-            ul.nav.navbar-nav
-                if(title==='Dashboard')
-                    li(class='active')
-                        a(href='/')
-                            span.glyphicon.glyphicon-dashboard
-                            +space
-                            |Dashboard
-                else
-                    li
-                        a(href='/')
-                            span.glyphicon.glyphicon-dashboard
-                            +space
-                            |Dashboard
-                if(title==='Settings')
-                    li(class='active')
-                        a(href='/settings')
-                            span.glyphicon.glyphicon-cog
-                            +space
-                            |Settings
-                else
-                    li
-                        a(href='/settings')
-                            span.glyphicon.glyphicon-cog
-                            +space
-                            |Settings
-                if(title==='Data store')
-                    li(class='active')
-                        a(href='/datastore')
-                            span.glyphicon.glyphicon-hdd
-                            +space
-                            |Data Store
-                else
-                    li
-                        a(href='/datastore')
-                            span.glyphicon.glyphicon-hdd
-                            +space
-                            |Data Store
-                li.divider
-                li.dropdown
-                    a.dropdown-toggle(href='#', data-toggle='dropdown')#restartdropdown
-                        span.glyphicon.glyphicon-refresh
-                        +space
-                        |Restart
-                        +space
-                        b.caret
-                    ul.dropdown-menu
-                        li#restartbutton
-                            a
-                                span.glyphicon.glyphicon-question-sign
-                                +space
-                                |Are you sure?
-                                br
-                                br
-                                .small
-                                    |This will restart the unblinkingbot application
+.container
+  nav.navbar.navbar-toggleable-sm.navbar-light.bg-faded
+    .navbar-toggler.navbar-toggler-right(
+      type="button", data-toggle="collapse", data-target="#navbar",
+      aria-expanded="false", aria-controls="navbar",
+      aria-label="Toggle navigation"
+    )
+      .navbar-toggler-icon
+    .navbar-brand
+      img(src="/images/safari-pinned-tab.svg", height="40dp")
+    .collapse.navbar-collapse(id="navbar")
+      .navbar-nav
+        .nav-item
+          a.nav-link(href="/")
+            |Dashboard
+        .nav-item
+          a.nav-link(href="/settings")
+            |Settings
+        .nav-item
+          a.nav-link(href="/datastore")
+            |Datastore
+        .nav-item.dropdown
+          a.nav-link.dropdown-toggle(href="#", id="restartdropdown",
+          data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
+            |Restart
+            .dropdown-menu(aria-labelledby="restartdropdown")
+              a.dropdown-item
+                |Are you sure?
+                br
+                .small|This will restart the unblinkingbot application
+

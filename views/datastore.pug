@@ -1,36 +1,39 @@
 doctype html(lang='en')
 head
-    include head
+  include head
 body
-    include mixins
-    include navbar
-    // Showcase container begin
-    br
-    .container.theme-showcase(role='main')
+  include mixins
+  include navbar
+  br
+  .container
+    .card
+      .card-header
+        |#{title}
+        .btn.btn-sm.btn-outline-success.float-right.ml-3(
+          id="dataStoreRefreshBtn"
+        )
+          |Refresh
+        .btn.btn-sm.btn-outline-danger.float-right.ml-3(
+          id="dataStoreHideBtn"
+        )
+          |Hide
+      .card-block
+        .small.text-muted
+          |The refresh button will request a fresh copy of the LevelDB datastore
+          |from the bot. The response will be displayed for your review.
         br
-        .page-header.clearfix
-            h4=title
-        .row
-            .col-md-12
-                .panel.panel-primary
-                    .panel-heading
-                        |Data Store
-                    .panel-body
-                        .small|The refresh button will request a fresh copy of the levelDB data store from the bot. The response will be displayed below for your review.
-                        br
-                        pre#datastorepanelbody
-                    .panel-footer
-                        button#datastorerefreshbutton.btn.btn-primary
-                            span.glyphicon.glyphicon-refresh
-                            +space
-                            | Refresh Full Data Store
-                        +space
-                        button#datastorehidebutton.btn.btn-default
-                            span.glyphicon.glyphicon-remove
-                            +space
-                            | Hide
-        include footer
+        .card.card-outline-success
+          pre.small(
+            id="dataStoreCardBody"
+          )
+      .card-footer
 
-    // Place JavaScript at the end of the document so the pages load faster
-    include js
-    script(src='/js/datastore.js')
+
+    include footer
+
+  // Place JavaScript at the end of the document so the pages load faster
+  include js
+  script(src='/js/datastore.js')
+
+// TODO: Add a progress bar when loading.
+
