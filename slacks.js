@@ -2,7 +2,7 @@
 
 /**
  * The unblinking bot.
- * @namespace unblinkingslack
+ * @namespace slacks.js
  * @public
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
@@ -19,11 +19,14 @@
  */
 const slackClient = require("@slack/client");
 
-// TODO: Get rid of this, maybe move to a utility
-var unblinking_db = require("./datastore.js");
-
+/**
+ * 
+ */
 const slacking = {
 
+  /**
+   * 
+   */
   getNewRtmInstance: function (bundle, callback) {
     let err = null;
     let rtmExists = bundle.rtm !== undefined && Object.keys(bundle.rtm).length !== 0;
@@ -41,6 +44,9 @@ const slacking = {
     }
   },
 
+  /**
+   * 
+   */
   startRtmInstance: function (bundle, callback) {
     let err = null;
     let rtmStartExists = bundle.rtm !== undefined && bundle.rtm.start !== undefined;
@@ -58,6 +64,9 @@ const slacking = {
     }
   },
 
+  /**
+   * 
+   */
   disconnectRtmInstance: function (bundle, callback) {
     let err = null;
     let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
@@ -77,11 +86,14 @@ const slacking = {
     }
   },
 
+  /**
+   * 
+   */
   logSlacktivity: function (bundle, callback) {
     let err = null;
     try {
       bundle.dbp.put("slack::activity::" + new Date().getTime(), bundle.slacktivity);
-      unblinking_db.trimObjKeys(bundle);
+      // trim the number of saved activity
     } catch (e) {
       err = e;
     } finally {
@@ -91,6 +103,9 @@ const slacking = {
     }
   },
 
+  /**
+   * 
+   */
   sendMessage: function (bundle, callback) {
     let err = null;
     let rtmExists = bundle.rtm !== undefined && Object.keys(bundle.rtm).length !== 0;
@@ -113,6 +128,9 @@ const slacking = {
     }
   },
 
+  /**
+   * 
+   */
   listenForEvents: function (bundle, callback) {
 
     bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {

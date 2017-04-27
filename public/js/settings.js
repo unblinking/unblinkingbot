@@ -22,9 +22,11 @@ removeSuccessOnFocus();
 enableNotifyTypeRadioBtn();
 
 /**
- * Request the current Slack connection status.
+ * Request the current Slack details.
  */
-slackConnectionStatusRequest();
+slackConnectionStatusReq();
+slackTokenReq();
+slackNotifyReq();
 
 /**
  * 
@@ -63,30 +65,6 @@ socket.on("readSlackUsersRes", userNames =>
 );
 
 /**
- * Register the "slackConnectionOpened" event handler.
- * Enable the restart button, update connection status, and display an alert.
- */
-socket.on("slackConnectionOpened", message =>
-  enableRestartSlackBtn()
-  .then(() => slackConnectionStatusUpdate(true))
-  .then(() => alertSlackConnection(message))
-);
-
-socket.on("slackConnectionStatusRes", connected =>
-  slackConnectionStatusUpdate(connected)
-);
-
-/**
- * Register the "slackDisconnection" event handler.
- * Enable the stop button, update connection status, and display an alert.
- */
-socket.on("slackDisconnection", message =>
-  enableStopSlackBtn()
-  .then(() => slackConnectionStatusUpdate(false))
-  .then(() => alertSlackDisconnection(message))
-);
-
-/**
  * Register the "saveSlackNotifyRes" event handler.
  * Enable the save button, update notify on-screen, and display an alert.
  */
@@ -116,6 +94,50 @@ socket.on("saveSlackTokenRes", (token, success, err) => {
         .then(() => renderHtmlAlertTokenSavedError(err))
         .then(alert => alertAnimationError(alert.element, alert.html));
     });
+});
+
+/**
+ * Register the "slackConnectionOpened" event handler.
+ * Enable the restart button, update connection status, and display an alert.
+ */
+socket.on("slackConnectionOpened", message =>
+  enableRestartSlackBtn()
+  .then(() => slackConnectionStatusUpdate(true))
+  .then(() => alertSlackConnection(message))
+);
+
+/**
+ * 
+ */
+socket.on("slackConnectionStatusRes", connected =>
+  slackConnectionStatusUpdate(connected)
+);
+
+/**
+ * Register the "slackDisconnection" event handler.
+ * Enable the stop button, update connection status, and display an alert.
+ */
+socket.on("slackDisconnection", message =>
+  enableStopSlackBtn()
+  .then(() => slackConnectionStatusUpdate(false))
+  .then(() => alertSlackDisconnection(message))
+);
+
+/**
+ * 
+ */
+socket.on("slackNotifyRes", data => {
+  $("#currentSettingsNotify").html(data.notifyType + " " + data.notify);
+});
+
+/**
+ * 
+ */
+socket.on("slackTokenRes", token => {
+  $("#startSlack").removeClass("hidden-xs-up");
+  $("#stopSlack").removeClass("hidden-xs-up");
+  $("#settingsToken").html(token);
+  $("#slackToken").val(token);
 });
 
 /**
@@ -257,11 +279,11 @@ function enableNotifyTypeRadioBtn() {
  */
 function enableRestartSlackBtn() {
   return new P(resolve => {
-    $("#slackRestartBtn").off("click"); // Start with no click handler, prevent duplicates.
-    renderHtmlBtnSlackRestart().then(html => $("#slackRestartBtn").html(html));
-    $("#slackRestartBtn").one("click", () => { // Add new click handler.
-      $("#slackRestartBtn").off("click"); // When clicked, remove handler.
-      renderHtmlBtnSlackRestarting().then(html => $("#slackRestartBtn").html(html));
+    $("#startSlack").off("click"); // Start with no click handler, prevent duplicates.
+    renderHtmlBtnSlackRestart().then(html => $("#startSlack").html(html));
+    $("#startSlack").one("click", () => { // Add new click handler.
+      $("#startSlack").off("click"); // When clicked, remove handler.
+      renderHtmlBtnSlackRestarting().then(html => $("#startSlack").html(html));
       socket.emit("slackRestartReq");
     });
     resolve();
@@ -406,9 +428,9 @@ function handleSaveTokenError(err) {
  */
 function handleSaveTokenSuccess(token) {
   return new P(resolve => {
-    $("#currentSettingsToken").html(token);
+    $("#settingsToken").html(token);
     $("#slackTokenInputGroup").addClass("has-success");
-    $("#slackRestartBtn").removeClass("hidden-xs-up");
+    $("#startSlack").removeClass("hidden-xs-up");
     $("#stopSlack").removeClass("hidden-xs-up");
     $("#defaultNotifyPanel").removeClass("hidden-xs-up");
     socket.emit("slackRestartReq");
@@ -464,7 +486,10 @@ function removeSuccessOnFocus() {
   });
 }
 
-function slackConnectionStatusRequest() {
+/**
+ * 
+ */
+function slackConnectionStatusReq() {
   return new P(resolve => {
     socket.emit("slackConnectionStatusReq");
     resolve();
@@ -489,6 +514,20 @@ function slackConnectionStatusUpdate(connected) {
     }
     resolve();
   });
+}
+
+/**
+ * 
+ */
+function slackNotifyReq() {
+  return new P.resolve(socket.emit("slackNotifyReq"));
+}
+
+/**
+ * 
+ */
+function slackTokenReq() {
+  return new P.resolve(socket.emit("slackTokenReq"));
 }
 
 /**

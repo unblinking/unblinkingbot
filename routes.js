@@ -30,7 +30,6 @@ const prettyError = new pretty_error()
   .skipNodeFiles();
 
 /**
- * @public
  * @namespace router
  * @memberof routes
  * @param {object} app - The Express application instance.
@@ -40,70 +39,15 @@ const prettyError = new pretty_error()
 const router = function (app, bundle) {
 
   app.get("/", function (req, res) {
-    res.render("index", {
-      title: "Dashboard",
-      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected
-    });
+    res.render("index");
   });
 
   app.get("/settings", function (req, res) {
-
-    /*
-    res.render("settings", {
-      title: "Settings",
-      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
-    });
-    */
-
-    
-    let params = {
-      title: "Settings",
-      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
-    };
-    bundle.db.get("slack::settings::token")
-      .then(function (token) {
-        params.token = token;
-      })
-      .catch(function (err) {
-        if (!err.notFound) throw err;
-      })
-      .then(function () {
-        return bundle.db.get("slack::settings::notify");
-      })
-      .then(function (notify) {
-        params.notify = notify;
-      })
-      .catch(function (err) {
-        if (!err.notFound) throw err;
-      })
-      .then(function () {
-        return bundle.db.get("slack::settings::notifyType");
-      })
-      .then(function (notifyType) {
-        params.notifyType = notifyType;
-      })
-      .catch(function (err) {
-        if (!err.notFound) throw err;
-      })
-      .then(function () {
-        res.render("settings", params);
-      })
-      .catch(function (err) {
-        let params = {
-          title: "Error",
-          message: err.message,
-          error: ansiConvert.toHtml(prettyError.render(err))
-        };
-        res.render("error", params);
-      });
-    
+    res.render("settings");
   });
 
   app.get("/datastore", function (req, res) {
-    res.render("datastore", {
-      title: "Data Store",
-      rtmConnected: bundle.rtm !== undefined && bundle.rtm.connected === true
-    });
+    res.render("datastore");
   });
 
 };

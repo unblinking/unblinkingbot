@@ -44,7 +44,7 @@ function renderHtmlAlertTokenSavedSuccess() {
 function renderHtmlAlertTokenSavedError(err) {
   return new P.resolve({
     element: $("#saveSlackTokenAlert"),
-    html: `<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> There was an error. Slack token was not saved. &nbsp; <a class="label label-default small" type="button" data-toggle="collapse" data-target="#errorDetails" aria-expanded="false" aria-controls="errorDetails">Details</a><br><br><div class="well collapse" id="errorDetails" style="background-color:#000; overflow:hidden"> ${err} </div></div>`
+    html: `<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> There was an error. Slack token was not saved. &nbsp; <span class="badge badge-warning small"><a data-toggle="collapse" data-target="#errorDetails" aria-expanded="false" aria-controls="errorDetails">Details</a></span><br><br><div class="container-fluid rounded p-3 collapse" id="errorDetails" style="background-color:#000; overflow:hidden"> ${err} </div></div>`
   });
 }
 
@@ -58,7 +58,7 @@ function renderHtmlAlertNotifySavedSuccess() {
 function renderHtmlAlertNotifySavedError(err) {
   return new P.resolve({
     element: $("#saveSlackNotifyAlert"),
-    html: `<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> There was an error. Default notification recipient was not saved. &nbsp; <a class="label label-default small" type="button" data-toggle="collapse" data-target="#errorDetails" aria-expanded="false" aria-controls="errorDetails">Details</a><br><br><div class="well collapse" id="errorDetails" style="background-color:#000; overflow:hidden"> ${err} </div></div>`
+    html: `<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> There was an error. Default notification recipient was not saved. &nbsp; <span class="badge badge-warning small"><a data-toggle="collapse" data-target="#errorDetails" aria-expanded="false" aria-controls="errorDetails">Details</a></span><br><br><div class="container-fluid rounded p-3 collapse" id="errorDetails" style="background-color:#000; overflow:hidden"> ${err} </div></div>`
   });
 }
 
@@ -80,44 +80,44 @@ function renderHtmlBtnSlackRestart() {
  * Render the HTML for the Slack restart button when it is unavailable during restart.
  */
 function renderHtmlBtnSlackRestarting() {
-  return new P.resolve(`<div class="loader pull-left"></div> &nbsp; Restarting Slack Integration`);
+  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Restarting`);
 }
 
 /**
  * Render the HTML for the Slack stop button when it is available to click.
  */
 function renderHtmlBtnSlackStop() {
-  return new P.resolve(`<span class="glyphicon glyphicon-off"></span> &nbsp; Stop Slack Integration`);
+  return new P.resolve(`Stop`);
 }
 
 /**
  * Render the HTML for the Slack stop button when it is unavailable during stop.
  */
 function renderHtmlBtnSlackStopping() {
-  return new P.resolve(`<div class="loader pull-left"></div> &nbsp; Stopping Slack Integration`);
+  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Stopping`);
 }
 
 /**
  * Render the HTML for the Slack save token button when it is available to click.
  */
 function renderHtmlBtnSaveToken() {
-  return new P.resolve(`<span class="glyphicon glyphicon-save"></span> &nbsp; Save`);
+  return new P.resolve(`Save`);
 }
 
 /**
  * Render the HTML for the Slack save token button when it is unavailable during save.
  */
 function renderHtmlBtnSavingToken() {
-  return new P.resolve(`<div class="loader pull-left"></div>`);
+  return new P.resolve(`<div class="loader float-left"></div>`);
 }
 
 /**
  * Render the HTML for the Slack save notify button when it is available to click.
  */
 function renderHtmlBtnSaveNotify() {
-  return new P.resolve(`<span class="glyphicon glyphicon-save"></span> &nbsp; Save`);
+  return new P.resolve(`Save`);
 }
 
 function renderHtmlBtnSavingNotify() {
-  return new P.resolve(`<div class="loader pull-left"></div>`);
+  return new P.resolve(`<div class="loader float-left"></div>`);
 }

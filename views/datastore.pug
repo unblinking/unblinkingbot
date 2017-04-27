@@ -1,39 +1,25 @@
-doctype html(lang='en')
+doctype html(lang="en")
 head
   include head
 body
   include mixins
   include navbar
-  br
-  .container
+  .container.mt-3
     .card
-      .card-header
-        |#{title}
-        .btn.btn-sm.btn-outline-success.float-right.ml-3(
-          id="dataStoreRefreshBtn"
-        )
-          |Refresh
-        .btn.btn-sm.btn-outline-danger.float-right.ml-3(
-          id="dataStoreHideBtn"
-        )
-          |Hide
+      .card-header|Datastore
+        .btn.btn-sm.btn-outline-success.float-right.ml-3(id="refreshBtn")
+        .btn.btn-sm.btn-outline-danger.float-right.ml-3(id="hideBtn")
       .card-block
-        .small.text-muted
+        .small.text-muted.mb-3
           |The refresh button will request a fresh copy of the LevelDB datastore
           |from the bot. The response will be displayed for your review.
-        br
         .card.card-outline-success
-          pre.small(
-            id="dataStoreCardBody"
-          )
+          pre.small(id="dataStoreCardBody")
       .card-footer
-
-
+  .container
     include footer
-
-  // Place JavaScript at the end of the document so the pages load faster
-  include js
-  script(src='/js/datastore.js')
-
+// Place JavaScript at the end of the document so the pages load faster
+include js
+script(src="/js/datastore-templates.js")
+script(src="/js/datastore.js")
 // TODO: Add a progress bar when loading.
-

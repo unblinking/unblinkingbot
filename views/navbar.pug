@@ -20,11 +20,10 @@
           a.nav-link(href="/datastore")
             |Datastore
         .nav-item.dropdown
-          a.nav-link.dropdown-toggle(href="#", id="restartdropdown",
+          a.nav-link.dropdown-toggle(href="#", id="restartDropDown",
           data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
             |Restart
-            .dropdown-menu(aria-labelledby="restartdropdown")
-              a.dropdown-item
+            .dropdown-menu(aria-labelledby="restartDropDown")
+              a.dropdown-item(id="restartBtn")
                 |Are you sure?
-                br
-                .small|This will restart the unblinkingbot application
+                .small.mt-1|This will restart the unblinkingbot application

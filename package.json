@@ -17,12 +17,12 @@
     "express": "4.15.2",
     "level": "1.6.0",
     "pretty-error": "2.1.0",
-    "pug": "2.0.0-beta11",
+    "pug": "2.0.0-beta12",
     "socket.io": "1.7.3",
     "then-levelup": "1.0.2"
   },
   "devDependencies": {
-    "eslint": "3.18.0",
+    "eslint": "3.19.0",
     "jshint": "2.9.4"
   },
   "scripts": {

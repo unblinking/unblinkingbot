@@ -1,25 +1,18 @@
-doctype html(lang='en')
+doctype html(lang="en")
 head
   include head
 body
   include mixins
   include navbar
-  // Showcase container begin
-  br
-  .container.theme-showcase(role='main')
-    br
-    .page-header.clearfix
-      h1=title
-    .row
-      .col-md-12
-        .panel.panel-primary
-          .panel-heading
-            h2=message
-          .panel-body(style={background: 'black'})
-            p!=error
-          .panel-footer
-            .small|This is the error
+  .container.mt-3
+    .card.card-outline-danger
+      .card-header
+        |An error occurred
+      .card-block(style={background: "black"})
+        p!=error
+      .card-footer
+        .small|This is the error
+  .container
     include footer
-
-  // Place JavaScript at the end of the document so the pages load faster
-  include js
+// Place JavaScript at the end of the document so the pages load faster
+include js

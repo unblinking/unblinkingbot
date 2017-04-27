@@ -38,7 +38,7 @@ const thenLevel = require("then-levelup");
  * @see {@link https://github.com/nothingworksright/unblinkingBot unblinkingbot}
  */
 const routes = require("./routes.js"); // Endpoints for the local web interface
-const sockets = require("./unblinkingsockets");
+const sockets = require("./sockets.js");
 
 /**
  * Define all app configurations here, except routes (define routes last).
@@ -51,7 +51,10 @@ app.set("view engine", "pug");
 /**
  * Instantiate the http server here.
  * @see {@link https://github.com/socketio/socket.io socket.io}
- * "Starting with 3.0, express applications have become request handler functions that you pass to http or http Server instances. You need to pass the Server to socket.io, and not the express application function. Also make sure to call .listen on the server, not the app."
+ * "Starting with 3.0, express applications have become request handler
+ * functions that you pass to http or http Server instances. You need to pass
+ * the Server to socket.io, and not the express application function. Also make
+ * sure to call .listen on the server, not the app."
  */
 const server = http.Server(app);
 
@@ -65,12 +68,16 @@ server.listen(port, function () {
 });
 
 /**
- * Create the main bundle object, copies of references that will be passed to other functions. Holds references to the LevelDB data store, Slack RTM Client, and Socket.io server.
+ * Create the main bundle object, copies of references that will be passed to
+ * other functions. Holds references to the LevelDB data store, Slack RTM
+ * Client, and Socket.io server.
  */
 var bundle = {};
+
 bundle.db = thenLevel(level("db", {
   valueEncoding: 'json'
 }));
+
 bundle.rtm = undefined;
 bundle.socket = io(server);
 
@@ -85,7 +92,8 @@ sockets.events(bundle);
 routes(app, bundle);
 
 /**
- * Using pretty-error along with ansi-to-html to display error messages to the user in a nice format.
+ * Using pretty-error along with ansi-to-html to display error messages to the
+ * user in a nice format.
  */
 const ansiConvert = new ansi_to_html({
   newline: true
@@ -102,8 +110,6 @@ app.use(function (req, res, next) {
 app.use(function (err, req, res, next) {
   if (err) {
     let params = {
-      title: "Error",
-      message: err.message,
       error: ansiConvert.toHtml(prettyError.render(err))
     };
     res.render("error", params);

@@ -2,8 +2,7 @@
 
 /**
  * The unblinking bot.
- * @namespace unblinkingsockets
- * @public
+ * @namespace sockets.js
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
 
@@ -33,10 +32,10 @@ const prettyError = new pretty_error()
  * Promisify some local module callback functions.
  */
 const getAllData = bluebird.promisify(require("./datastore.js").getAllData);
-const getNewRtmInstance = bluebird.promisify(require("./unblinkingslack.js").getNewRtmInstance);
-const startRtmInstance = bluebird.promisify(require("./unblinkingslack.js").startRtmInstance);
-const listenForRtmEvents = bluebird.promisify(require("./unblinkingslack.js").listenForEvents);
-const disconnectRtm = bluebird.promisify(require("./unblinkingslack.js").disconnectRtmInstance);
+const getNewRtmInstance = bluebird.promisify(require("./slacks.js").getNewRtmInstance);
+const startRtmInstance = bluebird.promisify(require("./slacks.js").startRtmInstance);
+const listenForRtmEvents = bluebird.promisify(require("./slacks.js").listenForEvents);
+const disconnectRtm = bluebird.promisify(require("./slacks.js").disconnectRtmInstance);
 
 const sockets = {
 
@@ -182,7 +181,6 @@ const sockets = {
         } catch (e) {
           success = false;
           err = ansiConvert.toHtml(prettyError.render(e));
-          console.log(err.message);
         } finally {
           socket.emit(
             "saveSlackNotifyRes",
@@ -223,6 +221,37 @@ const sockets = {
           .catch(function (err) {
             console.log(`Error: ${err.message}`);
           });
+      });
+
+      socket.on("slackNotifyReq", function () {
+        let data = {};
+        try {
+          bundle.db.get("slack::settings::notify")
+            .then(function (notify) {
+              data.notify = notify;
+            })
+            .then(function () {
+              return bundle.db.get("slack::settings::notifyType");
+            })
+            .then(function (notifyType) {
+              data.notifyType = notifyType;
+              socket.emit("slackNotifyRes", data);
+            });
+        } catch (err) {
+          console.log(err.message);
+        }
+      });
+
+      socket.on("slackTokenReq", function () {
+        var data = {};
+        try {
+          bundle.db.get("slack::settings::token")
+            .then(function (token) {
+              socket.emit("slackTokenRes", token);
+            });
+        } catch (err) {
+          console.log(err.message);
+        }
       });
 
       // Restart the unblinkingBot application

@@ -4,85 +4,77 @@ head
 body
   include mixins
   include navbar
-  br
-  .container
+  .container.mt-3
     form(id="slackSettings")
       .form-group(id="currentSettingsPanel")
         .card
-          .card-header
-            |#{title}
+          .card-header|Settings
             a.badge.badge-info.float-right(
               href="https://api.slack.com/bot-users", target="_blank"
             )
               |About Slack bot users
           .card-block
-            .small|Slack integration is currently 
-                span(id="slackIntegrationStatus")
-                |.
-            br
-            b.small|Token:
-            br
-            .text-info.small(id="currentSettingsToken")
-            br
-            b.small|Notifications:
-            br
-            .text-info.small(id="currentSettingsNotify")
-            //span(id="restartSlackIntegrationAlert")
-            #restartSlackIntegrationAlert
+            .small.mb-3|Slack integration is currently
+              |
+              |
+              span(id="slackIntegrationStatus")
+              |.
+            .small.mb-3|Token:
+              |
+              |
+              span.text-primary(id="settingsToken")
+            .small.mb-3|Notifications:
+              |
+              |
+              span.text-primary(id="currentSettingsNotify")
+            span(id="restartSlackIntegrationAlert")
             span(id="stopSlackIntegrationAlert")
           .card-footer
-            .btn.btn-sm.btn-outline-primary(
-              id="changeSettings", style="margin-bottom: 5px;"
-            )
-            .btn.btn-sm.btn-outline-success.hidden-xs-up(
-              id="slackRestartBtn", style="margin-bottom: 5px;"
-            )
-              if token
-                script.
-                  document.getElementById("slackRestartBtn").classList.remove("hidden");
-            .btn.btn-sm.btn-outline-danger.hidden-xs-up(id="stopSlack", style="margin-bottom: 5px;")
-              if token
-                script.
-                  document.getElementById("stopSlack").classList.remove("hidden");
+            .btn.btn-sm.btn-outline-primary.mr-3(id="changeSettings")
+            .btn.btn-sm.btn-outline-success.mr-3.hidden-xs-up(id="startSlack")
+            .btn.btn-sm.btn-outline-danger.mr-3.hidden-xs-up(id="stopSlack")
       .form-group.hidden-xs-up(id="tokenPanel")
         .card
-          .card-header
-            |Enter or change the token
+          .card-header|Enter or change the token
           .card-block
-            .small
-              |Enter the Slack bot-user token here. If a token has been previously saved, it will be automatically populated here to allow for changes.
-            br
-            .input-group(id="slackTokenInputGroup")
-              input.form-control(id="slackToken", type="text", placeholder="e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX" value=token)
-              .input-group-addon.btn.btn-outline-success(id="saveToken")
-                |Save
-            br
-            span(id="saveSlackTokenAlert")
-            span(id="restartSlackTokenAlert")
+            .small.mb-3
+              |Enter the Slack bot-user token here. If a token has been
+              |previously saved, it will be automatically populated here to
+              |allow for changes.
+            .input-group.mb-3(id="slackTokenInputGroup")
+              input.form-control(
+                id="slackToken",
+                type="text",
+                placeholder="e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX"
+              )
+              .input-group-addon.btn.btn-outline-primary(id="saveToken")|Save
+            span.mb-3(id="saveSlackTokenAlert")
+            span.mb-3(id="restartSlackTokenAlert")
       .form-group.hidden-xs-up(id="defaultNotifyPanel")
         .card
           .card-header
             |Choose where to send notifications
           .card-block
-            .small
-              |Choose where you would like the Slack bot user to send default notifications. Choose between a channel, a group, or a direct message to a user. Add the bot user to the desired channel or direct message in Slack first.
-            br
-            .small
+            .small.mb-3
+              |Choose where you would like the Slack bot user to send default
+              |notifications. Choose between a channel, a group, or a direct
+              |message to a user. Add the bot user to the desired channel or
+              |direct message in Slack first.
+            .small.mb-3
               b Channels
               +space
-              |include non-private channels where the bot user has already been invited (is a member of the channel).
-            br
-            .small
+              |include non-private channels where the bot user has already been
+              |invited (is a member of the channel).
+            .small.mb-3
               b Groups
               +space
-              |include private channels where the bot user has already been invited (is a member of the channel).
-            br
-            .small
+              |include private channels where the bot user has already been
+              |invited (is a member of the channel).
+            .small.mb-3
               b Users
               +space
               |include direct messages already open between users and the bot.
-            br
-            .btn-group(data-toggle="buttons")
+            .btn-group.mb-3(data-toggle="buttons")
               label.btn.btn-outline-primary(id="radioChannel")
                 input(type="radio")
                 |Channel
@@ -92,35 +84,32 @@ body
               label.btn.btn-outline-primary(id="radioUser")
                 input(type="radio")
                 |User
-            br
-            br
-            .progress.hidden-xs-up(id="progressDefaultNotifications")
-              .progress-bar.progress-bar-striped.active(role="progressbar", aria-valuenow="100", aria-valuemin="0", aria-valuemax="100", style="width: 100%")
-            .input-group.hidden-xs-up(id="inputChannels")
-              .input-group-addon
-                |Channels
+            .progress.hidden-xs-up.mb-3(id="progressDefaultNotifications")
+              .progress-bar.progress-bar-striped.progress-bar-animated(
+                role="progressbar", aria-valuenow="100", aria-valuemin="0",
+                aria-valuemax="100", style="width: 100%"
+              )
+            .input-group.hidden-xs-up.mb-3(id="inputChannels")
+              .input-group-addon|Channels
               select.form-control(id="defaultChannelSelect", type="text")
-              .input-group-addon.btn.btn-outline-primary(id="saveSlackDefaultNotifyChannel")
-                |Save
-            .input-group.hidden-xs-up(id="inputGroups")
-              .input-group-addon
-                |Groups
+              .input-group-addon.btn.btn-outline-primary(
+                id="saveSlackDefaultNotifyChannel"
+              )|Save
+            .input-group.hidden-xs-up.mb-3(id="inputGroups")
+              .input-group-addon|Groups
               select.form-control(id="defaultGroupSelect", type="text")
-              .input-group-addon.btn.btn-outline-primary(id="saveSlackDefaultNotifyGroup")
-                |Save
-            .input-group.hidden-xs-up(id="inputUsers")
-              .input-group-addon
-                |Users
+              .input-group-addon.btn.btn-outline-primary(
+                id="saveSlackDefaultNotifyGroup"
+              )|Save
+            .input-group.hidden-xs-up.mb-3(id="inputUsers")
+              .input-group-addon |Users
               select.form-control(id="defaultUserSelect", type="text")
-              .input-group-addon.btn.btn-outline-primary(id="saveSlackDefaultNotifyUser")
-                |Save
-            br
+              .input-group-addon.btn.btn-outline-primary(
+                id="saveSlackDefaultNotifyUser"
+              )|Save
             span(id="saveSlackNotifyAlert")
   .container
-    
-  .container
     include footer
-
 // Place JavaScript at the end of the document so the pages load faster
 include js
 script(src="/js/settings-templates.js")
