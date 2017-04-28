@@ -175,7 +175,7 @@ function alertAnimationSuccess(element, html) {
     .then(() => countTo(5))
     .then(() => fade(element, 500, 0))
     .then(() => upSlide(element, 500))
-    .catch((err) => alert(err))
+    //.catch((err) => alert(err))
     .then(() => resolve()));
 }
 
@@ -215,7 +215,9 @@ function countTo(seconds) {
  * @param {Number} speed Duration of the animation in milliseconds.
  */
 function downSlide(element, speed) {
-  return new P(resolve => element.slideDown(speed, resolve));
+  return new P(resolve => {
+    element.show(speed, resolve);
+  });
 }
 
 /**
@@ -383,7 +385,16 @@ function enableStopSlackBtn() {
  * @param {Number} opacity Target opacity, a number between 0 and 1.
  */
 function fade(element, speed, opacity) {
-  return new P(resolve => element.fadeTo(speed, opacity, resolve));
+  return new P(resolve => {
+    element.fadeTo(speed, opacity, resolve);
+    /*
+    if (element[0].clientHeight > 0) { // Only if the element has some height.
+      element.fadeTo(speed, opacity, resolve);
+    } else {
+      resolve();
+    }
+    */
+  });
 }
 
 /**
@@ -504,12 +515,12 @@ function slackConnectionStatusUpdate(connected) {
   return new P(resolve => {
     let element = $("#slackIntegrationStatus");
     if (connected) {
+      element.removeClass("text-danger");
       element.html("connected");
-      element.removeClass(); // Remove all classes
       element.addClass("text-success");
     } else if (!connected) {
+      element.removeClass("text-success");
       element.html("disconnected");
-      element.removeClass(); // Remove all classes
       element.addClass("text-danger");
     }
     resolve();
@@ -536,5 +547,7 @@ function slackTokenReq() {
  * @param {Number} speed Duration of the animation in milliseconds.
  */
 function upSlide(element, speed) {
-  return new P(resolve => element.slideUp(speed, resolve));
+  return new P(resolve => {
+    element.hide(speed, resolve);
+  });
 }

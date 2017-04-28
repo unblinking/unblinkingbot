@@ -22,6 +22,9 @@ const ansi_to_html = require('ansi-to-html');
 const bluebird = require("bluebird");
 const pretty_error = require('pretty-error');
 
+/**
+ * Configure the ansi-to-html and pretty-error modules.
+ */
 const ansiConvert = new ansi_to_html({
   newline: true
 });
@@ -37,39 +40,51 @@ const startRtmInstance = bluebird.promisify(require("./slacks.js").startRtmInsta
 const listenForRtmEvents = bluebird.promisify(require("./slacks.js").listenForEvents);
 const disconnectRtm = bluebird.promisify(require("./slacks.js").disconnectRtmInstance);
 
+/**
+ * Module to be exported, containing the Socket.io events.
+ */
 const sockets = {
 
-  events: function (bundle, callback) {
+  /**
+   * Socket.io event handlers.
+   * @param {Object} bundle The main bundle, containing references to the
+   * LevelDB data store, Slack RTM Client, and Socket.io server.
+   */
+  events: (bundle) => {
 
-    bundle.socket.on("connection", function (socket) {
-      // let handshake = JSON.stringify(socket.handshake, null, 2);
-      // console.log(`Socket.io connection handshake: ${handshake}.`);
+    /**
+     * 
+     */
+    bundle.io.on("connection", (socket) => {
 
-      socket.on("disconnect", function () {
-        // console.log("Socket.io disconnection.");
-      });
+      //let handshake = JSON.stringify(socket.handshake, null, 2);
+      //console.log(`Socket.io connection handshake: ${handshake}.`);
 
-      // TODO: Do a pretty error here
-      socket.on("readFullDbReq", function () {
+      /**
+       * 
+       */
+      socket.on("disconnect", () => console.log("Socket.io disconnection."));
+
+      /**
+       * 
+       */
+      socket.on("readFullDbReq", () => {
         getAllData(bundle.db)
-          .then(function (allData) {
-            socket.emit("readFullDbRes", allData);
-          })
-          .catch(function (err) {
-            socket.emit("readFullDbRes", err.message);
-          });
+          .then((allData)=> socket.emit("readFullDbRes", allData))
+          .catch((err) => socket.emit("readFullDbRes", err.message)); // TODO: Do a pretty error here
       });
 
-      // Read available Slack channels
-      socket.on("readSlackChannelsReq", function () {
+      /**
+       * Read available Slack channels
+       */
+      socket.on("readSlackChannelsReq", () => {
         let channelNames = [];
         let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
           if (rtmConnected) {
             let channels = bundle.rtm.dataStore.channels;
-            Object.keys(channels).forEach(function (key) {
-              // Only if the bot is a member.
-              if (channels[key].is_member) {
+            Object.keys(channels).forEach((key) => {
+              if (channels[key].is_member) { // Only if the bot is a member.
                 channelNames.push(channels[key].name);
               }
             });
@@ -81,16 +96,18 @@ const sockets = {
         }
       });
 
-      // Read available Slack groups
-      socket.on("readSlackGroupsReq", function () {
+      /**
+       * Read available Slack groups
+       */
+      socket.on("readSlackGroupsReq", () => {
         let groupNames = [];
         let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
           if (rtmConnected) {
             let groups = bundle.rtm.dataStore.groups;
-            Object.keys(groups).forEach(function (key) {
-              groupNames.push(groups[key].name);
-            });
+            Object.keys(groups).forEach((key) =>
+              groupNames.push(groups[key].name)
+            );
           }
         } catch (err) {
           console.log(err.message);
@@ -99,8 +116,10 @@ const sockets = {
         }
       });
 
-      // Read available Slack users
-      socket.on("readSlackUsersReq", function () {
+      /**
+       * Read available Slack users
+       */
+      socket.on("readSlackUsersReq", () => {
         let directMessageUserNames = [];
         let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
@@ -108,12 +127,12 @@ const sockets = {
             let directMessageUserIds = [];
             let dms = bundle.rtm.dataStore.dms;
             let users = bundle.rtm.dataStore.users;
-            Object.keys(dms).forEach(function (key) {
-              directMessageUserIds.push(dms[key].user);
-            });
-            directMessageUserIds.forEach(function (id) {
-              directMessageUserNames.push(users[id].name);
-            });
+            Object.keys(dms).forEach((key) =>
+              directMessageUserIds.push(dms[key].user)
+            );
+            directMessageUserIds.forEach((id) =>
+              directMessageUserNames.push(users[id].name)
+            );
           }
         } catch (err) {
           console.log(err.message);
@@ -122,7 +141,9 @@ const sockets = {
         }
       });
 
-      // Save Slack token
+      /**
+       * Save Slack token
+       */
       socket.on("saveSlackTokenReq", (token) => {
         let success = true;
         let err = null;
@@ -141,8 +162,10 @@ const sockets = {
         }
       });
 
-      // Save Slack default-notify
-      socket.on("saveSlackNotifyReq", function (notify, notifyType) {
+      /**
+       * Save Slack default-notify
+       */
+      socket.on("saveSlackNotifyReq", (notify, notifyType) => {
         let success = true;
         let err = null;
         let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
@@ -150,14 +173,14 @@ const sockets = {
         try {
           if (rtmConnected && notifyType === "channel") {
             let channels = bundle.rtm.dataStore.channels;
-            Object.keys(channels).forEach(function (key) {
+            Object.keys(channels).forEach((key) => {
               if (channels[key].name === notify) {
                 notifyId = key.toString();
               }
             });
           } else if (rtmConnected && notifyType === "group") {
             let groups = bundle.rtm.dataStore.groups;
-            Object.keys(groups).forEach(function (key) {
+            Object.keys(groups).forEach((key) => {
               if (groups[key].name === notify) {
                 notifyId = key.toString();
               }
@@ -165,9 +188,9 @@ const sockets = {
           } else if (rtmConnected && notifyType === "user") {
             let users = bundle.rtm.dataStore.users;
             let dms = bundle.rtm.dataStore.dms;
-            Object.keys(users).forEach(function (usersKey) {
+            Object.keys(users).forEach((usersKey) => {
               if (users[usersKey].name === notify) {
-                Object.keys(dms).forEach(function (dmsKey) {
+                Object.keys(dms).forEach((dmsKey) => {
                   if (dms[dmsKey].user === users[usersKey].id) {
                     notifyId = dmsKey.toString();
                   }
@@ -192,48 +215,52 @@ const sockets = {
         }
       });
 
-      socket.on("slackConnectionStatusReq", function () {
+      /**
+       * 
+       */
+      socket.on("slackConnectionStatusReq", () => {
         let connected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         socket.emit("slackConnectionStatusRes", connected);
       });
 
-      // Restart Slack integration
-      socket.on("slackRestartReq", function () {
+      /**
+       * Restart Slack integration
+       */
+      socket.on("slackRestartReq", () => {
         disconnectRtm(bundle)
-          .then(function () {
+          .then(() => {
             return bundle.db.get("slack::settings::token");
           })
-          .then(function (token) {
+          .then((token) => {
             bundle.token = token;
             return bundle;
           })
           .then(getNewRtmInstance)
           .then(startRtmInstance)
           .then(listenForRtmEvents)
-          .catch(function (err) {
-            console.log(`Error: ${err.message}`);
-          });
+          .catch((err) => console.log(err.message));
       });
 
-      // Stop Slack integration
-      socket.on("slackStopReq", function () {
+      /**
+       * Stop Slack integration
+       */
+      socket.on("slackStopReq", () => {
         disconnectRtm(bundle)
-          .catch(function (err) {
-            console.log(`Error: ${err.message}`);
-          });
+          .catch((err) => console.log(err.message));
       });
 
-      socket.on("slackNotifyReq", function () {
-        let data = {};
+      /**
+       * 
+       */
+      socket.on("slackNotifyReq", () => {
         try {
+          let data = {};
           bundle.db.get("slack::settings::notify")
-            .then(function (notify) {
-              data.notify = notify;
-            })
-            .then(function () {
+            .then((notify) => data.notify = notify)
+            .then(() => {
               return bundle.db.get("slack::settings::notifyType");
             })
-            .then(function (notifyType) {
+            .then((notifyType) => {
               data.notifyType = notifyType;
               socket.emit("slackNotifyRes", data);
             });
@@ -242,23 +269,22 @@ const sockets = {
         }
       });
 
-      socket.on("slackTokenReq", function () {
-        var data = {};
+      /**
+       * 
+       */
+      socket.on("slackTokenReq", () => {
         try {
           bundle.db.get("slack::settings::token")
-            .then(function (token) {
-              socket.emit("slackTokenRes", token);
-            });
+            .then((token) => socket.emit("slackTokenRes", token));
         } catch (err) {
           console.log(err.message);
         }
       });
 
-      // Restart the unblinkingBot application
-      socket.on("restartReq", function () {
-        // TODO: Restart the systemd service correctly?
-        process.exit(1);
-      });
+      /**
+       * Restart the unblinkingBot application
+       */ 
+      socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service correctly?
 
     });
 

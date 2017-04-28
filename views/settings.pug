@@ -14,21 +14,24 @@ body
             )
               |About Slack bot users
           .card-block
-            .small.mb-3|Slack integration is currently
-              |
-              |
-              span(id="slackIntegrationStatus")
+            .mb-3|Slack RTM Client is
+              span.ml-1(
+                id="slackIntegrationStatus"
+              )
               |.
-            .small.mb-3|Token:
-              |
-              |
-              span.text-primary(id="settingsToken")
-            .small.mb-3|Notifications:
-              |
-              |
-              span.text-primary(id="currentSettingsNotify")
-            span(id="restartSlackIntegrationAlert")
-            span(id="stopSlackIntegrationAlert")
+            .mb-3|Token:
+              span.text-primary.ml-2(
+                id="settingsToken",
+                style="font-family: monospace;"
+              )
+            .mb-3|Notifications:
+              span.text-primary.ml-2(
+                id="currentSettingsNotify"
+              )
+            #restartSlackIntegrationAlert
+            #stopSlackIntegrationAlert
+            //.mb-0(id="restartSlackIntegrationAlert")
+            //.mb-0(id="stopSlackIntegrationAlert")
           .card-footer
             .btn.btn-sm.btn-outline-primary.mr-3(id="changeSettings")
             .btn.btn-sm.btn-outline-success.mr-3.hidden-xs-up(id="startSlack")
@@ -42,14 +45,21 @@ body
               |previously saved, it will be automatically populated here to
               |allow for changes.
             .input-group.mb-3(id="slackTokenInputGroup")
-              input.form-control(
+              input.form-control.bg-faded.text-primary(
                 id="slackToken",
+                style="border-color: blue; font-family: monospace;",
                 type="text",
                 placeholder="e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX"
               )
-              .input-group-addon.btn.btn-outline-primary(id="saveToken")|Save
-            span.mb-3(id="saveSlackTokenAlert")
-            span.mb-3(id="restartSlackTokenAlert")
+              .input-group-addon.btn.btn-outline-primary.bg-faded(
+                id="saveToken",
+                style="border-color: blue;"
+              )
+                |Save
+            #saveSlackTokenAlert
+            #restartSlackTokenAlert
+            //.mb-0(id="saveSlackTokenAlert")
+            //.mb-0(id="restartSlackTokenAlert")
       .form-group.hidden-xs-up(id="defaultNotifyPanel")
         .card
           .card-header
@@ -89,25 +99,56 @@ body
                 role="progressbar", aria-valuenow="100", aria-valuemin="0",
                 aria-valuemax="100", style="width: 100%"
               )
+
             .input-group.hidden-xs-up.mb-3(id="inputChannels")
-              .input-group-addon|Channels
-              select.form-control(id="defaultChannelSelect", type="text")
-              .input-group-addon.btn.btn-outline-primary(
-                id="saveSlackDefaultNotifyChannel"
-              )|Save
+              .input-group-addon.bg-faded.text-primary(
+                style="border-color: blue;"
+              )
+                |Channels
+              select.form-control.bg-faded.text-primary(
+                id="defaultChannelSelect",
+                style="border-color: blue;",
+                type="text"
+              )
+              .input-group-addon.btn.btn-outline-primary.bg-faded(
+                id="saveSlackDefaultNotifyChannel",
+                style="border-color: blue;"
+              )
+                |Save
+
             .input-group.hidden-xs-up.mb-3(id="inputGroups")
-              .input-group-addon|Groups
-              select.form-control(id="defaultGroupSelect", type="text")
-              .input-group-addon.btn.btn-outline-primary(
-                id="saveSlackDefaultNotifyGroup"
-              )|Save
+              .input-group-addon.bg-faded.text-primary(
+                style="border-color: blue;"
+              )
+                |Groups
+              select.form-control.bg-faded.text-primary(
+                id="defaultGroupSelect",
+                style="border-color: blue;",
+                type="text"
+              )
+              .input-group-addon.btn.btn-outline-primary.bg-faded(
+                id="saveSlackDefaultNotifyGroup",
+                style="border-color: blue;"
+              )
+                |Save
+
             .input-group.hidden-xs-up.mb-3(id="inputUsers")
-              .input-group-addon |Users
-              select.form-control(id="defaultUserSelect", type="text")
-              .input-group-addon.btn.btn-outline-primary(
-                id="saveSlackDefaultNotifyUser"
-              )|Save
-            span(id="saveSlackNotifyAlert")
+              .input-group-addon.bg-faded.text-primary(
+                style="border-color: blue;"
+              )
+                |Users
+              select.form-control.bg-faded.text-primary(
+                id="defaultUserSelect",
+                style="border-color: blue;",
+                type="text"
+              )
+              .input-group-addon.btn.btn-outline-primary.bg-faded(
+                id="saveSlackDefaultNotifyUser",
+                style="border-color: blue;"
+              )
+                |Save
+            #saveSlackNotifyAlert
+            //.mb-0(id="saveSlackNotifyAlert")
   .container
     include footer
 // Place JavaScript at the end of the document so the pages load faster

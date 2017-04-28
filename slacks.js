@@ -75,7 +75,7 @@ const slacking = {
         bundle.rtm.autoReconnect = false;
         bundle.rtm.disconnect("User request", "1");
       } else {
-        bundle.socket.emit("slackDisconnection", "Disconnect requested but the Slack RTM Client was already disconnected.");
+        bundle.io.emit("slackDisconnection", "Disconnect requested but the Slack RTM Client was already disconnected.");
       }
     } catch (e) {
       err = e;
@@ -141,12 +141,12 @@ const slacking = {
       var user = bundle.rtm.dataStore.getUserById(bundle.rtm.activeUserId);
       var team = bundle.rtm.dataStore.getTeamById(bundle.rtm.activeTeamId);
       let message = `Slack RTM Client connected to ${team.name} as user ${user.name}.`;
-      bundle.socket.emit("slackConnectionOpened", message);
+      bundle.io.emit("slackConnectionOpened", message);
     });
 
     bundle.rtm.on(slackClient.CLIENT_EVENTS.RTM.DISCONNECT, function (message) {
       //console.log(`RTM Disconnect Event: ${message}`);
-      bundle.socket.emit("slackDisconnection", message);
+      bundle.io.emit("slackDisconnection", message);
     });
 
     bundle.rtm.on(slackClient.RTM_EVENTS.MESSAGE, function (message) {

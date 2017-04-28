@@ -79,7 +79,7 @@ bundle.db = thenLevel(level("db", {
 }));
 
 bundle.rtm = undefined;
-bundle.socket = io(server);
+bundle.io = io(server);
 
 /**
  * Define socket.io events.
