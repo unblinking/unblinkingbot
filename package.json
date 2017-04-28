@@ -2,27 +2,31 @@
   "name": "unblinkingbot",
   "version": "0.0.1",
   "description": "Another Slack bot.",
-  "author": "jmg1138",
-  "license": "GPL-3.0",
+  "main": "app.js",
+  "author": "jmg1138 https://github.com/jmg1138",
+  "license": "MIT",
   "readme": "README.md",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/nothingworksright/unblinkingBot.git"
+    "url": "https://github.com/nothingworksright/unblinkingbot.git"
   },
   "dependencies": {
-    "@slack/client": "3.8.1",
-    "express": "4.14.0",
-    "external-ip": "0.2.4",
-    "humanize-duration": "3.10.0",
-    "level": "1.5.0",
-    "level-pathwise": "3.0.3",
-    "moment": "2.17.1",
-    "node-cron": "1.1.2",
-    "pug": "2.0.0-beta6",
-    "socket.io": "1.7.2"
+    "@slack/client": "3.9.0",
+    "ansi-to-html": "0.6.0",
+    "express": "4.15.2",
+    "level": "1.6.0",
+    "pretty-error": "2.1.0",
+    "pug": "2.0.0-beta12",
+    "socket.io": "1.7.3",
+    "then-levelup": "1.0.2"
   },
   "devDependencies": {
-    "eslint": "3.12.2"
+    "eslint": "3.19.0",
+    "jshint": "2.9.4"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "mocha --timeout 10000"
   }
 }

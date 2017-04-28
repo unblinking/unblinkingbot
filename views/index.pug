@@ -1,30 +1,25 @@
 doctype html(lang='en')
 head
-    include head
+  include head
 body
-    include mixins
-    include navbar
-    br
-    .container.theme-showcase(role='main')
-        br
-        .page-header.clearfix
-            h4=title
-        .row
-            .col-md-5
-                .panel.panel-primary
-                    .panel-heading
-                        |Slack Activity
-                    .panel-body
-                        .text-primary.small
-                            |Recent activity using Slack integration.
-                        br
-                        pre#slackactivitypanelbody=history
-                    .panel-footer
-                        .text-warning.small
-                            |Requires Slack token setup. See the Settings page.
-
-        include footer
-
-    // Place JavaScript at the end of the document so the pages load faster
-    include js
-    script(src='/js/index.js')
+  include mixins
+  include navbar
+  .container.mt-3
+    .col-md-6.pl-0
+      .card
+        .card-header
+          |Slack Activity
+        .card-block
+          .small.text-primary.mb-3
+            |Recent activity using Slack integration.
+          .card.card-outline-primary
+            pre.small(id="slackactivitypanelbody")
+              |History will go here
+        .card-footer
+          .small.text-warning
+            |Requires Slack token setup. See the Settings page.
+  .container
+    include footer
+// Place JavaScript at the end of the document so the pages load faster
+include js
+script(src='/js/index.js')

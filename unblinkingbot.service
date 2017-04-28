@@ -1,13 +1,13 @@
 [Unit]
 Description=unblinkingBot - Another Slack bot
-Documentation=http://unblinkingbot.com
+Documentation=http://www.unblinkingbot.com
 After=network.target
 
 [Service]
 Type=simple
 User=root
 WorkingDirectory=/usr/local/unblinkingbot
-ExecStart=/usr/bin/node /usr/local/unblinkingbot/unblinkingbot.js
+ExecStart=/usr/bin/node /usr/local/unblinkingbot/app.js
 Restart=on-failure
 
 [Install]

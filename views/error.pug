@@ -1,0 +1,18 @@
+doctype html(lang="en")
+head
+  include head
+body
+  include mixins
+  include navbar
+  .container.mt-3
+    .card.card-outline-danger
+      .card-header
+        |An error occurred
+      .card-block(style={background: "black"})
+        p!=error
+      .card-footer
+        .small|This is the error
+  .container
+    include footer
+// Place JavaScript at the end of the document so the pages load faster
+include js

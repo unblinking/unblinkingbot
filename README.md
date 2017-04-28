@@ -1,7 +1,4 @@
-[![Docker Stars](https://img.shields.io/docker/stars/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Pulls](https://img.shields.io/docker/pulls/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Automated build](https://img.shields.io/docker/automated/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  
-[![Code Climate](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/gpa.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot) [![Test Coverage](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/coverage.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot/coverage) [![Issue Count](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/issue_count.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot)  
-
-# Unblinking Bot  
+# unblinkingbot  
 
 Another [Slack](https://api.slack.com/bot-users) bot.  
 
@@ -11,7 +8,7 @@ Another [Slack](https://api.slack.com/bot-users) bot.
 
 Make it easy to get started on a new [Slack](https://api.slack.com/bot-users) bot.  
 
-Once running, the bot serves a website where you paste in your [Slack](https://api.slack.com/bot-users) bot token and save it. After that, you can immediately talk to the bot through [Slack](https://api.slack.com/bot-users). As it is, mentioning the bot's name in a direct message or channel with the bot will trigger a response of "That's my name, don't wear it out!" but the bot does nothing else.  
+Once running, the bot serves a website where you paste in your [Slack](https://api.slack.com/bot-users) bot token and save it. After that, you can immediately talk to the bot through [Slack](https://api.slack.com/bot-users). As it is, mentioning the bot user's name in a direct message or channel where the bot is a member will trigger a response of "That's my name, don't wear it out!" but the bot does nothing else.  
 
 Fork this repository and then customize the bot for your own needs. Add other fun message responses, schedule tasks for home automation or server maintenance, setup notifications for important events, etc.  
 
@@ -42,3 +39,6 @@ Screenshots are at [http://www.unblinkingbot.com/](http://www.unblinkingbot.com/
 ## Show your support  
 
 Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
+
+[![Docker Stars](https://img.shields.io/docker/stars/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Pulls](https://img.shields.io/docker/pulls/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Automated build](https://img.shields.io/docker/automated/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  
+[![Code Climate](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/gpa.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot) [![Test Coverage](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/coverage.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot/coverage) [![Issue Count](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/issue_count.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot)  

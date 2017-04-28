@@ -1,36 +1,25 @@
-doctype html(lang='en')
+doctype html(lang="en")
 head
-    include head
+  include head
 body
-    include mixins
-    include navbar
-    // Showcase container begin
-    br
-    .container.theme-showcase(role='main')
-        br
-        .page-header.clearfix
-            h4=title
-        .row
-            .col-md-12
-                .panel.panel-primary
-                    .panel-heading
-                        |Data Store
-                    .panel-body
-                        .small|The refresh button will request a fresh copy of the levelDB data store from the bot. The response will be displayed below for your review.
-                        br
-                        pre#datastorepanelbody
-                    .panel-footer
-                        button#datastorerefreshbutton.btn.btn-primary
-                            span.glyphicon.glyphicon-refresh
-                            +space
-                            | Refresh Full Data Store
-                        +space
-                        button#datastorehidebutton.btn.btn-default
-                            span.glyphicon.glyphicon-remove
-                            +space
-                            | Hide
-        include footer
-
-    // Place JavaScript at the end of the document so the pages load faster
-    include js
-    script(src='/js/datastore.js')
+  include mixins
+  include navbar
+  .container.mt-3
+    .card
+      .card-header|Datastore
+        .btn.btn-sm.btn-outline-success.float-right.ml-3(id="refreshBtn")
+        .btn.btn-sm.btn-outline-danger.float-right.ml-3(id="hideBtn")
+      .card-block
+        .small.text-muted.mb-3
+          |The refresh button will request a fresh copy of the LevelDB datastore
+          |from the bot. The response will be displayed for your review.
+        .card.card-outline-success
+          pre.small(id="dataStoreCardBody")
+      .card-footer
+  .container
+    include footer
+// Place JavaScript at the end of the document so the pages load faster
+include js
+script(src="/js/datastore-templates.js")
+script(src="/js/datastore.js")
+// TODO: Add a progress bar when loading.
