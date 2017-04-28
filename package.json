@@ -17,7 +17,7 @@
     "express": "4.15.2",
     "level": "1.6.0",
     "pretty-error": "2.1.0",
-    "pug": "2.0.0-beta12",
+    "pug": "2.0.0-beta.12",
     "socket.io": "1.7.3",
     "then-levelup": "1.0.2"
   },
