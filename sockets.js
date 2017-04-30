@@ -1,16 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * The unblinking bot.
+ * The web sockets for the unblinkingbot web UI.
  * @namespace sockets.js
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
-
-/**
- * Invoke strict mode for the entire script.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode Strict mode}
- */
-"use strict";
 
 /**
  * Require the 3rd party modules that will be used.
@@ -18,9 +12,9 @@
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
  */
-const ansi_to_html = require('ansi-to-html');
+const ansi_to_html = require("ansi-to-html");
 const bluebird = require("bluebird");
-const pretty_error = require('pretty-error');
+const pretty_error = require("pretty-error");
 
 /**
  * Configure the ansi-to-html and pretty-error modules.
@@ -32,13 +26,26 @@ const prettyError = new pretty_error()
   .skipNodeFiles();
 
 /**
+ * Require the local modules that will be used.
+ */
+const spawns = require("./spawns.js");
+
+/**
+ * TODO: Setup processes to be spawned for real.
+ */
+spawns.spawner({
+  "command": "echo",
+  "argsArray": ["This is a test"]
+});
+
+/**
  * Promisify some local module callback functions.
  */
 const getAllData = bluebird.promisify(require("./datastore.js").getAllData);
-const getNewRtmInstance = bluebird.promisify(require("./slacks.js").getNewRtmInstance);
-const startRtmInstance = bluebird.promisify(require("./slacks.js").startRtmInstance);
-const listenForRtmEvents = bluebird.promisify(require("./slacks.js").listenForEvents);
-const disconnectRtm = bluebird.promisify(require("./slacks.js").disconnectRtmInstance);
+const getNewRtmInstance = require("./slacks.js").getNewRtmInstance;
+const startRtmInstance = require("./slacks.js").startRtmInstance;
+const listenForRtmEvents = require("./slacks.js").listenForEvents;
+const disconnectRtm = require("./slacks.js").disconnectRtmInstance;
 
 /**
  * Module to be exported, containing the Socket.io events.
@@ -50,37 +57,42 @@ const sockets = {
    * @param {Object} bundle The main bundle, containing references to the
    * LevelDB data store, Slack RTM Client, and Socket.io server.
    */
-  events: (bundle) => {
+  events: bundle => {
 
     /**
-     * 
+     * Register the "connection" event handler for the main bundle.io object.
+     * Upon connection, register the other event handlers.
      */
-    bundle.io.on("connection", (socket) => {
+    bundle.io.on("connection", socket => {
 
       //let handshake = JSON.stringify(socket.handshake, null, 2);
       //console.log(`Socket.io connection handshake: ${handshake}.`);
 
       /**
-       * 
+       * Register the "disconnect" event handler.
        */
-      socket.on("disconnect", () => console.log("Socket.io disconnection."));
+      //socket.on("disconnect", () => console.log("Socket.io disconnection."));
 
       /**
-       * 
+       * Register the "readFullDbReq" event handler.
+       * Read the entire LevelDB Datastore and emit it back out.
        */
       socket.on("readFullDbReq", () => {
         getAllData(bundle.db)
-          .then((allData)=> socket.emit("readFullDbRes", allData))
-          .catch((err) => socket.emit("readFullDbRes", err.message)); // TODO: Do a pretty error here
+          .then(allData => socket.emit("readFullDbRes", allData))
+          .catch(err => socket.emit("readFullDbRes", err.message)); // TODO: Do a pretty error here
       });
 
       /**
-       * Read available Slack channels
+       * Register the "readSlackChannelsReq" event handler.
+       * If the Slack RTM Client is currently connected, get an array of all of
+       * the channel names where the bot user is a member of the channel, and
+       * then emit the channel names back out.
        */
       socket.on("readSlackChannelsReq", () => {
-        let channelNames = [];
-        let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
+          let channelNames = [];
+          let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
           if (rtmConnected) {
             let channels = bundle.rtm.dataStore.channels;
             Object.keys(channels).forEach((key) => {
@@ -89,40 +101,44 @@ const sockets = {
               }
             });
           }
+          socket.emit("readSlackChannelsRes", channelNames);
         } catch (err) {
           console.log(err.message);
-        } finally {
-          socket.emit("readSlackChannelsRes", channelNames);
         }
       });
 
       /**
-       * Read available Slack groups
+       * Register the "readSlackGroupsReq" event handler.
+       * If the Slack RTM Client is currently connected, get an array of all of
+       * the group names where the bot user is a member of the group, and then
+       * emit the group names back out.
        */
       socket.on("readSlackGroupsReq", () => {
-        let groupNames = [];
-        let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
+          let groupNames = [];
+          let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
           if (rtmConnected) {
             let groups = bundle.rtm.dataStore.groups;
             Object.keys(groups).forEach((key) =>
               groupNames.push(groups[key].name)
             );
           }
+          socket.emit("readSlackGroupsRes", groupNames);
         } catch (err) {
           console.log(err.message);
-        } finally {
-          socket.emit("readSlackGroupsRes", groupNames);
         }
       });
 
       /**
-       * Read available Slack users
+       * Register the "readSlackUsersReq" event handler.
+       * If the Slack RTM Client is currently connected, get an array of all of
+       * the user names where the bot user is in a direct message with the user,
+       * and then emit the user names back out.
        */
       socket.on("readSlackUsersReq", () => {
-        let directMessageUserNames = [];
-        let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
         try {
+          let directMessageUserNames = [];
+          let rtmConnected = bundle.rtm !== undefined && bundle.rtm.connected === true;
           if (rtmConnected) {
             let directMessageUserIds = [];
             let dms = bundle.rtm.dataStore.dms;
@@ -134,17 +150,19 @@ const sockets = {
               directMessageUserNames.push(users[id].name)
             );
           }
+          socket.emit("readSlackUsersRes", directMessageUserNames);
         } catch (err) {
           console.log(err.message);
-        } finally {
-          socket.emit("readSlackUsersRes", directMessageUserNames);
         }
       });
 
       /**
-       * Save Slack token
+       * Register the "saveSlackTokenReq" event handler.
+       * Try to save the token to the LevelDB Datastore, and then emit a
+       * response that includes the token, a boolean success, and an error if
+       * one exists. The error is formatted using pretty-error and ansi-to-html.
        */
-      socket.on("saveSlackTokenReq", (token) => {
+      socket.on("saveSlackTokenReq", token => {
         let success = true;
         let err = null;
         try {
@@ -163,7 +181,7 @@ const sockets = {
       });
 
       /**
-       * Save Slack default-notify
+       * Register the "saveSlackNotifyReq" event handler.
        */
       socket.on("saveSlackNotifyReq", (notify, notifyType) => {
         let success = true;
@@ -216,15 +234,17 @@ const sockets = {
       });
 
       /**
-       * 
+       * Register the "slackConnectionStatusReq" event handler.
        */
       socket.on("slackConnectionStatusReq", () => {
-        let connected = bundle.rtm !== undefined && bundle.rtm.connected === true;
-        socket.emit("slackConnectionStatusRes", connected);
+        socket.emit(
+          "slackConnectionStatusRes",
+          bundle.rtm !== undefined && bundle.rtm.connected === true
+        );
       });
 
       /**
-       * Restart Slack integration
+       * Register the "slackRestartReq" event handler.
        */
       socket.on("slackRestartReq", () => {
         disconnectRtm(bundle)
@@ -238,53 +258,52 @@ const sockets = {
           .then(getNewRtmInstance)
           .then(startRtmInstance)
           .then(listenForRtmEvents)
-          .catch((err) => console.log(err.message));
+          .catch(err => console.log(err.message));
       });
 
       /**
-       * Stop Slack integration
+       * Register the "slackStopReq" event handler.
+       * Disconnect the Slack RTM Client.
        */
       socket.on("slackStopReq", () => {
         disconnectRtm(bundle)
-          .catch((err) => console.log(err.message));
+          .catch(err => console.log(err.message));
       });
 
       /**
-       * 
+       * Register the "slackNotifyReq" event handler.
+       * Get the default notification recipient name and type from the LevelDB
+       * Datastore, and then emit them back out as a response.
        */
       socket.on("slackNotifyReq", () => {
-        try {
-          let data = {};
-          bundle.db.get("slack::settings::notify")
-            .then((notify) => data.notify = notify)
-            .then(() => {
-              return bundle.db.get("slack::settings::notifyType");
-            })
-            .then((notifyType) => {
-              data.notifyType = notifyType;
-              socket.emit("slackNotifyRes", data);
-            });
-        } catch (err) {
-          console.log(err.message);
-        }
+        let data = {};
+        bundle.db.get("slack::settings::notify")
+          .then(notify => data.notify = notify)
+          .then(() => {
+            return bundle.db.get("slack::settings::notifyType");
+          })
+          .then(notifyType => data.notifyType = notifyType)
+          .then(() => socket.emit("slackNotifyRes", data))
+          .catch(err => console.log(err.message));
       });
 
       /**
-       * 
+       * Register the "slackTokenReq" event handler.
+       * Get the bot user token from the LevelDB Datastore, and then emit it
+       * back out as a response.
        */
       socket.on("slackTokenReq", () => {
-        try {
-          bundle.db.get("slack::settings::token")
-            .then((token) => socket.emit("slackTokenRes", token));
-        } catch (err) {
-          console.log(err.message);
-        }
+        bundle.db.get("slack::settings::token")
+          .then(token => socket.emit("slackTokenRes", token))
+          .catch(err => console.log(err.message));
       });
 
       /**
-       * Restart the unblinkingBot application
-       */ 
-      socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service correctly?
+       * Register the "restartReq" event handler.
+       * Exit the current process. The process is running as a systemd based
+       * service, and will restart itself.
+       */
+      socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service differently?
 
     });
 

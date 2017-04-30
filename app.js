@@ -73,11 +73,9 @@ server.listen(port, function () {
  * Client, and Socket.io server.
  */
 var bundle = {};
-
 bundle.db = thenLevel(level("db", {
   valueEncoding: 'json'
 }));
-
 bundle.rtm = undefined;
 bundle.io = io(server);
 
