@@ -16,6 +16,11 @@ const P = require("bluebird");
 const slackClient = require("@slack/client");
 
 /**
+ * Require the local modules/functions that will be used.
+ */
+const trimByKeyPrefix = require("./datastore.js").trimByKeyPrefix;
+
+/**
  * 
  */
 const slacks = {
@@ -72,6 +77,7 @@ const slacks = {
     return new P(resolve => {
       let key = "slack::activity::" + new Date().getTime();
       bundle.db.put(key, bundle.slacktivity)
+        .then(() => trimByKeyPrefix(bundle, "slack::activity"))
         .then(resolve(bundle));
     });
   },

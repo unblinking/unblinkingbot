@@ -26,9 +26,9 @@ const pretty = new pretty_error()
   .skipNodeFiles();
 
 /**
- * Promisify some local module callback functions.
+ * Require the local modules/functions that will be used.
  */
-const getAllData = P.promisify(require("./datastore.js").getAllData);
+const getAllData = require("./datastore.js").getAllData;
 const getNewRtmInstance = require("./slacks.js").getNewRtmInstance;
 const startRtmInstance = require("./slacks.js").startRtmInstance;
 const listenForRtmEvents = require("./slacks.js").listenForEvents;
