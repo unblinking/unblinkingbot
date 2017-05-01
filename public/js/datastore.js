@@ -17,20 +17,13 @@ enableRefreshBtn();
 enableHideBtn();
 
 /**
- * Register the "readFullDbRes" event handler.
+ * Register the "fullDbRes" event handler.
  * Enable the refresh button, and then populate the datastore data into the 
  * dataStoreCardBody element.
  */
-socket.on("readFullDbRes", data =>
-  enableRefreshBtn()
-  .then(
-    () => $("#dataStoreCardBody").html(JSON.stringify(
-      data,
-      undefined,
-      2
-    ))
-  )
-);
+socket.on("fullDbRes", data =>
+  enableRefreshBtn().then(() =>
+    $("#dataStoreCardBody").html(JSON.stringify(data, undefined, 2))));
 
 /**
  * Attach a handler to the click event for the hideBtn element.
@@ -59,7 +52,7 @@ function enableHideBtn() {
  * Start by removing any existing click handler to avoid assigning the click
  * handler more than once at a time, and then add a new click handler. When
  * clicked, first remove the existing handler to disable multiple clicks trying
- * to happen at the same time, and then use Socket.io to emit readFullDbReq.
+ * to happen at the same time, and then use Socket.io to emit fullDbReq.
  */
 function enableRefreshBtn() {
   return new P(resolve => {
@@ -68,7 +61,7 @@ function enableRefreshBtn() {
     $("#refreshBtn").one("click", () => { // Add new handler.
       $("#refreshBtn").off("click"); // When clicked, remove handler.
       renderHtmlBtnDatastoreRefreshing().then(html => $("#refreshBtn").html(html));
-      socket.emit("readFullDbReq");
+      socket.emit("fullDbReq");
     });
     resolve();
   });

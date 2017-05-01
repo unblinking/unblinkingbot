@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * The Slack RTM Client configuration for the unblinkingbot.
+ * The node-slack-sdk wrapper functions for the unblinkingbot.
  * @namespace slacks.js
  * @public
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
@@ -36,7 +36,7 @@ const slacks = {
 
   /**
    * 
-   * @param {*} bundle  References to the db, rtm, and io.
+   * @param {*} bundle
    */
   startRtmInstance: bundle => {
     return new P(resolve => {
@@ -49,7 +49,7 @@ const slacks = {
 
   /**
    * 
-   * @param {*} bundle  References to the db, rtm, and io.
+   * @param {*} bundle
    */
   disconnectRtmInstance: bundle => {
     return new P(resolve => {
@@ -66,7 +66,7 @@ const slacks = {
 
   /**
    * 
-   * @param {*} bundle  References to the db, rtm, and io.
+   * @param {*} bundle
    */
   logSlacktivity: bundle => {
     return new P(resolve => {
@@ -78,7 +78,7 @@ const slacks = {
 
   /**
    * 
-   * @param {*} bundle  References to the db, rtm, and io.
+   * @param {*} bundle
    */
   sendMessage: bundle => {
     return new P(resolve => {
@@ -94,7 +94,7 @@ const slacks = {
 
   /**
    * 
-   * @param {*} bundle  References to the db, rtm, and io.
+   * @param {*} bundle
    */
   listenForEvents: bundle => {
     return new P(resolve => {
