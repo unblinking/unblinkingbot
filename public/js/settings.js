@@ -13,32 +13,30 @@ var socket = io.connect();
 /**
  * Setup the page buttons when this script is loaded.
  */
-enableChangeSettingsBtn();
-enableRestartSlackBtn();
-enableStopSlackBtn();
-enableSaveTokenBtn();
-enableSaveNotifyBtn();
-removeSuccessOnFocus();
-enableNotifyTypeRadioBtn();
+enableChangeSettingsBtn()
+  .then(enableRestartSlackBtn())
+  .then(enableStopSlackBtn())
+  .then(enableSaveTokenBtn())
+  .then(enableSaveNotifyBtn())
+  .then(removeSuccessOnFocus())
+  .then(enableNotifyTypeRadioBtn());
 
 /**
  * Request the current Slack details.
  */
-slackConnectionStatusReq();
-slackTokenReq();
-slackNotifyReq();
+slackConnectionStatusReq()
+  .then(slackTokenReq())
+  .then(slackNotifyReq());
 
 /**
  * 
  */
-socket.on("readSlackChannelsRes", channelNames =>
+socket.on("channelsRes", channelNames =>
   enableNotifyTypeRadioBtn()
   .then(() => populateDropDown(
     $("#inputChannels"),
     channelNames,
-    $("#defaultChannelSelect")
-  ))
-);
+    $("#defaultChannelSelect"))));
 
 /**
  * 
@@ -48,9 +46,7 @@ socket.on("readSlackGroupsRes", groupNames =>
   .then(() => populateDropDown(
     $("#inputGroups"),
     groupNames,
-    $("#defaultGroupSelect")
-  ))
-);
+    $("#defaultGroupSelect"))));
 
 /**
  * 
@@ -60,9 +56,7 @@ socket.on("readSlackUsersRes", userNames =>
   .then(() => populateDropDown(
     $("#inputUsers"),
     userNames,
-    $("#defaultUserSelect")
-  ))
-);
+    $("#defaultUserSelect"))));
 
 /**
  * Register the "saveSlackNotifyRes" event handler.
@@ -77,8 +71,7 @@ socket.on("saveSlackNotifyRes", (notify, notifyType, success, err) =>
     if (!success) handleSaveNotifyError(err)
       .then(() => renderHtmlAlertNotifySavedError(err))
       .then(alert => alertAnimationError(alert.element, alert.html));
-  })
-);
+  }));
 
 /**
  * Register the "saveSlackTokenRes" event handler.
@@ -103,15 +96,13 @@ socket.on("saveSlackTokenRes", (token, success, err) => {
 socket.on("slackConnectionOpened", message =>
   enableRestartSlackBtn()
   .then(() => slackConnectionStatusUpdate(true))
-  .then(() => alertSlackConnection(message))
-);
+  .then(() => alertSlackConnection(message)));
 
 /**
  * 
  */
 socket.on("slackConnectionStatusRes", connected =>
-  slackConnectionStatusUpdate(connected)
-);
+  slackConnectionStatusUpdate(connected));
 
 /**
  * Register the "slackDisconnection" event handler.
@@ -120,15 +111,13 @@ socket.on("slackConnectionStatusRes", connected =>
 socket.on("slackDisconnection", message =>
   enableStopSlackBtn()
   .then(() => slackConnectionStatusUpdate(false))
-  .then(() => alertSlackDisconnection(message))
-);
+  .then(() => alertSlackDisconnection(message)));
 
 /**
  * 
  */
-socket.on("slackNotifyRes", data => {
-  $("#currentSettingsNotify").html(data.notifyType + " " + data.notify);
-});
+socket.on("slackNotifyRes", data =>
+  $("#currentSettingsNotify").html(data.notifyType + " " + data.notify));
 
 /**
  * 
@@ -186,8 +175,7 @@ function alertAnimationSuccess(element, html) {
 function alertSlackConnection(message) {
   return new P(resolve => renderHtmlAlertSlackConnection(message)
     .then(alert => alertAnimationSuccess(alert.element, alert.html))
-    .then(() => resolve())
-  );
+    .then(() => resolve()));
 }
 
 /**
@@ -197,8 +185,7 @@ function alertSlackConnection(message) {
 function alertSlackDisconnection(message) {
   return new P(resolve => renderHtmlAlertSlackDisconnection(message)
     .then(alert => alertAnimationSuccess(alert.element, alert.html))
-    .then(() => resolve())
-  );
+    .then(() => resolve()));
 }
 
 /**
@@ -215,9 +202,7 @@ function countTo(seconds) {
  * @param {Number} speed Duration of the animation in milliseconds.
  */
 function downSlide(element, speed) {
-  return new P(resolve => {
-    element.show(speed, resolve);
-  });
+  return new P(resolve => element.show(speed, resolve));
 }
 
 /**
@@ -252,7 +237,7 @@ function enableNotifyTypeRadioBtn() {
       hideDefaultNotifySelectors(); // Start with all options hidden and an empty select element.
       $("#defaultChannelSelect")[0].options.length = 0;
       $("#progressDefaultNotifications").removeClass("hidden-xs-up"); // Show progress bar.
-      socket.emit("readSlackChannelsReq");
+      socket.emit("channelsReq");
     });
     $("#radioGroup").off("click"); // Remove previous handler to start with none.
     $("#radioGroup").one("click", () => { // Add new handler.
@@ -385,16 +370,7 @@ function enableStopSlackBtn() {
  * @param {Number} opacity Target opacity, a number between 0 and 1.
  */
 function fade(element, speed, opacity) {
-  return new P(resolve => {
-    element.fadeTo(speed, opacity, resolve);
-    /*
-    if (element[0].clientHeight > 0) { // Only if the element has some height.
-      element.fadeTo(speed, opacity, resolve);
-    } else {
-      resolve();
-    }
-    */
-  });
+  return new P(resolve => element.fadeTo(speed, opacity, resolve));
 }
 
 /**

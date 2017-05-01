@@ -1,126 +1,86 @@
 #!/usr/bin/env node
 
 /**
- * Datastore module.
+ * The LevelDB datastore wrapper functions for the unblinkingbot.
  * @module datastore
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
 
 /**
- * Invoke strict mode for the entire script.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode Strict mode}
+ * Require the 3rd party modules that will be used.
+ * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  */
-"use strict";
+const P = require("bluebird");
 
 /**
  * Datastore related functions for the unblinkingbot application.
  * @constant datastore
- * @type {Object}
  */
 const datastore = {
 
   /**
-   * Obtain all key-value pairs.
-   * 
+   * Get all key-value pairs.
    * @function getAllData
    * @param {Object} db Reference to the LevelDB data store
    * @param {Function} callback Called when the ReadStream ends.
    */
-  getAllData: function (db, callback) {
-    let err = null;
-    let allData = {};
-
-    db.createReadStream()
-      .on("data", function (data) {
-        allData[data.key] = data.value;
-      })
-      .on("error", function (e) {
-        err = e;
-      })
-      .on("close", function () {})
-      .on("end", function () {
-        doCallback();
-      });
-
-    function doCallback() {
-      if (typeof callback === "function") {
-        /**
-         * @function getAllData~callback
-         * @param {Error} err An error, only if an error occurred.
-         * @param {Object} allData Key-value pairs captured from the ReadStream data events.
-         */
-        callback(err, allData);
-      }
-    }
+  getAllData: db => {
+    return new P((resolve, reject) => {
+      let foundData = {};
+      db.createReadStream()
+        .on("data", data => foundData[data.key] = data.value)
+        .on("error", err => reject(err))
+        //.on("close", () => console.log("closing"))
+        .on("end", () => resolve(foundData));
+    });
   },
 
   /**
-   * Obtain all keys with a given prefix.
-   * 
+   * Get all keys with a given prefix.
    * @function getKeysByPrefix
    * @param {Object} bundle References to the LevelDB data store, Slack RTM Client, and Socket.io server.
    * @param {Function} callback A callback function
    */
-  getKeysByPrefix: function (bundle, callback) {
-    let err = null;
-    let keysWithPrefix = [];
-    bundle.db.createReadStream({
-        keys: true,
-        values: false
-      })
-      .on('data', function (key) {
-        if (key.startsWith(bundle.prefix)) {
-          keysWithPrefix.push(key);
-        }
-      })
-      .on("error", function (e) {
-        err = e;
-      })
-      .on("close", function () {})
-      .on("end", function () {
-        doCallback();
-      });
-
-    function doCallback() {
-      if (typeof callback === "function") {
-        callback(err, keysWithPrefix);
-      }
-    }
+  getKeysByPrefix: bundle => {
+    return new P((resolve, reject) => {
+      let matchingKeys = [];
+      bundle.db.createReadStream({
+          keys: true,
+          values: false
+        })
+        .on("data", key => {
+          if (key.startsWith(bundle.prefix)) matchingKeys.push(key);
+        })
+        .on("error", (err) => reject(err))
+        //.on("close", () => console.log("closing"))
+        .on("end", () => resolve(matchingKeys));
+    });
   },
-
-  
 
   /**
    * @param {Object} bundle References to the LevelDB data store, Slack RTM Client, and Socket.io server.
    * @param {Function} callback A callback function
    */
-  trimByKeyPrefix: function (bundle, callback) {
-    let err = null;
-    let allKeys = [];
-    bundle.db.createReadStream({
-        keys: true,
-        values: false
-      })
-      .on('data', function (key) {
-        if (key.startsWith("slack::activity")) {
-          allKeys.push(key);
-        }
-      })
-      .on("error", function (e) {
-        err = e;
-      })
-      .on("close", function () {})
-      .on("end", function () {
-        allKeys.sort().reverse();
-        Object.keys(allKeys).forEach(function (unique_key_name) {
-          if (unique_key_name > 4) {
-            bundle.db.del(allKeys[unique_key_name]);
-          }
+  trimByKeyPrefix: (bundle, prefix) => {
+    return new P((resolve, reject) => {
+      let matchingKeys = [];
+      bundle.db.createReadStream({
+          keys: true,
+          values: false
+        })
+        .on("data", key => {
+          if (key.startsWith(prefix)) matchingKeys.push(key);
+        })
+        .on("error", (err) => reject(err))
+        //.on("close", () => console.log("closing"))
+        .on("end", () => {
+          matchingKeys.sort().reverse();
+          Object.keys(matchingKeys).forEach(key => {
+            if (key > 4) bundle.db.del(matchingKeys[key]);
+          });
+          resolve(bundle);
         });
-        if (typeof callback === "function") {
-          callback(err, bundle);
-        }
-      });
+    });
   }
 
 };

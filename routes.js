@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * The application end points (routes) for the unblinking bot.
+ * The application end points (routes) for the unblinkingbot.
  * @namespace routes
- * @public
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
 
@@ -14,42 +13,17 @@
 "use strict";
 
 /**
- * Require the 3rd party modules that will be used.
- * @see {@link https://github.com/rburns/ansi-to-html ansi-to-html}
- * @see {@link https://github.com/petkaantonov/bluebird bluebird}
- * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
- */
-const ansi_to_html = require('ansi-to-html');
-const bluebird = require("bluebird");
-const pretty_error = require('pretty-error');
-
-const ansiConvert = new ansi_to_html({
-  newline: true
-});
-const prettyError = new pretty_error()
-  .skipNodeFiles();
-
-/**
  * @namespace router
  * @memberof routes
- * @param {object} app - The Express application instance.
+ * @param {object} app The Express application instance.
+ * @param {*} bundle The main bundle object, holding references to the LevelDB
+ * data store, Slack RTM Client, and Socket.io server.
  * @see {@link https://expressjs.com/en/guide/routing.html Express routing}
- * @see {@link http://expressjs.com/en/api.html Express API}
  */
-const router = function (app, bundle) {
-
-  app.get("/", function (req, res) {
-    res.render("index");
-  });
-
-  app.get("/settings", function (req, res) {
-    res.render("settings");
-  });
-
-  app.get("/datastore", function (req, res) {
-    res.render("datastore");
-  });
-
+const router = (app, bundle) => {
+  app.get("/", (req, res) => res.render("index"));
+  app.get("/settings", (req, res) => res.render("settings"));
+  app.get("/datastore", (req, res) => res.render("datastore"));
 };
 
 /**
