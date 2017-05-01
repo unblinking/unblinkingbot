@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * The child process spawner for the unblinkingbot.
+ * The child process wrapper functions for the unblinkingbot.
  * @namespace spawns
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
@@ -15,17 +15,28 @@ const P = require("bluebird");
 const spawn = require("child_process").spawn;
 
 /**
- * 
+ * Module to be exported, containing the spawn child process wrapper functions.
  */
 const spawns = {
 
   /**
-   * 
+   * Child process spawner.
+   * @param {Object} data An object containing the command and arguments-array
+   * to be spawned.
+   * @example
+   * const spawns = require("./spawns.js");
+   * spawns.spawner({
+   *   "command": "echo",
+   *   "argsArray": ["This is a test"]
+   * });
    */
   spawner: data => {
 
     /**
-     * 
+     * Steps to spawn the child process.
+     * Handle the case where data isn't defined, and then handle the case where
+     * data.command isn't defined, and then spawn the process, and then handle
+     * the process output.
      */
     handleNoData(data)
       .then(data => handleNoCommand(data))
@@ -34,7 +45,8 @@ const spawns = {
       .catch(err => console.log(err.message));
 
     /**
-     * 
+     * Handle the case where data isn't defined.
+     * Set the command and args to echo "No data provided" when spawned.
      * @param {Object} data
      */
     function handleNoData(data) {
@@ -49,7 +61,8 @@ const spawns = {
     }
 
     /**
-     * Set defaults if no command parameter was provided.
+     * Handle the case where data.command isn't defined.
+     * Set the command and args to echo "No data provided" when spawned.
      * @param {Object} data
      */
     function handleNoCommand(data) {
@@ -81,7 +94,7 @@ const spawns = {
     }
 
     /**
-     * 
+     * Handle the process output of the spawned child process.
      * @param {*} proc 
      */
     function handleProcessOutput(proc) {
@@ -95,7 +108,7 @@ const spawns = {
     }
 
     /**
-     * 
+     * Log data to the console, after removing newlines.
      * @param {*} data 
      */
     function logOutput(data) {

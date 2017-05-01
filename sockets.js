@@ -26,19 +26,6 @@ const pretty = new pretty_error()
   .skipNodeFiles();
 
 /**
- * Require the local modules that will be used.
- */
-const spawns = require("./spawns.js");
-
-/**
- * TODO: Setup processes to be spawned for real.
- */
-spawns.spawner({
-  "command": "echo",
-  "argsArray": ["This is a test"]
-});
-
-/**
  * Promisify some local module callback functions.
  */
 const getAllData = P.promisify(require("./datastore.js").getAllData);
@@ -271,6 +258,10 @@ const sockets = {
         });
       }
 
+      /**
+       * 
+       * @param {*} name 
+       */
       function getGroupIdByName(name) {
         return new P(resolve => {
           let id;
@@ -282,6 +273,10 @@ const sockets = {
         });
       }
 
+      /**
+       * 
+       * @param {*} name 
+       */
       function getDmIdByUserName(name) {
         return new P(resolve => {
           let id;

@@ -13,20 +13,20 @@ var socket = io.connect();
 /**
  * Setup the page buttons when this script is loaded.
  */
-enableChangeSettingsBtn();
-enableRestartSlackBtn();
-enableStopSlackBtn();
-enableSaveTokenBtn();
-enableSaveNotifyBtn();
-removeSuccessOnFocus();
-enableNotifyTypeRadioBtn();
+enableChangeSettingsBtn()
+  .then(enableRestartSlackBtn())
+  .then(enableStopSlackBtn())
+  .then(enableSaveTokenBtn())
+  .then(enableSaveNotifyBtn())
+  .then(removeSuccessOnFocus())
+  .then(enableNotifyTypeRadioBtn());
 
 /**
  * Request the current Slack details.
  */
-slackConnectionStatusReq();
-slackTokenReq();
-slackNotifyReq();
+slackConnectionStatusReq()
+  .then(slackTokenReq())
+  .then(slackNotifyReq());
 
 /**
  * 

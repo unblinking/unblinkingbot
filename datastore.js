@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Datastore module.
+ * The LevelDB datastore wrapper functions for the unblinkingbot.
  * @module datastore
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */

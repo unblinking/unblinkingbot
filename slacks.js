@@ -40,9 +40,9 @@ const slacks = {
    */
   startRtmInstance: bundle => {
     return new P(resolve => {
-      let startExists = bundle.rtm !== undefined && bundle.rtm.start !== undefined;
-      let connected = bundle.rtm !== undefined && bundle.rtm.connected === true;
-      if (startExists && !connected) bundle.rtm.start();
+      if ((bundle.rtm !== undefined && bundle.rtm.start !== undefined) &&
+        !(bundle.rtm !== undefined && bundle.rtm.connected === true))
+        bundle.rtm.start();
       resolve(bundle);
     });
   },
@@ -127,9 +127,9 @@ const slacks = {
             bundle.event.text.match(/unblinkingbot/gi) ||
             bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g"))
           ) {
+            let slackUser = bundle.rtm.dataStore.getUserById(bundle.event.user).name;
             bundle.sending = {};
-            bundle.sending.user = bundle.rtm.dataStore.getUserById(bundle.event.user);
-            bundle.sending.text = `That's my name ${bundle.sending.user.name}, don't wear it out!`;
+            bundle.sending.text = `That's my name ${slackUser}, don't wear it out!`;
             bundle.sending.id = bundle.event.channel;
             slacks.sendMessage(bundle);
           }
