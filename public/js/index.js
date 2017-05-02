@@ -9,3 +9,6 @@
  * @see {@link https://socket.io/docs/#using-with-express-3/4 Socket.io }
  */
 var socket = io.connect();
+
+socket.on("slacktivity", text => 
+  $("#slackactivitypanelbody").append("\n" + text));
