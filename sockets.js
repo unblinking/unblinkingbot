@@ -29,6 +29,7 @@ const pretty = new pretty_error()
  * Require the local modules/functions that will be used.
  */
 const getAllData = require("./datastore.js").getAllData;
+const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
 const getNewRtmInstance = require("./slacks.js").getNewRtmInstance;
 const startRtmInstance = require("./slacks.js").startRtmInstance;
 const listenForRtmEvents = require("./slacks.js").listenForEvents;
@@ -194,6 +195,24 @@ const sockets = {
        * service, and will restart itself.
        */
       socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service differently?
+
+      socket.on("dashRecentActivityReq", () => {
+        getValuesByKeyPrefix(bundle, "slack::activity::")
+          .then((slacktivities) => {
+            Object.keys(slacktivities).forEach(key => {
+              if (slacktivities[key].type === "message") {
+                let name = "unknown";
+                Object.keys(bundle.rtm.dataStore.users).forEach(usersKey => {
+                  if (bundle.rtm.dataStore.users[usersKey].id === slacktivities[key].user)
+                    name = bundle.rtm.dataStore.users[usersKey].name;
+                });
+                let time = new Date(slacktivities[key].ts.split(".")[0] * 1000).toTimeString();
+                let dashActivity = `${name}: ${time}: ${slacktivities[key].text}`;
+                bundle.io.emit("slacktivity", dashActivity);
+              }
+            });
+          });
+      });
 
       /**
        * 

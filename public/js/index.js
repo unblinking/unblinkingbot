@@ -10,5 +10,14 @@
  */
 var socket = io.connect();
 
+/**
+ * Setup the dashboard instrumentation when this script is loaded.
+ */
+showRecentActivity();
+
 socket.on("slacktivity", text => 
-  $("#slackactivitypanelbody").append("\n" + text));
+  $("#activityCard").append(text + "<br>"));
+
+function showRecentActivity() {
+  return new P.resolve(socket.emit("dashRecentActivityReq"));
+}

@@ -471,10 +471,7 @@ function removeSuccessOnFocus() {
  * 
  */
 function slackConnectionStatusReq() {
-  return new P(resolve => {
-    socket.emit("slackConnectionStatusReq");
-    resolve();
-  });
+  return new P.resolve(socket.emit("slackConnectionStatusReq"));
 }
 
 /**

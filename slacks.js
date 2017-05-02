@@ -83,11 +83,11 @@ const slacks = {
             let name = "unknown";
             Object.keys(bundle.rtm.dataStore.users).forEach(key => {
               if (bundle.rtm.dataStore.users[key].id === bundle.slacktivity.user)
-                name = bundle.rtm.dataStore.users[key].name
+                name = bundle.rtm.dataStore.users[key].name;
             });
             let time = new Date(bundle.slacktivity.ts.split(".")[0]*1000).toTimeString();
             let dashActivity = `${name}: ${time}: ${bundle.slacktivity.text}`;
-            bundle.io.emit("slacktivity", dashActivity)
+            bundle.io.emit("slacktivity", dashActivity);
           }
         })
         .then(() => resolve(bundle));
