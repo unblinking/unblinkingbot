@@ -78,7 +78,19 @@ const slacks = {
       let key = "slack::activity::" + new Date().getTime();
       bundle.db.put(key, bundle.slacktivity)
         .then(() => trimByKeyPrefix(bundle, "slack::activity"))
-        .then(resolve(bundle));
+        .then(() => {
+          if (bundle.slacktivity.type === "message") {
+            let name = "unknown";
+            Object.keys(bundle.rtm.dataStore.users).forEach(key => {
+              if (bundle.rtm.dataStore.users[key].id === bundle.slacktivity.user)
+                name = bundle.rtm.dataStore.users[key].name
+            });
+            let time = new Date(bundle.slacktivity.ts.split(".")[0]*1000).toTimeString();
+            let dashActivity = `${name}: ${time}: ${bundle.slacktivity.text}`;
+            bundle.io.emit("slacktivity", dashActivity)
+          }
+        })
+        .then(() => resolve(bundle));
     });
   },
 

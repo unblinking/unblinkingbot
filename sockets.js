@@ -116,18 +116,18 @@ const sockets = {
        */
       socket.on("saveSlackNotifyReq", (notify, notifyType) =>
         bundle.db.put("slack::settings::notify", notify)
-          .then(() => bundle.db.put("slack::settings::notifyType", notifyType))
-          .then(() => {
-            if (bundle.rtm !== undefined && bundle.rtm.connected === true) {
-              if (notifyType === "channel") return getChannelIdByName(notify);
-              else if (notifyType === "group") return getGroupIdByName(notify);
-              else if (notifyType === "user") return getDmIdByUserName(notify);
-            }
-          })
-          .then((id) => bundle.db.put("slack::settings::notifyId", id))
-          .then(() => socket.emit("saveSlackNotifyRes", notify, notifyType, true, null))
-          .catch(err => socket.emit("saveSlackNotifyRes", notify, notifyType, false,
-            convert.toHtml(pretty.render(err)))));
+        .then(() => bundle.db.put("slack::settings::notifyType", notifyType))
+        .then(() => {
+          if (bundle.rtm !== undefined && bundle.rtm.connected === true) {
+            if (notifyType === "channel") return getChannelIdByName(notify);
+            else if (notifyType === "group") return getGroupIdByName(notify);
+            else if (notifyType === "user") return getDmIdByUserName(notify);
+          }
+        })
+        .then(id => bundle.db.put("slack::settings::notifyId", id))
+        .then(() => socket.emit("saveSlackNotifyRes", notify, notifyType, true, null))
+        .catch(err => socket.emit("saveSlackNotifyRes", notify, notifyType, false,
+          convert.toHtml(pretty.render(err)))));
 
       /**
        * Register the "slackConnectionStatusReq" event handler.
@@ -280,10 +280,11 @@ const sockets = {
       function getDmIdByUserName(name) {
         return new P(resolve => {
           let id;
-          Object.keys(bundle.rtm.dataStore.users).forEach((usersKey) => {
+          Object.keys(bundle.rtm.dataStore.users).forEach(usersKey => {
             if (bundle.rtm.dataStore.users[usersKey].name === name)
-              Object.keys(bundle.rtm.dataStore.dms).forEach((dmsKey) => {
-                if (bundle.rtm.dataStore.dms[dmsKey].user === bundle.rtm.dataStore.users[usersKey].id)
+              Object.keys(bundle.rtm.dataStore.dms).forEach(dmsKey => {
+                if (bundle.rtm.dataStore.dms[dmsKey].user ===
+                  bundle.rtm.dataStore.users[usersKey].id)
                   id = dmsKey.toString();
               });
           });
