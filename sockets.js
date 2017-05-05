@@ -202,9 +202,14 @@ const sockets = {
        * 
        */
       socket.on("dashRecentActivityReq", () => {
-        if (bundle.rtm !== undefined && bundle.rtm.connected === true && bundle.web !== undefined) {
-          bundle.web.channels.history("D2T0K7N7R")
-            .then((res) => console.log(res));
+        if (
+          bundle.rtm !== undefined &&
+          bundle.rtm.connected === true &&
+          bundle.web !== undefined
+        ) {
+          bundle.web.channels.history("C2T0214N8")
+            .then((res) => console.log(res))
+            .catch(err => console.log(err));
         }
 
         /*
