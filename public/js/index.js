@@ -15,8 +15,9 @@ var socket = io.connect();
  */
 showRecentActivity();
 
-socket.on("slacktivity", text => 
-  $("#activityCard").append(text + "<br>"));
+socket.on("slacktivity", text => {
+  $("#activityCard").append(text + `<br>`);
+});
 
 function showRecentActivity() {
   return new P.resolve(socket.emit("dashRecentActivityReq"));

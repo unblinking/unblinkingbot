@@ -9,9 +9,12 @@
 
 /**
  * Require the 3rd party modules that will be used.
+ * @see {@link https://github.com/moment/moment/ moment}
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
  */
+
+const moment = require("moment");
 const P = require("bluebird");
 const slackClient = require("@slack/client");
 
@@ -32,9 +35,10 @@ const slacks = {
   getNewRtmInstance: bundle => {
     return new P(resolve => {
       bundle.rtm = new slackClient.RtmClient(bundle.token, {
-        // logLevel: "verbose",
+        logLevel: "verbose",
         dataStore: new slackClient.MemoryDataStore()
       });
+      bundle.web = new slackClient.WebClient(bundle.token);
       resolve(bundle);
     });
   },
@@ -85,8 +89,8 @@ const slacks = {
               if (bundle.rtm.dataStore.users[key].id === bundle.slacktivity.user)
                 name = bundle.rtm.dataStore.users[key].name;
             });
-            let time = new Date(bundle.slacktivity.ts.split(".")[0]*1000).toTimeString();
-            let dashActivity = `${name}: ${time}: ${bundle.slacktivity.text}`;
+            let time = moment(bundle.slacktivity.ts.split(".")[0]*1000).format("HH:mma");
+            let dashActivity = `Message [${name} ${time}] ${bundle.slacktivity.text}`;
             bundle.io.emit("slacktivity", dashActivity);
           }
         })

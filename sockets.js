@@ -9,10 +9,12 @@
 /**
  * Require the 3rd party modules that will be used.
  * @see {@link https://github.com/rburns/ansi-to-html ansi-to-html}
+ * @see {@link https://github.com/moment/moment/ moment}
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
  */
 const ansi_to_html = require("ansi-to-html");
+const moment = require("moment");
 const P = require("bluebird");
 const pretty_error = require("pretty-error");
 
@@ -196,22 +198,41 @@ const sockets = {
        */
       socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service differently?
 
+      /**
+       * 
+       */
       socket.on("dashRecentActivityReq", () => {
+        if (bundle.rtm !== undefined && bundle.rtm.connected === true && bundle.web !== undefined) {
+          bundle.web.channels.history("D2T0K7N7R")
+            .then((res) => console.log(res));
+        }
+
+        /*
         getValuesByKeyPrefix(bundle, "slack::activity::")
           .then((slacktivities) => {
             Object.keys(slacktivities).forEach(key => {
-              if (slacktivities[key].type === "message") {
+              if (slacktivities[key].type === "message" &&
+                bundle.rtm !== undefined &&
+                bundle.rtm.connected === true) {
+
+                  
+
                 let name = "unknown";
                 Object.keys(bundle.rtm.dataStore.users).forEach(usersKey => {
                   if (bundle.rtm.dataStore.users[usersKey].id === slacktivities[key].user)
                     name = bundle.rtm.dataStore.users[usersKey].name;
                 });
-                let time = new Date(slacktivities[key].ts.split(".")[0] * 1000).toTimeString();
-                let dashActivity = `${name}: ${time}: ${slacktivities[key].text}`;
+                let time = moment(slacktivities[key].ts.split(".")[0] * 1000).format("HH:mma");
+                let dashActivity = `Message [${name} ${time}] ${slacktivities[key].text}`;
                 bundle.io.emit("slacktivity", dashActivity);
+
+              } else {
+                bundle.io.emit("slacktivity", "Bot is disconnected.");
               }
             });
           });
+        */
+
       });
 
       /**
