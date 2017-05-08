@@ -202,42 +202,49 @@ const sockets = {
        * 
        */
       socket.on("dashRecentActivityReq", () => {
-        if (
-          bundle.rtm !== undefined &&
-          bundle.rtm.connected === true &&
-          bundle.web !== undefined
-        ) {
-          bundle.web.channels.history("C2T0214N8")
-            .then((res) => console.log(res))
-            .catch(err => console.log(err));
-        }
-
-        /*
-        getValuesByKeyPrefix(bundle, "slack::activity::")
-          .then((slacktivities) => {
-            Object.keys(slacktivities).forEach(key => {
-              if (slacktivities[key].type === "message" &&
+        let notify;
+        let notifyId;
+        let notifyType;
+        bundle.db.get("slack::settings::notify")
+          .then(res => notify = res)
+          .then(() => {
+            return bundle.db.get("slack::settings::notifyId");
+          })
+          .then(res => notifyId = res)
+          .then(() => {
+            return bundle.db.get("slack::settings::notifyType");
+          })
+          .then(res => notifyType = res)
+          .then(() => {
+            if (notifyType === "channel") {
+              return bundle.web.channels.history(notifyId);
+            } else if (notifyType === "group") {
+              return bundle.web.groups.history(notifyId);
+            } else if (notifyType === "user") {
+              return bundle.web.im.history(notifyId);
+            }
+          })
+          .then(history => {
+            history.messages.forEach(activity => {
+              console.log(activity);
+              if (
+                activity.type === "message" &&
                 bundle.rtm !== undefined &&
-                bundle.rtm.connected === true) {
-
-                  
-
+                bundle.rtm.connected === true
+              ) {
                 let name = "unknown";
                 Object.keys(bundle.rtm.dataStore.users).forEach(usersKey => {
-                  if (bundle.rtm.dataStore.users[usersKey].id === slacktivities[key].user)
+                  if (bundle.rtm.dataStore.users[usersKey].id === activity.user)
                     name = bundle.rtm.dataStore.users[usersKey].name;
                 });
-                let time = moment(slacktivities[key].ts.split(".")[0] * 1000).format("HH:mma");
-                let dashActivity = `Message [${name} ${time}] ${slacktivities[key].text}`;
+                let time = moment(activity.ts.split(".")[0] * 1000).format("HH:mma");
+                let dashActivity = `Message [${name} ${time}] ${activity.text}`;
                 bundle.io.emit("slacktivity", dashActivity);
-
               } else {
                 bundle.io.emit("slacktivity", "Bot is disconnected.");
               }
             });
           });
-        */
-
       });
 
       /**

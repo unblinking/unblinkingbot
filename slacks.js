@@ -13,7 +13,6 @@
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
  */
-
 const moment = require("moment");
 const P = require("bluebird");
 const slackClient = require("@slack/client");
@@ -145,9 +144,7 @@ const slacks = {
           slacks.logSlacktivity(bundle);
           bundle.event = message;
           if (
-            bundle.event.text !== undefined &&
-            bundle.event.text.match(/unblinkingbot/gi) ||
-            bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g"))
+            ( bundle.event.text !== undefined ) && ( bundle.event.text.match(/unblinkingbot/gi) || bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g")) )
           ) {
             let slackUser = bundle.rtm.dataStore.getUserById(bundle.event.user).name;
             bundle.sending = {};
