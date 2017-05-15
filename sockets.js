@@ -217,16 +217,18 @@ const sockets = {
           .then(res => notifyType = res)
           .then(() => {
             if (notifyType === "channel") {
-              return bundle.web.channels.history(notifyId);
+              return bundle.web.channels.history(notifyId, {"count": 5});
             } else if (notifyType === "group") {
-              return bundle.web.groups.history(notifyId);
+              return bundle.web.groups.history(notifyId, {"count": 5});
             } else if (notifyType === "user") {
-              return bundle.web.im.history(notifyId);
+              return bundle.web.im.history(notifyId, {"count": 5});
             }
           })
           .then(history => {
+            history.messages.sort((a, b) => {
+              return a.ts - b.ts; // Sort by timestamp
+            });
             history.messages.forEach(activity => {
-              console.log(activity);
               if (
                 activity.type === "message" &&
                 bundle.rtm !== undefined &&
@@ -238,7 +240,9 @@ const sockets = {
                     name = bundle.rtm.dataStore.users[usersKey].name;
                 });
                 let time = moment(activity.ts.split(".")[0] * 1000).format("HH:mma");
-                let dashActivity = `Message [${name} ${time}] ${activity.text}`;
+                let text = activity.text.replace(/[\<\>]/g,"");
+                console.log(text);
+                let dashActivity = `Message [${name} ${time}] ${text}`;
                 bundle.io.emit("slacktivity", dashActivity);
               } else {
                 bundle.io.emit("slacktivity", "Bot is disconnected.");
