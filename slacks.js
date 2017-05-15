@@ -9,9 +9,11 @@
 
 /**
  * Require the 3rd party modules that will be used.
+ * @see {@link https://github.com/moment/moment/ moment}
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
  */
+const moment = require("moment");
 const P = require("bluebird");
 const slackClient = require("@slack/client");
 
@@ -32,9 +34,10 @@ const slacks = {
   getNewRtmInstance: bundle => {
     return new P(resolve => {
       bundle.rtm = new slackClient.RtmClient(bundle.token, {
-        // logLevel: "verbose",
+        logLevel: "verbose",
         dataStore: new slackClient.MemoryDataStore()
       });
+      bundle.web = new slackClient.WebClient(bundle.token);
       resolve(bundle);
     });
   },
@@ -78,7 +81,19 @@ const slacks = {
       let key = "slack::activity::" + new Date().getTime();
       bundle.db.put(key, bundle.slacktivity)
         .then(() => trimByKeyPrefix(bundle, "slack::activity"))
-        .then(resolve(bundle));
+        .then(() => {
+          if (bundle.slacktivity.type === "message") {
+            let name = "unknown";
+            Object.keys(bundle.rtm.dataStore.users).forEach(key => {
+              if (bundle.rtm.dataStore.users[key].id === bundle.slacktivity.user)
+                name = bundle.rtm.dataStore.users[key].name;
+            });
+            let time = moment(bundle.slacktivity.ts.split(".")[0]*1000).format("HH:mma");
+            let dashActivity = `Message [${name} ${time}] ${bundle.slacktivity.text}`;
+            bundle.io.emit("slacktivity", dashActivity);
+          }
+        })
+        .then(() => resolve(bundle));
     });
   },
 
@@ -129,9 +144,7 @@ const slacks = {
           slacks.logSlacktivity(bundle);
           bundle.event = message;
           if (
-            bundle.event.text !== undefined &&
-            bundle.event.text.match(/unblinkingbot/gi) ||
-            bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g"))
+            ( bundle.event.text !== undefined ) && ( bundle.event.text.match(/unblinkingbot/gi) || bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g")) )
           ) {
             let slackUser = bundle.rtm.dataStore.getUserById(bundle.event.user).name;
             bundle.sending = {};

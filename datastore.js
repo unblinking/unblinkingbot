@@ -41,19 +41,24 @@ const datastore = {
    * @param {Object} bundle References to the LevelDB data store, Slack RTM Client, and Socket.io server.
    * @param {Function} callback A callback function
    */
-  getKeysByPrefix: bundle => {
+  getValuesByKeyPrefix: (bundle, prefix) => {
     return new P((resolve, reject) => {
-      let matchingKeys = [];
-      bundle.db.createReadStream({
-          keys: true,
-          values: false
-        })
-        .on("data", key => {
-          if (key.startsWith(bundle.prefix)) matchingKeys.push(key);
+      let values = {};
+      bundle.db.createReadStream()
+        .on("data", data => {
+          if (data.key.startsWith(prefix)) {
+            values[data.key] = data.value;
+            /*
+            console.log(`Prefix: ${prefix}`);
+            console.log(`emitName: ${emitName}`);
+            console.log(`Data.value: ${data.value}`);
+            bundle.io.emit(emitName, data.value);
+            */
+          }
         })
         .on("error", (err) => reject(err))
-        //.on("close", () => console.log("closing"))
-        .on("end", () => resolve(matchingKeys));
+        /*.on("close", () => console.log("closing"))*/
+        .on("end", () => resolve(values));
     });
   },
 

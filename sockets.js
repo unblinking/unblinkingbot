@@ -9,10 +9,12 @@
 /**
  * Require the 3rd party modules that will be used.
  * @see {@link https://github.com/rburns/ansi-to-html ansi-to-html}
+ * @see {@link https://github.com/moment/moment/ moment}
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
  */
 const ansi_to_html = require("ansi-to-html");
+const moment = require("moment");
 const P = require("bluebird");
 const pretty_error = require("pretty-error");
 
@@ -29,6 +31,7 @@ const pretty = new pretty_error()
  * Require the local modules/functions that will be used.
  */
 const getAllData = require("./datastore.js").getAllData;
+const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
 const getNewRtmInstance = require("./slacks.js").getNewRtmInstance;
 const startRtmInstance = require("./slacks.js").startRtmInstance;
 const listenForRtmEvents = require("./slacks.js").listenForEvents;
@@ -116,18 +119,18 @@ const sockets = {
        */
       socket.on("saveSlackNotifyReq", (notify, notifyType) =>
         bundle.db.put("slack::settings::notify", notify)
-          .then(() => bundle.db.put("slack::settings::notifyType", notifyType))
-          .then(() => {
-            if (bundle.rtm !== undefined && bundle.rtm.connected === true) {
-              if (notifyType === "channel") return getChannelIdByName(notify);
-              else if (notifyType === "group") return getGroupIdByName(notify);
-              else if (notifyType === "user") return getDmIdByUserName(notify);
-            }
-          })
-          .then((id) => bundle.db.put("slack::settings::notifyId", id))
-          .then(() => socket.emit("saveSlackNotifyRes", notify, notifyType, true, null))
-          .catch(err => socket.emit("saveSlackNotifyRes", notify, notifyType, false,
-            convert.toHtml(pretty.render(err)))));
+        .then(() => bundle.db.put("slack::settings::notifyType", notifyType))
+        .then(() => {
+          if (bundle.rtm !== undefined && bundle.rtm.connected === true) {
+            if (notifyType === "channel") return getChannelIdByName(notify);
+            else if (notifyType === "group") return getGroupIdByName(notify);
+            else if (notifyType === "user") return getDmIdByUserName(notify);
+          }
+        })
+        .then(id => bundle.db.put("slack::settings::notifyId", id))
+        .then(() => socket.emit("saveSlackNotifyRes", notify, notifyType, true, null))
+        .catch(err => socket.emit("saveSlackNotifyRes", notify, notifyType, false,
+          convert.toHtml(pretty.render(err)))));
 
       /**
        * Register the "slackConnectionStatusReq" event handler.
@@ -194,6 +197,59 @@ const sockets = {
        * service, and will restart itself.
        */
       socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service differently?
+
+      /**
+       * 
+       */
+      socket.on("dashRecentActivityReq", () => {
+        let notify;
+        let notifyId;
+        let notifyType;
+        bundle.db.get("slack::settings::notify")
+          .then(res => notify = res)
+          .then(() => {
+            return bundle.db.get("slack::settings::notifyId");
+          })
+          .then(res => notifyId = res)
+          .then(() => {
+            return bundle.db.get("slack::settings::notifyType");
+          })
+          .then(res => notifyType = res)
+          .then(() => {
+            if (notifyType === "channel") {
+              return bundle.web.channels.history(notifyId, {"count": 5});
+            } else if (notifyType === "group") {
+              return bundle.web.groups.history(notifyId, {"count": 5});
+            } else if (notifyType === "user") {
+              return bundle.web.im.history(notifyId, {"count": 5});
+            }
+          })
+          .then(history => {
+            history.messages.sort((a, b) => {
+              return a.ts - b.ts; // Sort by timestamp
+            });
+            history.messages.forEach(activity => {
+              if (
+                activity.type === "message" &&
+                bundle.rtm !== undefined &&
+                bundle.rtm.connected === true
+              ) {
+                let name = "unknown";
+                Object.keys(bundle.rtm.dataStore.users).forEach(usersKey => {
+                  if (bundle.rtm.dataStore.users[usersKey].id === activity.user)
+                    name = bundle.rtm.dataStore.users[usersKey].name;
+                });
+                let time = moment(activity.ts.split(".")[0] * 1000).format("HH:mma");
+                let text = activity.text.replace(/[\<\>]/g,"");
+                console.log(text);
+                let dashActivity = `Message [${name} ${time}] ${text}`;
+                bundle.io.emit("slacktivity", dashActivity);
+              } else {
+                bundle.io.emit("slacktivity", "Bot is disconnected.");
+              }
+            });
+          });
+      });
 
       /**
        * 
@@ -280,10 +336,11 @@ const sockets = {
       function getDmIdByUserName(name) {
         return new P(resolve => {
           let id;
-          Object.keys(bundle.rtm.dataStore.users).forEach((usersKey) => {
+          Object.keys(bundle.rtm.dataStore.users).forEach(usersKey => {
             if (bundle.rtm.dataStore.users[usersKey].name === name)
-              Object.keys(bundle.rtm.dataStore.dms).forEach((dmsKey) => {
-                if (bundle.rtm.dataStore.dms[dmsKey].user === bundle.rtm.dataStore.users[usersKey].id)
+              Object.keys(bundle.rtm.dataStore.dms).forEach(dmsKey => {
+                if (bundle.rtm.dataStore.dms[dmsKey].user ===
+                  bundle.rtm.dataStore.users[usersKey].id)
                   id = dmsKey.toString();
               });
           });

@@ -5,16 +5,17 @@ body
   include mixins
   include navbar
   .container.mt-3
-    .col-md-6.p-0
+    .col-12.p-0
       .card
         .card-header
           |Slack Activity
         .card-block
           .small.text-primary.mb-3
             |Recent activity using Slack integration.
-          .card.card-outline-primary
-            pre.small(id="slackactivitypanelbody")
-              |History will go here
+          .card.card-outline-primary(
+            id="activityCard",
+            style="font-family: monospace;"
+          )
         .card-footer
           .small.text-warning
             |Requires Slack token setup. See the Settings page.

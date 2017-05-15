@@ -33,9 +33,7 @@ slackConnectionStatusReq()
  */
 socket.on("channelsRes", channelNames =>
   enableNotifyTypeRadioBtn()
-  .then(() => populateDropDown(
-    $("#inputChannels"),
-    channelNames,
+  .then(() => populateDropDown($("#inputChannels"), channelNames,
     $("#defaultChannelSelect"))));
 
 /**
@@ -43,9 +41,7 @@ socket.on("channelsRes", channelNames =>
  */
 socket.on("readSlackGroupsRes", groupNames =>
   enableNotifyTypeRadioBtn()
-  .then(() => populateDropDown(
-    $("#inputGroups"),
-    groupNames,
+  .then(() => populateDropDown($("#inputGroups"), groupNames,
     $("#defaultGroupSelect"))));
 
 /**
@@ -53,9 +49,7 @@ socket.on("readSlackGroupsRes", groupNames =>
  */
 socket.on("readSlackUsersRes", userNames =>
   enableNotifyTypeRadioBtn()
-  .then(() => populateDropDown(
-    $("#inputUsers"),
-    userNames,
+  .then(() => populateDropDown($("#inputUsers"), userNames,
     $("#defaultUserSelect"))));
 
 /**
@@ -477,10 +471,7 @@ function removeSuccessOnFocus() {
  * 
  */
 function slackConnectionStatusReq() {
-  return new P(resolve => {
-    socket.emit("slackConnectionStatusReq");
-    resolve();
-  });
+  return new P.resolve(socket.emit("slackConnectionStatusReq"));
 }
 
 /**
