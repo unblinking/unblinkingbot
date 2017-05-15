@@ -5,6 +5,7 @@ ENV INITSYSTEM on
 
 # Prepare the unblinkingbot application files
 RUN mkdir -p /usr/local/unblinkingbot
+RUN mkdir -p /usr/local/unblinkingbot/db
 WORKDIR /usr/local/unblinkingbot
 COPY . /usr/local/unblinkingbot
 RUN npm install
@@ -23,9 +24,9 @@ CMD [ "/usr/sbin/init" ]
 ##  Example docker commands
 # 
 # Building:
-# docker build --rm --no-cache -t nothingworksright/unblinkingbot:latest .
+# docker build --rm --no-cache -t nothingworksright/unblinkingbot:0.0.1 .
 # 
 # Running:
-# docker run --privileged --name unblinkingbot -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 1138:1138 -d nothingworksright/unblinkingbot:latest
+# docker run --restart=always --detach --privileged --env TZ='America/Los_Angeles' --publish 1138:1138 --name unblinkingbot --volume /sys/fs/cgroup:/sys/fs/cgroup:ro --volume /mnt/4tb/unblinkingbot/db:/usr/local/unblinkingbot/db nothingworksright/unblinkingbot:0.0.1
 # 
 ##
