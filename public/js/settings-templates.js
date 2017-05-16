@@ -13,7 +13,7 @@
 function renderHtmlAlertSlackConnection(message) {
   return new P.resolve({
     element: $("#restartSlackIntegrationAlert"),
-    html: `<div class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack integration was started.<br><span class="small">Message: ${message}</span></div>`
+    html: `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack integration was started.<br><span class="small">Message: ${message}</span></div>`
   });
 }
 
@@ -24,7 +24,7 @@ function renderHtmlAlertSlackConnection(message) {
 function renderHtmlAlertSlackDisconnection(message) {
   return new P.resolve({
     element: $("#stopSlackIntegrationAlert"),
-    html: `<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Warning!</strong> Slack integration was stopped.<br><span class="small">Message: ${message}</span></div>`
+    html: `<div class="alert alert-warning mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Warning!</strong> Slack integration was stopped.<br><span class="small">Message: ${message}</span></div>`
   });
 }
 
@@ -66,7 +66,7 @@ function renderHtmlAlertNotifySavedError(err) {
  * Render the HTML for the Change Settings button.
  */
 function renderHtmlBtnChangeSettings() {
-  return new P.resolve(`Change Settings`);
+  return new P.resolve(`Change Slack Settings`);
 }
 
 /**
@@ -119,5 +119,19 @@ function renderHtmlBtnSaveNotify() {
 }
 
 function renderHtmlBtnSavingNotify() {
+  return new P.resolve(`<div class="loader float-left"></div>`);
+}
+
+/**
+ * Render the HTML for the Slack save token button when it is available to click.
+ */
+function renderHtmlBtnMotionUrlSave() {
+  return new P.resolve(`Save`);
+}
+
+/**
+ * Render the HTML for the Slack save token button when it is unavailable during save.
+ */
+function renderHtmlBtnMotionUrlSaving() {
   return new P.resolve(`<div class="loader float-left"></div>`);
 }

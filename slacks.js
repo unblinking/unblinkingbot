@@ -17,6 +17,15 @@ const moment = require("moment");
 const P = require("bluebird");
 const slackClient = require("@slack/client");
 
+
+
+const fs = require('fs');
+const http = require('http');
+const stream = require('stream').Transform;
+
+const request = require('request');
+
+
 /**
  * Require the local modules/functions that will be used.
  */
@@ -88,7 +97,7 @@ const slacks = {
               if (bundle.rtm.dataStore.users[key].id === bundle.slacktivity.user)
                 name = bundle.rtm.dataStore.users[key].name;
             });
-            let time = moment(bundle.slacktivity.ts.split(".")[0]*1000).format("HH:mma");
+            let time = moment(bundle.slacktivity.ts.split(".")[0] * 1000).format("HH:mma");
             let dashActivity = `Message [${name} ${time}] ${bundle.slacktivity.text}`;
             bundle.io.emit("slacktivity", dashActivity);
           }
@@ -143,8 +152,17 @@ const slacks = {
           bundle.slacktivity = message;
           slacks.logSlacktivity(bundle);
           bundle.event = message;
-          if (
-            ( bundle.event.text !== undefined ) && ( bundle.event.text.match(/unblinkingbot/gi) || bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g")) )
+
+
+
+
+          // TODO: This needs to limit itself, don't get stuck in a loop when it
+          // detects it's own name or user ID that it says, responding to itself
+          /*
+          // Listen for the bot name or user ID
+          if ((bundle.event.text !== undefined) &&
+            (bundle.event.text.match(/unblinkingbot/gi) ||
+              bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g")))
           ) {
             let slackUser = bundle.rtm.dataStore.getUserById(bundle.event.user).name;
             bundle.sending = {};
@@ -152,6 +170,40 @@ const slacks = {
             bundle.sending.id = bundle.event.channel;
             slacks.sendMessage(bundle);
           }
+            */
+
+
+
+
+
+          if (
+            bundle.event.text !== undefined &&
+            bundle.event.text.match(/show/gi) &&
+            bundle.event.text.match(/snapshot/gi) &&
+            bundle.event.text.match(/office/gi)
+          ) {
+            let url;
+            bundle.db.get("motion::snapshot::office")
+              .then(object => url = object.url)
+              .then(() => {
+                return bundle.web.files.upload("snapshot.jpg", {
+                  "file": request(url),
+                  "filename": "snapshot.jpg",
+                  "title": "Snapshot",
+                  "channels": bundle.event.channel,
+                  "initial_comment": "Here's the snapshot you requested!",
+                });
+              })
+              .then(res => console.log(res));
+          }
+
+
+
+
+
+
+
+
         });
 
       bundle.rtm.on(

@@ -3,8 +3,9 @@ FROM nothingworksright/amd64_debian_jessie_node
 # Enable the systemd init system
 ENV INITSYSTEM on
 
-# Prepare the unblinkingbot application files
+# Prepare the unblinkingbot application files and directories
 RUN mkdir -p /usr/local/unblinkingbot
+RUN mkdir -p /usr/local/unblinkingbot/cams
 RUN mkdir -p /usr/local/unblinkingbot/db
 WORKDIR /usr/local/unblinkingbot
 COPY . /usr/local/unblinkingbot

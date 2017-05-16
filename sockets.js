@@ -114,6 +114,15 @@ const sockets = {
         .catch(err => socket.emit("saveSlackTokenRes", token, false,
           convert.toHtml(pretty.render(err)))));
 
+      socket.on("saveMotionUrlReq", object => {
+        console.log("heard req to save motion URL");
+        bundle.db.put("motion::snapshot::" + object.name, object)
+          .then(() => socket.emit("saveMotionUrlRes", object, true, null))
+          .catch(err => socket.emit("saveMotionUrlRes", object, false,
+            convert.toHtml(pretty.render(err))));
+
+      });
+
       /**
        * Register the "saveSlackNotifyReq" event handler.
        */
@@ -217,11 +226,17 @@ const sockets = {
           .then(res => notifyType = res)
           .then(() => {
             if (notifyType === "channel") {
-              return bundle.web.channels.history(notifyId, {"count": 5});
+              return bundle.web.channels.history(notifyId, {
+                "count": 5
+              });
             } else if (notifyType === "group") {
-              return bundle.web.groups.history(notifyId, {"count": 5});
+              return bundle.web.groups.history(notifyId, {
+                "count": 5
+              });
             } else if (notifyType === "user") {
-              return bundle.web.im.history(notifyId, {"count": 5});
+              return bundle.web.im.history(notifyId, {
+                "count": 5
+              });
             }
           })
           .then(history => {
@@ -240,8 +255,7 @@ const sockets = {
                     name = bundle.rtm.dataStore.users[usersKey].name;
                 });
                 let time = moment(activity.ts.split(".")[0] * 1000).format("HH:mma");
-                let text = activity.text.replace(/[\<\>]/g,"");
-                console.log(text);
+                let text = activity.text.replace(/[\<\>]/g, "");
                 let dashActivity = `Message [${name} ${time}] ${text}`;
                 bundle.io.emit("slacktivity", dashActivity);
               } else {

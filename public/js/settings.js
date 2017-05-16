@@ -19,7 +19,8 @@ enableChangeSettingsBtn()
   .then(enableSaveTokenBtn())
   .then(enableSaveNotifyBtn())
   .then(removeSuccessOnFocus())
-  .then(enableNotifyTypeRadioBtn());
+  .then(enableNotifyTypeRadioBtn())
+  .then(enableSaveMotionUrlBtn());
 
 /**
  * Request the current Slack details.
@@ -121,6 +122,17 @@ socket.on("slackTokenRes", token => {
   $("#stopSlack").removeClass("hidden-xs-up");
   $("#settingsToken").html(token);
   $("#slackToken").val(token);
+});
+
+/**
+ * TODO: render and show alert too
+ */
+socket.on("saveMotionUrlRes", (object, success, err) => {
+  enableSaveMotionUrlBtn()
+    .then(() => {
+      if (success) handleSaveMotionUrlSuccess(object);
+      if (!success) handleSaveMotionUrlError(err);
+    });
 });
 
 /**
@@ -357,6 +369,23 @@ function enableStopSlackBtn() {
   });
 }
 
+function enableSaveMotionUrlBtn() {
+  return new P(resolve => {
+    let btn = $("#saveMotionUrl");
+    btn.off("click"); // Remove previous handler to start with none.
+    renderHtmlBtnMotionUrlSave().then(html => btn.html(html));
+    btn.one("click", () => { // Add new handler.
+      btn.off("click"); // When clicked, remove handler.
+      renderHtmlBtnMotionUrlSaving().then(html => btn.html(html));
+      socket.emit("saveMotionUrlReq", {
+        "name": $("input[id=motionNickname]").val(),
+        "url": $("input[id=motionSnapshotUrl]").val()
+    });
+    });
+    resolve();
+  });
+}
+
 /**
  * Animated change in opacity of the matched elements.
  * @param {JQuery} element The JQuery element selector to be manipulated.
@@ -415,6 +444,14 @@ function handleSaveTokenSuccess(token) {
     $("#stopSlack").removeClass("hidden-xs-up");
     $("#defaultNotifyPanel").removeClass("hidden-xs-up");
     socket.emit("slackRestartReq");
+    resolve();
+  });
+}
+
+function handleSaveMotionUrlSuccess(object) {
+  return new P(resolve => {
+    $("#motionSnapshotUrlList").html(object.name + " " + object.url);
+    $("#motionUrlInputGroup").addClass("has-success");
     resolve();
   });
 }
