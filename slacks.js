@@ -12,24 +12,17 @@
  * @see {@link https://github.com/moment/moment/ moment}
  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
+ * @see {@link https://github.com/request/request request}
  */
 const moment = require("moment");
 const P = require("bluebird");
 const slackClient = require("@slack/client");
-
-
-
-const fs = require('fs');
-const http = require('http');
-const stream = require('stream').Transform;
-
 const request = require('request');
-
 
 /**
  * Require the local modules/functions that will be used.
  */
-const trimByKeyPrefix = require("./datastore.js").trimByKeyPrefix;
+const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
 
 /**
  * 
@@ -85,47 +78,6 @@ const slacks = {
    * 
    * @param {*} bundle
    */
-  logSlacktivity: bundle => {
-    return new P(resolve => {
-      let key = "slack::activity::" + new Date().getTime();
-      bundle.db.put(key, bundle.slacktivity)
-        .then(() => trimByKeyPrefix(bundle, "slack::activity"))
-        .then(() => {
-          if (bundle.slacktivity.type === "message") {
-            let name = "unknown";
-            Object.keys(bundle.rtm.dataStore.users).forEach(key => {
-              if (bundle.rtm.dataStore.users[key].id === bundle.slacktivity.user)
-                name = bundle.rtm.dataStore.users[key].name;
-            });
-            let time = moment(bundle.slacktivity.ts.split(".")[0] * 1000).format("HH:mma");
-            let dashActivity = `Message [${name} ${time}] ${bundle.slacktivity.text}`;
-            bundle.io.emit("slacktivity", dashActivity);
-          }
-        })
-        .then(() => resolve(bundle));
-    });
-  },
-
-  /**
-   * 
-   * @param {*} bundle
-   */
-  sendMessage: bundle => {
-    return new P(resolve => {
-      if (
-        (bundle.rtm !== undefined && Object.keys(bundle.rtm).length !== 0) &&
-        (bundle.sending !== undefined) &&
-        (bundle.sending.text !== undefined) &&
-        (bundle.sending.id !== undefined)
-      ) bundle.rtm.sendMessage(bundle.sending.text, bundle.sending.id);
-      resolve();
-    });
-  },
-
-  /**
-   * 
-   * @param {*} bundle
-   */
   listenForEvents: bundle => {
     return new P(resolve => {
 
@@ -149,76 +101,80 @@ const slacks = {
       bundle.rtm.on(
         slackClient.RTM_EVENTS.MESSAGE,
         message => {
-          bundle.slacktivity = message;
-          slacks.logSlacktivity(bundle);
-          bundle.event = message;
+
+
+          if (message.text !== undefined) {
+            if (message.text.match(/get/gi)) {
+              if (message.text.match(/snapshot/gi)) {
+                if (message.text.match(/snapshot list/gi)) {
+                  let names = [];
+                  getValuesByKeyPrefix(bundle, "motion::snapshot::")
+                    .then(snapshots => {
+                      Object.keys(snapshots).forEach(key => {
+                        let name = snapshots[key].name;
+                        names.push(name);
+                      });
+                    })
+                    .then(() => {
+                      bundle.web.chat.postMessage(
+                        message.channel,
+                        names.join(", "), {
+                          "as_user": true,
+                          "parse": "full"
+                        }
+                      );
+                    });
+                }
+
+                if (message.text.match(/office/gi)) {
+                  let url;
+                  bundle.db.get("motion::snapshot::office")
+                    .then(object => url = object.url)
+                    .then(() => {
+                      return bundle.web.files.upload("snapshot.jpg", {
+                        "file": request(url),
+                        "filename": "snapshot.jpg",
+                        "title": "Snapshot of office",
+                        "channels": message.channel,
+                        "initial_comment": "You're welcome!",
+                      });
+                    })
+                    .then(res => console.log(res));
+                }
+
+                if (message.text.match(/basement/gi)) {
+                  let url;
+                  bundle.db.get("motion::snapshot::basement")
+                    .then(object => url = object.url)
+                    .then(() => {
+                      return bundle.web.files.upload("snapshot.jpg", {
+                        "file": request(url),
+                        "filename": "snapshot.jpg",
+                        "title": "Snapshot of basement",
+                        "channels": message.channel,
+                        "initial_comment": "You're welcome!",
+                      });
+                    })
+                    .then(res => console.log(res));
+                }
 
 
 
 
-          // TODO: This needs to limit itself, don't get stuck in a loop when it
-          // detects it's own name or user ID that it says, responding to itself
-          /*
-          // Listen for the bot name or user ID
-          if ((bundle.event.text !== undefined) &&
-            (bundle.event.text.match(/unblinkingbot/gi) ||
-              bundle.event.text.match(new RegExp(bundle.rtm.activeUserId, "g")))
-          ) {
-            let slackUser = bundle.rtm.dataStore.getUserById(bundle.event.user).name;
-            bundle.sending = {};
-            bundle.sending.text = `That's my name ${slackUser}, don't wear it out!`;
-            bundle.sending.id = bundle.event.channel;
-            slacks.sendMessage(bundle);
+              }
+            }
           }
-            */
-
-
-
-
-
-          if (
-            bundle.event.text !== undefined &&
-            bundle.event.text.match(/show/gi) &&
-            bundle.event.text.match(/snapshot/gi) &&
-            bundle.event.text.match(/office/gi)
-          ) {
-            let url;
-            bundle.db.get("motion::snapshot::office")
-              .then(object => url = object.url)
-              .then(() => {
-                return bundle.web.files.upload("snapshot.jpg", {
-                  "file": request(url),
-                  "filename": "snapshot.jpg",
-                  "title": "Snapshot",
-                  "channels": bundle.event.channel,
-                  "initial_comment": "Here's the snapshot you requested!",
-                });
-              })
-              .then(res => console.log(res));
-          }
-
-
-
-
-
-
 
 
         });
 
       bundle.rtm.on(
         slackClient.RTM_EVENTS.GOODBYE,
-        message => {
-          bundle.slacktivity = message;
-          slacks.logSlacktivity(bundle);
-        });
+        message => console.log(`RTM Client said goodbye.`));
 
       bundle.rtm.on(
         slackClient.RTM_EVENTS.REACTION_ADDED,
-        reaction => {
-          bundle.slacktivity = reaction;
-          slacks.logSlacktivity(bundle);
-        });
+        reaction => console.log(`RTM Client reaction added event.`));
 
       resolve();
     });

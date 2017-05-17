@@ -5,7 +5,7 @@ ENV INITSYSTEM on
 
 # Prepare the unblinkingbot application files and directories
 RUN mkdir -p /usr/local/unblinkingbot
-RUN mkdir -p /usr/local/unblinkingbot/cams
+RUN mkdir -p /usr/local/unblinkingbot/caps
 RUN mkdir -p /usr/local/unblinkingbot/db
 WORKDIR /usr/local/unblinkingbot
 COPY . /usr/local/unblinkingbot
@@ -28,6 +28,6 @@ CMD [ "/usr/sbin/init" ]
 # docker build --rm --no-cache -t nothingworksright/unblinkingbot:0.0.1 .
 # 
 # Running:
-# docker run --restart=always --detach --privileged --env TZ='America/Los_Angeles' --publish 1138:1138 --name unblinkingbot --volume /sys/fs/cgroup:/sys/fs/cgroup:ro --volume /mnt/4tb/unblinkingbot/db:/usr/local/unblinkingbot/db nothingworksright/unblinkingbot:0.0.1
+# docker run --restart=always --detach --publish 1138:1138 --name unblinkingbot --volume /etc/localtime:/etc/localtime:ro --volume /sys/fs/cgroup:/sys/fs/cgroup:ro --volume /mnt/4tb/unblinkingbot/db:/usr/local/unblinkingbot/db --volume /mnt/4tb/motion/captured:/usr/local/unblinkingbot/caps nothingworksright/unblinkingbot:0.0.1
 # 
 ##
