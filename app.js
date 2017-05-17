@@ -34,11 +34,18 @@ const pretty_error = require('pretty-error');
 const thenLevel = require("then-levelup");
 
 /**
- * Require the local modules that will be used.
+ * Require the local modules/functions that will be used.
  * @see {@link https://github.com/nothingworksright/unblinkingBot unblinkingbot}
  */
 const routes = require("./routes.js"); // Endpoints for the local web interface
 const sockets = require("./sockets.js");
+
+// const getAllData = require("./datastore.js").getAllData;
+// const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
+const getNewRtmInstance = require("./slacks.js").getNewRtmInstance;
+const startRtmInstance = require("./slacks.js").startRtmInstance;
+const listenForRtmEvents = require("./slacks.js").listenForEvents;
+const disconnectRtm = require("./slacks.js").disconnectRtmInstance;
 
 /**
  * Define all app configurations here, except routes (define routes last).
@@ -89,6 +96,22 @@ sockets.events(bundle);
  * Define route configurations after other app configurations.
  */
 routes(app, bundle);
+
+/**
+ * Try to start the Slack integration
+ */
+disconnectRtm(bundle)
+  .then(() => {
+    return bundle.db.get("slack::settings::token");
+  })
+  .then((token) => {
+    bundle.token = token;
+    return bundle;
+  })
+  .then(getNewRtmInstance)
+  .then(startRtmInstance)
+  .then(listenForRtmEvents)
+  .catch(err => console.log(err.message));
 
 /**
  * Using pretty-error along with ansi-to-html to display error messages to the

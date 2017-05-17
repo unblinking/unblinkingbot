@@ -48,12 +48,6 @@ const datastore = {
         .on("data", data => {
           if (data.key.startsWith(prefix)) {
             values[data.key] = data.value;
-            /*
-            console.log(`Prefix: ${prefix}`);
-            console.log(`emitName: ${emitName}`);
-            console.log(`Data.value: ${data.value}`);
-            bundle.io.emit(emitName, data.value);
-            */
           }
         })
         .on("error", (err) => reject(err))
