@@ -8,12 +8,6 @@
  */
 
 /**
- * Invoke strict mode for the entire script.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode Strict mode}
- */
-"use strict";
-
-/**
  * Require the 3rd party modules that will be used.
  * @see {@link https://github.com/rburns/ansi-to-html ansi-to-html}
  * @see {@link https://github.com/expressjs/express express}
