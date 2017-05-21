@@ -17,7 +17,7 @@
 const moment = require("moment");
 const P = require("bluebird");
 const slackClient = require("@slack/client");
-const request = require('request');
+const request = require("request");
 
 /**
  * Require the local modules/functions that will be used.
@@ -25,7 +25,7 @@ const request = require('request');
 const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
 
 /**
- * 
+ *
  */
 const slacks = {
 
@@ -45,7 +45,7 @@ const slacks = {
   },
 
   /**
-   * 
+   *
    * @param {*} bundle
    */
   startRtmInstance: bundle => {
@@ -58,7 +58,7 @@ const slacks = {
   },
 
   /**
-   * 
+   *
    * @param {*} bundle
    */
   disconnectRtmInstance: bundle => {
@@ -75,7 +75,7 @@ const slacks = {
   },
 
   /**
-   * 
+   *
    * @param {*} bundle
    */
   listenForEvents: bundle => {
@@ -102,109 +102,85 @@ const slacks = {
         slackClient.RTM_EVENTS.MESSAGE,
         message => {
 
-          if (message.user !== bundle.rtm.activeUserId) { // Not a message from the bot itself, don't respond to its own messages.
-
+          if (message.user !== bundle.rtm.activeUserId) { // Not a message from the bot itself, do not respond to its own messages.
             if (message.text !== undefined) { // There is text in this message event.
-
               if (message.text.match(/get/gi)) { // The word "get" appeared in the text
-
                 if (message.text.match(/snapshot/gi)) { // The word "snapshot" appeared in the text.
-
                   if (message.text.match(/snapshot list/gi)) { // The words "snapshot list" appeared together.
-                    // Get the requested snapshot URL names from the LevelDB data store.
-                    let names = [];
                     getValuesByKeyPrefix(bundle, "motion::snapshot::")
                       .then(snapshots => {
+                        let names = [];
+                        names.push("Here are the snapshot names that you requested:")
                         Object.keys(snapshots).forEach(key => {
                           let name = snapshots[key].name;
-                          names.push(name);
+                          names.push("• " + name);
                         });
+                        return names;
                       })
-                      .then(() => {
-                        // Respond with the requested snapshot URL names.
-                        bundle.web.chat.postMessage(
+                      .then(names => {
+                        return bundle.web.chat.postMessage(
+                          message.channel,
+                          names.join("\n"), {
+                            "as_user": true,
+                            "parse": "full"
+                          }
+                        )
+                      })
+                      .then(res => {
+                        console.log(`Got a response after giving the snapshot names list.`);
+                        //console.log(res);
+                      });
+                  };
+                  if (!message.text.match(/snapshot list/gi)) { // The words "snapshot list" do not appeared together.
+                    getValuesByKeyPrefix(bundle, "motion::snapshot::")
+                      .then(snapshots => {
+                        let names = {};
+                        Object.keys(snapshots).forEach(key => {
+                          names[key] = snapshots[key];
+                        });
+                        return names;
+                      })
+                      .then(names => {
+                        let matchingNames = {};
+                        Object.keys(names).forEach(key => {
+                          let re = new RegExp(names[key].name, "gi");
+                          if (message.text.match(re)) {
+                            matchingNames[key] = names[key];
+                          }
+                        });
+                        return matchingNames;
+                      })
+                      .then(matchingNames => {
+                        if (Object.keys(matchingNames).length === 0) { // No names were found :(
+                          bundle.web.chat.postMessage(
                             message.channel,
-                            names.join(", "), {
+                            "Did you want a snapshot? If so, next time ask for one that exists. (hint: ask for the snapshot list)", {
                               "as_user": true,
                               "parse": "full"
                             }
-                          )
-                          .then(res => {
-                            console.log(`Got a response after giving the snapshot names list.`);
-                            // console.log(res);
-                          });
-                      });
-                  } else { // The word "snapshot" appeared, but not "snapshot list", so see if they asked for an existing snapshot name.
-                    let names = [];
-                    let foundOne = false;
-                    getValuesByKeyPrefix(bundle, "motion::snapshot::")
-                      .then(snapshots => {
-                        Object.keys(snapshots).forEach(key => {
-                          let name = snapshots[key].name;
-                          names.push(name);
-                        });
-                      })
-                      .then(() => {
-                        names.forEach(name => {
-                          let re = new RegExp(name, "gi");
-                          if (message.text.match(re)) {
-                            foundOne = true;
-                            let url;
-                            let filename;
-                            let title;
-                            let comment;
-                            bundle.db.get("motion::snapshot::" + name)
-                              .then(object => url = object.url)
-                              .then(() => {
-                                filename = `snapshot_${name}_${new Date().getTime()}.jpg`;
-                                title = `Snapshot of ${name}`;
-                                comment = `Here's that snapshot of the ${name}`;
-                              })
-                              .then(() => {
-                                //console.log(snapshot);
-                                console.log(`Attempting to upload it to Slack now.`);
-                                return bundle.web.files.upload(filename, {
-                                  "file": request(url),
-                                  "filename": filename,
-                                  "title": title,
-                                  "channels": message.channel,
-                                  "initial_comment": comment,
-                                });
+                          );
+                        } else { // Some names were found!
+                          Object.keys(matchingNames).forEach(key => {
+                            bundle.web.files.upload(`snapshot_${matchingNames[key].name}_${new Date().getTime()}.jpg`, {
+                                "file": request(matchingNames[key].url),
+                                "filename": `snapshot_${matchingNames[key].name}_${new Date().getTime()}.jpg`,
+                                "title": `Snapshot of ${matchingNames[key].name}`,
+                                "channels": message.channel,
+                                "initial_comment": `Here's that picture of the ${matchingNames[key].name} that you wanted.`,
                               })
                               .then(res => {
-                                console.log(`Got a response from Slack after the upload.`);
-                                //console.log(res);
+                                console.log(`Got a res from the file upload to Slack`);
                               })
-                              .catch(err => console.log(err));
-                          }
-                        });
-                      })
-                      .then(() => {
-                        if (foundOne === false) {
-                          bundle.web.chat.postMessage(
-                              message.channel,
-                              "Did you want a snapshot? If so, ask for one that exists next time. (hint: try asking me to get you the snapshot list)", {
-                                "as_user": true,
-                                "parse": "full"
-                              }
-                            )
-                            .then(res => {
-                                console.log(`Got a response from Slack after telling user to ask for one that exists next time.`);
-                                //console.log(res);
-                              });
+                              .catch(err => console.log(err.message));
+                          });
                         }
                       })
-                      .catch(err => console.log(err));
+                      .catch(err => console.log(err.message));
                   }
-
                 }
-
               }
-
             }
-
           }
-
         });
 
       bundle.rtm.on(
