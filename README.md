@@ -8,7 +8,7 @@ The unblinkingBot is a surveillance-system assistant. For general information, p
 
 ## A [Docker](https://www.docker.com/) container  
 
-For amd64 based systems. There is a [separate repo for armv7hf](https://github.com/nothingworksright/unblinkingbot_pi).  
+For amd64 based systems. If you're looking for the armv7hf version (for the Raspberry Pi), [click here](https://github.com/nothingworksright/unblinkingbot_pi).  
 
 This repository is setup on [Docker Hub](https://hub.docker.com/r/nothingworksright/unblinkingbot/) as an automated build. The Dockerfile starts the build from the image [nothingworksright/amd64 debian jessie node](https://hub.docker.com/r/nothingworksright/amd64_debian_jessie_node/), which is itself an automated build which starts from the image [resin/amd64-debian:jessie](https://hub.docker.com/r/resin/amd64-debian/), which is built on top of the [official Debian Docker image](https://hub.docker.com/_/debian/).  
 
