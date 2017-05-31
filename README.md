@@ -4,8 +4,11 @@
 
 ## About  
 
-The unblinkingBot is a surveillance-system assistant. For general information, please [see the website](http://www.unblinkingbot.com/). For documentation, please [see the wiki](https://github.com/nothingworksright/unblinkingbot/wiki).  
+The unblinkingBot is a surveillance-system assistant.  
 
+For general information, please [see the website](http://www.unblinkingbot.com/).  
+
+For documentation, please [see the wiki](https://github.com/nothingworksright/unblinkingbot/wiki).  
 [Prerequisites](https://github.com/nothingworksright/unblinkingbot/wiki/Prerequisites)  
 [Installation](https://github.com/nothingworksright/unblinkingbot/wiki/Installation)  
 [Running](https://github.com/nothingworksright/unblinkingbot/wiki/Running)  
