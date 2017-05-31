@@ -12,9 +12,12 @@ This repository is setup on [Docker Hub](https://hub.docker.com/r/nothingworksri
 
 [![Docker Stars](https://img.shields.io/docker/stars/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Pulls](https://img.shields.io/docker/pulls/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Automated build](https://img.shields.io/docker/automated/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  
 
+## Code review  
+
+[![Code Climate](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/gpa.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot) [![Issue Count](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/issue_count.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot)  
+
 ## Show your support  
 
 Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
 
-[![Docker Stars](https://img.shields.io/docker/stars/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Pulls](https://img.shields.io/docker/pulls/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  [![Docker Automated build](https://img.shields.io/docker/automated/nothingworksright/unblinkingbot.svg)](https://hub.docker.com/r/nothingworksright/unblinkingbot/)  
-[![Code Climate](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/gpa.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot) [![Issue Count](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/issue_count.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot)  
+:copyright: **nothingworksright**  
