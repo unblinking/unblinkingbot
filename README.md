@@ -6,6 +6,10 @@
 
 The unblinkingBot is a surveillance-system assistant. For general information, please [see the website](http://www.unblinkingbot.com/). For documentation, please [see the wiki](https://github.com/nothingworksright/unblinkingbot/wiki).  
 
+[Prerequisites](https://github.com/nothingworksright/unblinkingbot/wiki/Prerequisites)  
+[Installation](https://github.com/nothingworksright/unblinkingbot/wiki/Installation)  
+[Running](https://github.com/nothingworksright/unblinkingbot/wiki/Running)  
+
 ## A [Docker](https://www.docker.com/) container  
 
 For amd64 based systems. If you're looking for the armv7hf version (for the Raspberry Pi), [click here](https://github.com/nothingworksright/unblinkingbot_pi).  
