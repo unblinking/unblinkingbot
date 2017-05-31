@@ -4,7 +4,7 @@
 
 ## About  
 
-The unblinkingBot is a surveillance-system assistant. For general information, please [see the unblinkingBot website](http://www.unblinkingbot.com/). For documentation, please [see the unblinkingBot wiki](https://github.com/nothingworksright/unblinkingbot/wiki).  
+The unblinkingBot is a surveillance-system assistant. For general information, please [see the website](http://www.unblinkingbot.com/). For documentation, please [see the wiki](https://github.com/nothingworksright/unblinkingbot/wiki).  
 
 ## A [Docker](https://www.docker.com/) container  
 
@@ -21,5 +21,4 @@ This repository is setup on [Docker Hub](https://hub.docker.com/r/nothingworksri
 ## Show your support  
 
 Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
-
 :copyright: 2017 [nothingworksright](https://github.com/nothingworksright)  
