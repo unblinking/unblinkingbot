@@ -13,10 +13,6 @@ For documentation, please [see the wiki](https://github.com/nothingworksright/un
 - [Installation](https://github.com/nothingworksright/unblinkingbot/wiki/Installation)  
 - [Running](https://github.com/nothingworksright/unblinkingbot/wiki/Running)  
 
-## Code review  
-
-[![Code Climate](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/gpa.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot) [![Issue Count](https://codeclimate.com/github/nothingworksright/unblinkingbot/badges/issue_count.svg)](https://codeclimate.com/github/nothingworksright/unblinkingbot)  
-
 ## Show your support  
 
 Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
