@@ -20,4 +20,4 @@ This repository is setup on [Docker Hub](https://hub.docker.com/r/nothingworksri
 
 Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
 
-:copyright: **nothingworksright**  
+:copyright: 2017 [nothingworksright](https://github.com/nothingworksright)  
