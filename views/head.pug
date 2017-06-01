@@ -3,9 +3,9 @@ meta(http-equiv="X-UA-Compatible", content="IE=edge")
 meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
 // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
 
-title= "unblinkingBot"
+title="unblinkingBot"
 
-// favicon stuff - http://realfavicongenerator.net
+// Favicons - http://realfavicongenerator.net
 link(rel="icon" href="/images/favicon.ico")
 link(rel="apple-touch-icon", sizes="180x180", href="/images/apple-touch-icon.png")
 link(rel="icon", type="image/png", href="/images/favicon-32x32.png", sizes="32x32")
@@ -16,23 +16,8 @@ link(rel="shortcut icon", href="/images/favicon.ico")
 meta(name="msapplication-config", content="/images/browserconfig.xml")
 meta(name="theme-color", content="#ffffff")
 
-// https://v4-alpha.getbootstrap.com/getting-started/
-// Latest compiled and minified CSS
+// Bootstrap styles - https://v4-alpha.getbootstrap.com/getting-started/
 link(href="/bs/bootstrap.css", rel="stylesheet")
 
-// Some last minute css
-style(type="text/css").
-    .loader {
-        width: 16px;
-        height: 16px;
-        border-top: 3px solid #008ae6;
-        border-right: 2px solid #cccccc;
-        border-bottom: 3px solid #008ae6;
-        border-left: 2px solid #cccccc;
-        border-radius: 50%;
-        animation: spin 3s linear infinite;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+// Additional styles
+link(href="/style/unblinkingstyle.css", rel="stylesheet")

@@ -107,6 +107,19 @@ socket.on("slackDisconnection", message =>
   .then(() => slackConnectionStatusUpdate(false))
   .then(() => alertSlackDisconnection(message)));
 
+  /**
+   *
+   */
+  socket.on("slackNotifyRes", data =>
+  $("#currentSettingsNotify").html(data.notifyType + " " + data.notify));
+
+  /**
+   *
+   */
+  socket.on("slackTokenRes", token => {
+    $("#slackToken").val(token);
+  });
+
 /**
  * TODO: render and show alert too
  */
@@ -378,8 +391,7 @@ function handleSaveNotifyError(err) {
  */
 function handleSaveNotifySuccess(notify, notifyType) {
   return new P(resolve => {
-    //TODO: Maybe remove this next line permanently.
-    //$("#currentSettingsNotify").html(notifyType + " " + notify);
+    $("#currentSettingsNotify").html(notifyType + " " + notify);
     if (notifyType === "channel") $("#inputChannels").addClass("has-success");
     if (notifyType === "group") $("#inputGroups").addClass("has-success");
     if (notifyType === "user") $("#inputUsers").addClass("has-success");
