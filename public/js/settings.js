@@ -13,8 +13,7 @@ var socket = io.connect();
 /**
  * Setup the page buttons when this script is loaded.
  */
-enableChangeSettingsBtn()
-  .then(enableRestartSlackBtn())
+enableRestartSlackBtn()
   .then(enableStopSlackBtn())
   .then(enableSaveTokenBtn())
   .then(enableSaveNotifyBtn())
@@ -109,22 +108,6 @@ socket.on("slackDisconnection", message =>
   .then(() => alertSlackDisconnection(message)));
 
 /**
- *
- */
-//TODO: Maybe remove this permanently.
-//socket.on("slackNotifyRes", data =>
-//  $("#currentSettingsNotify").html(data.notifyType + " " + data.notify));
-
-/**
- *
- */
-socket.on("slackTokenRes", token => {
-  $("#startSlack").removeClass("hidden-xs-up");
-  $("#stopSlack").removeClass("hidden-xs-up");
-  $("#slackToken").val(token);
-});
-
-/**
  * TODO: render and show alert too
  */
 socket.on("saveMotionUrlRes", (object, success, err) => {
@@ -209,27 +192,6 @@ function countTo(seconds) {
  */
 function downSlide(element, speed) {
   return new P(resolve => element.show(speed, resolve));
-}
-
-/**
- * Attach a handler to the click event for the changeSettings element.
- * When clicked; hide the button, un-hide the token panel, un-hide the notify
- * panel (if the token element is populated), and scroll the un-hidden panels
- * into view.
- */
-function enableChangeSettingsBtn() {
-  return new P(resolve => {
-    $("#changeSettings").off("click"); // Start with no click handler, prevent duplicates.
-    renderHtmlBtnChangeSettings().then(html => $("#changeSettings").html(html));
-    $("#changeSettings").one("click", () => { // Add new click handler.
-      $("#changeSettings").off("click"); // When clicked, remove handler.
-      $("#changeSettings").addClass("hidden-xs-up");
-      $("#tokenPanel").removeClass("hidden-xs-up");
-      if ($("#slackToken").val()) $("#defaultNotifyPanel").removeClass("hidden-xs-up");
-      $("#tokenPanel")[0].scrollIntoView();
-    });
-    resolve();
-  });
 }
 
 /**
@@ -440,9 +402,6 @@ function handleSaveTokenError(err) {
 function handleSaveTokenSuccess(token) {
   return new P(resolve => {
     $("#slackTokenInputGroup").addClass("has-success");
-    $("#startSlack").removeClass("hidden-xs-up");
-    $("#stopSlack").removeClass("hidden-xs-up");
-    $("#defaultNotifyPanel").removeClass("hidden-xs-up");
     socket.emit("slackRestartReq");
     resolve();
   });

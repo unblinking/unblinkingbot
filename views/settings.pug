@@ -15,21 +15,29 @@ body
               |About Slack bot users
           .card-block
             .mb-3|Slack RTM Client is
-              span.ml-1(
-                id="slackIntegrationStatus"
-              )
+              span.ml-1(id="slackIntegrationStatus")
               |.
-              #restartSlackIntegrationAlert
-              #stopSlackIntegrationAlert
-            .form-group.hidden-xs-up(id="tokenPanel")
-              .card
-                .card-header|Token
-                .card-block
-                  .small.mb-3
+            .btn.btn-sm.btn-outline-success.mr-3(id="startSlack")
+            .btn.btn-sm.btn-outline-danger.mr-3(id="stopSlack")
+            #restartSlackIntegrationAlert
+            #stopSlackIntegrationAlert
+          ul.list-group.list-group-flush
+            li.list-group-item
+              .form-group(id="tokenPanel")
+                a.badge.badge-primary(
+                  data-toggle="collapse",
+                  href="#editToken",
+                  aria-expanded="false",
+                  aria-controls="editToken"
+                )|Slack Bot-User Token
+                .collapse(
+                  id="editToken"
+                )
+                  .small.mt-3.mb-3
                     |Enter the Slack bot-user token here. If a token has been
                     |previously saved, it will be automatically populated here to
                     |allow for changes.
-                  .input-group.mb-3(id="slackTokenInputGroup")
+                  .input-group(id="slackTokenInputGroup")
                     input.form-control.bg-faded.text-primary(
                       id="slackToken",
                       style="border-color: blue; font-family: monospace;",
@@ -43,99 +51,91 @@ body
                       |Save
                   #saveSlackTokenAlert
                   #restartSlackTokenAlert
-                  //.mb-0(id="saveSlackTokenAlert")
-                  //.mb-0(id="restartSlackTokenAlert")
-            .form-group.hidden-xs-up(id="defaultNotifyPanel")
-              .card
-                .card-header
-                  |Choose where to send notifications
-                .card-block
-                  .small.mb-3
-                    |Choose where you would like the Slack bot user to send default
-                    |notifications. Choose between a channel, a group, or a direct
-                    |message to a user. Add the bot user to the desired channel or
-                    |direct message in Slack first.
-                  .small.mb-3
-                    b Channels
-                    +space
-                    |include non-private channels where the bot user has already been
-                    |invited (is a member of the channel).
-                  .small.mb-3
-                    b Groups
-                    +space
-                    |include private channels where the bot user has already been
-                    |invited (is a member of the channel).
-                  .small.mb-3
-                    b Users
-                    +space
-                    |include direct messages already open between users and the bot.
-                  .btn-group.mb-3(data-toggle="buttons")
-                    label.btn.btn-outline-primary(id="radioChannel")
-                      input(type="radio")
-                      |Channel
-                    label.btn.btn-outline-primary(id="radioGroup")
-                      input(type="radio")
-                      |Group
-                    label.btn.btn-outline-primary(id="radioUser")
-                      input(type="radio")
-                      |User
-                  .progress.hidden-xs-up.mb-3(id="progressDefaultNotifications")
-                    .progress-bar.progress-bar-striped.progress-bar-animated(
-                      role="progressbar", aria-valuenow="100", aria-valuemin="0",
-                      aria-valuemax="100", style="width: 100%"
-                    )
-                  .input-group.hidden-xs-up.mb-3(id="inputChannels")
-                    .input-group-addon.bg-faded.text-primary(
-                      style="border-color: blue;"
-                    )
-                      |Channels
-                    select.form-control.bg-faded.text-primary(
-                      id="defaultChannelSelect",
-                      style="border-color: blue;",
-                      type="text"
-                    )
-                    .input-group-addon.btn.btn-outline-primary.bg-faded(
-                      id="saveSlackDefaultNotifyChannel",
-                      style="border-color: blue;"
-                    )
-                      |Save
+            li.list-group-item
+              .form-group(id="defaultNotifyPanel")
+                .mb-3|Choose where to send notifications
+                .small.mb-3
+                  |Choose where you would like the Slack bot user to send default
+                  |notifications. Choose between a channel, a group, or a direct
+                  |message to a user. Add the bot user to the desired channel or
+                  |direct message in Slack first.
+                .small.mb-3
+                  b Channels
+                  +space
+                  |include non-private channels where the bot user has already been
+                  |invited (is a member of the channel).
+                .small.mb-3
+                  b Groups
+                  +space
+                  |include private channels where the bot user has already been
+                  |invited (is a member of the channel).
+                .small.mb-3
+                  b Users
+                  +space
+                  |include direct messages already open between users and the bot.
+                .btn-group.mb-3(data-toggle="buttons")
+                  label.btn.btn-outline-primary(id="radioChannel")
+                    input(type="radio")
+                    |Channel
+                  label.btn.btn-outline-primary(id="radioGroup")
+                    input(type="radio")
+                    |Group
+                  label.btn.btn-outline-primary(id="radioUser")
+                    input(type="radio")
+                    |User
+                .progress.hidden-xs-up.mb-3(id="progressDefaultNotifications")
+                  .progress-bar.progress-bar-striped.progress-bar-animated(
+                    role="progressbar", aria-valuenow="100", aria-valuemin="0",
+                    aria-valuemax="100", style="width: 100%"
+                  )
+                .input-group.hidden-xs-up.mb-3(id="inputChannels")
+                  .input-group-addon.bg-faded.text-primary(
+                    style="border-color: blue;"
+                  )
+                    |Channels
+                  select.form-control.bg-faded.text-primary(
+                    id="defaultChannelSelect",
+                    style="border-color: blue;",
+                    type="text"
+                  )
+                  .input-group-addon.btn.btn-outline-primary.bg-faded(
+                    id="saveSlackDefaultNotifyChannel",
+                    style="border-color: blue;"
+                  )
+                    |Save
 
-                  .input-group.hidden-xs-up.mb-3(id="inputGroups")
-                    .input-group-addon.bg-faded.text-primary(
-                      style="border-color: blue;"
-                    )
-                      |Groups
-                    select.form-control.bg-faded.text-primary(
-                      id="defaultGroupSelect",
-                      style="border-color: blue;",
-                      type="text"
-                    )
-                    .input-group-addon.btn.btn-outline-primary.bg-faded(
-                      id="saveSlackDefaultNotifyGroup",
-                      style="border-color: blue;"
-                    )
-                      |Save
+                .input-group.hidden-xs-up.mb-3(id="inputGroups")
+                  .input-group-addon.bg-faded.text-primary(
+                    style="border-color: blue;"
+                  )
+                    |Groups
+                  select.form-control.bg-faded.text-primary(
+                    id="defaultGroupSelect",
+                    style="border-color: blue;",
+                    type="text"
+                  )
+                  .input-group-addon.btn.btn-outline-primary.bg-faded(
+                    id="saveSlackDefaultNotifyGroup",
+                    style="border-color: blue;"
+                  )
+                    |Save
 
-                  .input-group.hidden-xs-up.mb-3(id="inputUsers")
-                    .input-group-addon.bg-faded.text-primary(
-                      style="border-color: blue;"
-                    )
-                      |Users
-                    select.form-control.bg-faded.text-primary(
-                      id="defaultUserSelect",
-                      style="border-color: blue;",
-                      type="text"
-                    )
-                    .input-group-addon.btn.btn-outline-primary.bg-faded(
-                      id="saveSlackDefaultNotifyUser",
-                      style="border-color: blue;"
-                    )
-                      |Save
-                  #saveSlackNotifyAlert
-          .card-footer
-            .btn.btn-sm.btn-outline-primary.mr-3(id="changeSettings")
-            .btn.btn-sm.btn-outline-success.mr-3.hidden-xs-up(id="startSlack")
-            .btn.btn-sm.btn-outline-danger.mr-3.hidden-xs-up(id="stopSlack")
+                .input-group.hidden-xs-up.mb-3(id="inputUsers")
+                  .input-group-addon.bg-faded.text-primary(
+                    style="border-color: blue;"
+                  )
+                    |Users
+                  select.form-control.bg-faded.text-primary(
+                    id="defaultUserSelect",
+                    style="border-color: blue;",
+                    type="text"
+                  )
+                  .input-group-addon.btn.btn-outline-primary.bg-faded(
+                    id="saveSlackDefaultNotifyUser",
+                    style="border-color: blue;"
+                  )
+                    |Save
+                #saveSlackNotifyAlert
 
   .container.mt-3
     form(id="motionSettings")

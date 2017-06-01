@@ -29,7 +29,7 @@ function renderHtmlAlertSlackDisconnection(message) {
 }
 
 /**
- * 
+ *
  */
 function renderHtmlAlertTokenSavedSuccess() {
   return new P.resolve({
@@ -39,7 +39,7 @@ function renderHtmlAlertTokenSavedSuccess() {
 }
 
 /**
- * 
+ *
  */
 function renderHtmlAlertTokenSavedError(err) {
   return new P.resolve({
@@ -63,38 +63,31 @@ function renderHtmlAlertNotifySavedError(err) {
 }
 
 /**
- * Render the HTML for the Change Settings button.
- */
-function renderHtmlBtnChangeSettings() {
-  return new P.resolve(`Change Slack Settings`);
-}
-
-/**
  * Render the HTML for the Slack restart button when it is available to click.
  */
 function renderHtmlBtnSlackRestart() {
-  return new P.resolve(`Restart`);
+  return new P.resolve(`Restart Slack RTM Client`);
 }
 
 /**
  * Render the HTML for the Slack restart button when it is unavailable during restart.
  */
 function renderHtmlBtnSlackRestarting() {
-  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Restarting`);
+  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Restarting Slack RTM Client`);
 }
 
 /**
  * Render the HTML for the Slack stop button when it is available to click.
  */
 function renderHtmlBtnSlackStop() {
-  return new P.resolve(`Stop`);
+  return new P.resolve(`Stop Slack RTM Client`);
 }
 
 /**
  * Render the HTML for the Slack stop button when it is unavailable during stop.
  */
 function renderHtmlBtnSlackStopping() {
-  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Stopping`);
+  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Stopping Slack RTM Client`);
 }
 
 /**
