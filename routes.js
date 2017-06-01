@@ -7,12 +7,6 @@
  */
 
 /**
- * Invoke strict mode for the entire script.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode Strict mode}
- */
-"use strict";
-
-/**
  * @namespace router
  * @memberof routes
  * @param {object} app The Express application instance.
