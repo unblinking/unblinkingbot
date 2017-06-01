@@ -30,7 +30,7 @@ slackConnectionStatusReq()
   .then(slackNotifyReq());
 
 /**
- * 
+ *
  */
 socket.on("channelsRes", channelNames =>
   enableNotifyTypeRadioBtn()
@@ -38,7 +38,7 @@ socket.on("channelsRes", channelNames =>
     $("#defaultChannelSelect"))));
 
 /**
- * 
+ *
  */
 socket.on("readSlackGroupsRes", groupNames =>
   enableNotifyTypeRadioBtn()
@@ -46,7 +46,7 @@ socket.on("readSlackGroupsRes", groupNames =>
     $("#defaultGroupSelect"))));
 
 /**
- * 
+ *
  */
 socket.on("readSlackUsersRes", userNames =>
   enableNotifyTypeRadioBtn()
@@ -94,7 +94,7 @@ socket.on("slackConnectionOpened", message =>
   .then(() => alertSlackConnection(message)));
 
 /**
- * 
+ *
  */
 socket.on("slackConnectionStatusRes", connected =>
   slackConnectionStatusUpdate(connected));
@@ -109,18 +109,18 @@ socket.on("slackDisconnection", message =>
   .then(() => alertSlackDisconnection(message)));
 
 /**
- * 
+ *
  */
-socket.on("slackNotifyRes", data =>
-  $("#currentSettingsNotify").html(data.notifyType + " " + data.notify));
+//TODO: Maybe remove this permanently.
+//socket.on("slackNotifyRes", data =>
+//  $("#currentSettingsNotify").html(data.notifyType + " " + data.notify));
 
 /**
- * 
+ *
  */
 socket.on("slackTokenRes", token => {
   $("#startSlack").removeClass("hidden-xs-up");
   $("#stopSlack").removeClass("hidden-xs-up");
-  $("#settingsToken").html(token);
   $("#slackToken").val(token);
 });
 
@@ -233,7 +233,7 @@ function enableChangeSettingsBtn() {
 }
 
 /**
- * 
+ *
  */
 function enableNotifyTypeRadioBtn() {
   return new P(resolve => {
@@ -284,7 +284,7 @@ function enableRestartSlackBtn() {
 }
 
 /**
- * 
+ *
  */
 function enableSaveNotifyBtn() {
   return new P(resolve => {
@@ -397,8 +397,8 @@ function fade(element, speed, opacity) {
 }
 
 /**
- * 
- * @param {*} err 
+ *
+ * @param {*} err
  */
 function handleSaveNotifyError(err) {
   return new P(resolve => {
@@ -410,13 +410,14 @@ function handleSaveNotifyError(err) {
 }
 
 /**
- * 
- * @param {*} notify 
- * @param {*} notifyType 
+ *
+ * @param {*} notify
+ * @param {*} notifyType
  */
 function handleSaveNotifySuccess(notify, notifyType) {
   return new P(resolve => {
-    $("#currentSettingsNotify").html(notifyType + " " + notify);
+    //TODO: Maybe remove this next line permanently.
+    //$("#currentSettingsNotify").html(notifyType + " " + notify);
     if (notifyType === "channel") $("#inputChannels").addClass("has-success");
     if (notifyType === "group") $("#inputGroups").addClass("has-success");
     if (notifyType === "user") $("#inputUsers").addClass("has-success");
@@ -425,20 +426,19 @@ function handleSaveNotifySuccess(notify, notifyType) {
 }
 
 /**
- * 
- * @param {*} err 
+ *
+ * @param {*} err
  */
 function handleSaveTokenError(err) {
   return new P.resolve($("#slackTokenInputGroup").addClass("has-error"));
 }
 
 /**
- * 
- * @param {*} token 
+ *
+ * @param {*} token
  */
 function handleSaveTokenSuccess(token) {
   return new P(resolve => {
-    $("#settingsToken").html(token);
     $("#slackTokenInputGroup").addClass("has-success");
     $("#startSlack").removeClass("hidden-xs-up");
     $("#stopSlack").removeClass("hidden-xs-up");
@@ -505,7 +505,7 @@ function removeSuccessOnFocus() {
 }
 
 /**
- * 
+ *
  */
 function slackConnectionStatusReq() {
   return new P.resolve(socket.emit("slackConnectionStatusReq"));
@@ -532,14 +532,14 @@ function slackConnectionStatusUpdate(connected) {
 }
 
 /**
- * 
+ *
  */
 function slackNotifyReq() {
   return new P.resolve(socket.emit("slackNotifyReq"));
 }
 
 /**
- * 
+ *
  */
 function slackTokenReq() {
   return new P.resolve(socket.emit("slackTokenReq"));
