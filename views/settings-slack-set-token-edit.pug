@@ -1,0 +1,18 @@
+.collapse(
+  id="editToken"
+  )
+  .h5.mt-3|Current setting
+  .input-group.mt-3.mb-3(id="slackTokenInputGroup")
+    input.form-control.bg-faded.text-primary(
+      id="slackToken",
+      style="border-color: blue; font-family: monospace;",
+      type="text",
+      placeholder="e.g. xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX"
+      )
+    .input-group-addon.btn.btn-outline-primary.bg-faded(
+      id="saveToken",
+      style="border-color: blue;"
+      )
+      |Save
+  #saveSlackTokenAlert
+  #restartSlackTokenAlert

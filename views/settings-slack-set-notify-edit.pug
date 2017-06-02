@@ -1,0 +1,72 @@
+.collapse(
+  id="editNotify"
+  )
+  .h5.mt-3|Current setting
+  span.text-primary(
+    id="currentSettingsNotify"
+    )
+    |No default has been set.
+  .h5.mt-3|Change this setting
+  |The Slack RTM Client must be connected while changing this setting.
+  .btn-group.mt-3(data-toggle="buttons")
+    label.btn.btn-outline-primary(id="radioChannel")
+      input(type="radio")
+      |Channel
+    label.btn.btn-outline-primary(id="radioGroup")
+      input(type="radio")
+      |Group
+    label.btn.btn-outline-primary(id="radioUser")
+      input(type="radio")
+      |User
+  .progress.hidden-xs-up.mt-3(id="progressDefaultNotifications")
+    .progress-bar.progress-bar-striped.progress-bar-animated(
+      role="progressbar", aria-valuenow="100", aria-valuemin="0",
+      aria-valuemax="100", style="width: 100%"
+      )
+  .input-group.hidden-xs-up.mt-3.mb-3(id="inputChannels")
+    .input-group-addon.bg-faded.text-primary(
+      style="border-color: blue;"
+      )
+      |Channels
+    select.form-control.bg-faded.text-primary(
+      id="defaultChannelSelect",
+      style="border-color: blue;",
+      type="text"
+      )
+    .input-group-addon.btn.btn-outline-primary.bg-faded(
+      id="saveSlackDefaultNotifyChannel",
+      style="border-color: blue;"
+      )
+      |Save
+
+  .input-group.hidden-xs-up.mt-3.mb-3(id="inputGroups")
+    .input-group-addon.bg-faded.text-primary(
+      style="border-color: blue;"
+      )
+      |Groups
+    select.form-control.bg-faded.text-primary(
+      id="defaultGroupSelect",
+      style="border-color: blue;",
+      type="text"
+      )
+    .input-group-addon.btn.btn-outline-primary.bg-faded(
+      id="saveSlackDefaultNotifyGroup",
+      style="border-color: blue;"
+      )
+      |Save
+  .input-group.hidden-xs-up.mt-3.mb-3(id="inputUsers")
+    .input-group-addon.bg-faded.text-primary(
+      style="border-color: blue;"
+      )
+      |Users
+    select.form-control.bg-faded.text-primary(
+      id="defaultUserSelect",
+      style="border-color: blue;",
+      type="text"
+      )
+    .input-group-addon.btn.btn-outline-primary.bg-faded(
+      id="saveSlackDefaultNotifyUser",
+      style="border-color: blue;"
+      )
+      |Save
+  #saveSlackNotifyAlert

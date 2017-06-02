@@ -11,10 +11,15 @@
 var socket = io.connect();
 
 /**
+ * Initialize all tooltips
+ * https://v4-alpha.getbootstrap.com/components/tooltips/
+ */
+$(() => $('[data-toggle="tooltip"]').tooltip());
+
+/**
  * Setup the page buttons when this script is loaded.
  */
-enableChangeSettingsBtn()
-  .then(enableRestartSlackBtn())
+enableRestartSlackBtn()
   .then(enableStopSlackBtn())
   .then(enableSaveTokenBtn())
   .then(enableSaveNotifyBtn())
@@ -30,15 +35,24 @@ slackConnectionStatusReq()
   .then(slackNotifyReq());
 
 /**
- * 
+ * Request the current motionEye details.
+ */
+motionSnapshotsReq();
+
+/**
+ *
  */
 socket.on("channelsRes", channelNames =>
   enableNotifyTypeRadioBtn()
   .then(() => populateDropDown($("#inputChannels"), channelNames,
     $("#defaultChannelSelect"))));
 
+socket.on("motionSnapshotsRes", text => {
+  $("#motionSnapshotUrlList").append(text + `<br>`);
+});
+
 /**
- * 
+ *
  */
 socket.on("readSlackGroupsRes", groupNames =>
   enableNotifyTypeRadioBtn()
@@ -46,7 +60,7 @@ socket.on("readSlackGroupsRes", groupNames =>
     $("#defaultGroupSelect"))));
 
 /**
- * 
+ *
  */
 socket.on("readSlackUsersRes", userNames =>
   enableNotifyTypeRadioBtn()
@@ -94,7 +108,7 @@ socket.on("slackConnectionOpened", message =>
   .then(() => alertSlackConnection(message)));
 
 /**
- * 
+ *
  */
 socket.on("slackConnectionStatusRes", connected =>
   slackConnectionStatusUpdate(connected));
@@ -108,21 +122,18 @@ socket.on("slackDisconnection", message =>
   .then(() => slackConnectionStatusUpdate(false))
   .then(() => alertSlackDisconnection(message)));
 
-/**
- * 
- */
-socket.on("slackNotifyRes", data =>
+  /**
+   *
+   */
+  socket.on("slackNotifyRes", data =>
   $("#currentSettingsNotify").html(data.notifyType + " " + data.notify));
 
-/**
- * 
- */
-socket.on("slackTokenRes", token => {
-  $("#startSlack").removeClass("hidden-xs-up");
-  $("#stopSlack").removeClass("hidden-xs-up");
-  $("#settingsToken").html(token);
-  $("#slackToken").val(token);
-});
+  /**
+   *
+   */
+  socket.on("slackTokenRes", token => {
+    $("#slackToken").val(token);
+  });
 
 /**
  * TODO: render and show alert too
@@ -212,28 +223,7 @@ function downSlide(element, speed) {
 }
 
 /**
- * Attach a handler to the click event for the changeSettings element.
- * When clicked; hide the button, un-hide the token panel, un-hide the notify
- * panel (if the token element is populated), and scroll the un-hidden panels
- * into view.
- */
-function enableChangeSettingsBtn() {
-  return new P(resolve => {
-    $("#changeSettings").off("click"); // Start with no click handler, prevent duplicates.
-    renderHtmlBtnChangeSettings().then(html => $("#changeSettings").html(html));
-    $("#changeSettings").one("click", () => { // Add new click handler.
-      $("#changeSettings").off("click"); // When clicked, remove handler.
-      $("#changeSettings").addClass("hidden-xs-up");
-      $("#tokenPanel").removeClass("hidden-xs-up");
-      if ($("#slackToken").val()) $("#defaultNotifyPanel").removeClass("hidden-xs-up");
-      $("#tokenPanel")[0].scrollIntoView();
-    });
-    resolve();
-  });
-}
-
-/**
- * 
+ *
  */
 function enableNotifyTypeRadioBtn() {
   return new P(resolve => {
@@ -284,7 +274,7 @@ function enableRestartSlackBtn() {
 }
 
 /**
- * 
+ *
  */
 function enableSaveNotifyBtn() {
   return new P(resolve => {
@@ -397,8 +387,8 @@ function fade(element, speed, opacity) {
 }
 
 /**
- * 
- * @param {*} err 
+ *
+ * @param {*} err
  */
 function handleSaveNotifyError(err) {
   return new P(resolve => {
@@ -410,9 +400,9 @@ function handleSaveNotifyError(err) {
 }
 
 /**
- * 
- * @param {*} notify 
- * @param {*} notifyType 
+ *
+ * @param {*} notify
+ * @param {*} notifyType
  */
 function handleSaveNotifySuccess(notify, notifyType) {
   return new P(resolve => {
@@ -425,24 +415,20 @@ function handleSaveNotifySuccess(notify, notifyType) {
 }
 
 /**
- * 
- * @param {*} err 
+ *
+ * @param {*} err
  */
 function handleSaveTokenError(err) {
   return new P.resolve($("#slackTokenInputGroup").addClass("has-error"));
 }
 
 /**
- * 
- * @param {*} token 
+ *
+ * @param {*} token
  */
 function handleSaveTokenSuccess(token) {
   return new P(resolve => {
-    $("#settingsToken").html(token);
     $("#slackTokenInputGroup").addClass("has-success");
-    $("#startSlack").removeClass("hidden-xs-up");
-    $("#stopSlack").removeClass("hidden-xs-up");
-    $("#defaultNotifyPanel").removeClass("hidden-xs-up");
     socket.emit("slackRestartReq");
     resolve();
   });
@@ -450,7 +436,7 @@ function handleSaveTokenSuccess(token) {
 
 function handleSaveMotionUrlSuccess(object) {
   return new P(resolve => {
-    $("#motionSnapshotUrlList").html(object.name + " " + object.url);
+    $("#motionSnapshotUrlList").append(object.name + " " + object.url + "<br>");
     $("#motionUrlInputGroup").addClass("has-success");
     resolve();
   });
@@ -505,7 +491,7 @@ function removeSuccessOnFocus() {
 }
 
 /**
- * 
+ *
  */
 function slackConnectionStatusReq() {
   return new P.resolve(socket.emit("slackConnectionStatusReq"));
@@ -532,17 +518,24 @@ function slackConnectionStatusUpdate(connected) {
 }
 
 /**
- * 
+ *
  */
 function slackNotifyReq() {
   return new P.resolve(socket.emit("slackNotifyReq"));
 }
 
 /**
- * 
+ *
  */
 function slackTokenReq() {
   return new P.resolve(socket.emit("slackTokenReq"));
+}
+
+/**
+ *
+ */
+function motionSnapshotsReq() {
+  return new P.resolve(socket.emit("motionSnapshotsReq"));
 }
 
 /**

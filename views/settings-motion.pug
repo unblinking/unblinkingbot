@@ -1,0 +1,12 @@
+.container.mt-3
+  form(id="motionSettings")
+    .form-group(id="motionSettingsPanel")
+      .card
+        .card-header|motionEye Integration
+          a.btn.btn-sm.btn-link.float-right(
+            href="https://github.com/ccrisan/motioneye/wiki",
+            target="_blank"
+          )
+            |About motionEye
+        ul.list-group.list-group-flush
+          include settings-motion-set-snapshots

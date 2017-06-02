@@ -201,6 +201,19 @@ const sockets = {
         .catch(err => console.log(err.message)));
 
       /**
+       * Register the "motionSnapshotReq" event handler.
+       * Get the motionEye snapshot URLs from the LevelDB Datastore, and then
+       * emit them back out as a response.
+       */
+      socket.on("motionSnapshotsReq", () =>
+        getValuesByKeyPrefix(bundle, "motion::snapshot::")
+          .then(snapshots => {
+            Object.keys(snapshots).forEach(key => {
+              socket.emit("motionSnapshotsRes", snapshots[key].name + " " + snapshots[key].url)
+            });
+          }));
+
+      /**
        * Register the "restartReq" event handler.
        * Exit the current process. The process is running as a systemd based
        * service, and will restart itself.
@@ -208,7 +221,7 @@ const sockets = {
       socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service differently?
 
       /**
-       * 
+       *
        */
       socket.on("dashRecentActivityReq", () => {
         let notify;
@@ -266,8 +279,8 @@ const sockets = {
       });
 
       /**
-       * 
-       * @param {*} bundle 
+       *
+       * @param {*} bundle
        */
       function getJoinedChannelNamesArray(bundle) {
         return new P(resolve => {
@@ -282,8 +295,8 @@ const sockets = {
       }
 
       /**
-       * 
-       * @param {*} bundle 
+       *
+       * @param {*} bundle
        */
       function getJoinedGroupNamesArray(bundle) {
         return new P(resolve => {
@@ -296,8 +309,8 @@ const sockets = {
       }
 
       /**
-       * 
-       * @param {*} bundle 
+       *
+       * @param {*} bundle
        */
       function getJoinedDmUserNamesArray(bundle) {
         return new P(resolve => {
@@ -314,8 +327,8 @@ const sockets = {
       }
 
       /**
-       * 
-       * @param {*} name 
+       *
+       * @param {*} name
        */
       function getChannelIdByName(name) {
         return new P(resolve => {
@@ -329,8 +342,8 @@ const sockets = {
       }
 
       /**
-       * 
-       * @param {*} name 
+       *
+       * @param {*} name
        */
       function getGroupIdByName(name) {
         return new P(resolve => {
@@ -344,8 +357,8 @@ const sockets = {
       }
 
       /**
-       * 
-       * @param {*} name 
+       *
+       * @param {*} name
        */
       function getDmIdByUserName(name) {
         return new P(resolve => {

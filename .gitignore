@@ -1,7 +1,4 @@
 node_modules/
 db/
-dbp/
-.vscode/
-.eslintrc.json
-npm-debug.log.*
+npm-debug.log*
 testing*

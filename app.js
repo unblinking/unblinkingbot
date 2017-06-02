@@ -3,7 +3,6 @@
 /**
  * The unblinking bot.
  * @namespace unblinkingbot
- * @public
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
 
@@ -29,13 +28,9 @@ const thenLevel = require("then-levelup");
 
 /**
  * Require the local modules/functions that will be used.
- * @see {@link https://github.com/nothingworksright/unblinkingBot unblinkingbot}
  */
-const routes = require("./routes.js"); // Endpoints for the local web interface
+const routes = require("./routes.js"); // Endpoints for the web front-end
 const sockets = require("./sockets.js");
-
-// const getAllData = require("./datastore.js").getAllData;
-// const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
 const getNewRtmInstance = require("./slacks.js").getNewRtmInstance;
 const startRtmInstance = require("./slacks.js").startRtmInstance;
 const listenForRtmEvents = require("./slacks.js").listenForEvents;
@@ -46,6 +41,7 @@ const disconnectRtm = require("./slacks.js").disconnectRtmInstance;
  */
 const app = express();
 app.use(express.static(path.join(__dirname, "/public")));
+app.locals.pretty = true; // Pretty html.
 app.set("views", "./views");
 app.set("view engine", "pug");
 
