@@ -35,12 +35,21 @@ slackConnectionStatusReq()
   .then(slackNotifyReq());
 
 /**
+ * Request the current motionEye details.
+ */
+motionSnapshotsReq();
+
+/**
  *
  */
 socket.on("channelsRes", channelNames =>
   enableNotifyTypeRadioBtn()
   .then(() => populateDropDown($("#inputChannels"), channelNames,
     $("#defaultChannelSelect"))));
+
+socket.on("motionSnapshotsRes", text => {
+  $("#motionSnapshotUrlList").append(text + `<br>`);
+});
 
 /**
  *
@@ -427,7 +436,7 @@ function handleSaveTokenSuccess(token) {
 
 function handleSaveMotionUrlSuccess(object) {
   return new P(resolve => {
-    $("#motionSnapshotUrlList").html(object.name + " " + object.url);
+    $("#motionSnapshotUrlList").append(object.name + " " + object.url + "<br>");
     $("#motionUrlInputGroup").addClass("has-success");
     resolve();
   });
@@ -520,6 +529,13 @@ function slackNotifyReq() {
  */
 function slackTokenReq() {
   return new P.resolve(socket.emit("slackTokenReq"));
+}
+
+/**
+ *
+ */
+function motionSnapshotsReq() {
+  return new P.resolve(socket.emit("motionSnapshotsReq"));
 }
 
 /**
