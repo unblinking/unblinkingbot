@@ -11,6 +11,13 @@
 var socket = io.connect();
 
 /**
+ * https://v4-alpha.getbootstrap.com/components/tooltips/
+ */
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+/**
  * Setup the page buttons when this script is loaded.
  */
 enableRestartSlackBtn()
