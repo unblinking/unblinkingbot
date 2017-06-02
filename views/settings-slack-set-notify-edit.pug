@@ -1,10 +1,13 @@
 .collapse(
   id="editNotify"
   )
-  .mt-3|Current Default:
-    span.text-primary.ml-2(
-      id="currentSettingsNotify"
-      )
+  .h5.mt-3|Current setting
+  span.text-primary(
+    id="currentSettingsNotify"
+    )
+    |No default has been set.
+  .h5.mt-3|Change this setting
+  |The Slack RTM Client must be connected while changing this setting.
   .btn-group.mt-3(data-toggle="buttons")
     label.btn.btn-outline-primary(id="radioChannel")
       input(type="radio")
