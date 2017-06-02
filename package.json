@@ -1,7 +1,7 @@
 {
-  "name": "unblinkingbot",
+  "name": "unblinkingBot",
   "version": "0.0.1",
-  "description": "Another Slack bot.",
+  "description": "The unblinkingBot is a surveillance-system assistant.",
   "main": "app.js",
   "author": "jmg1138 https://github.com/jmg1138",
   "license": "MIT",
