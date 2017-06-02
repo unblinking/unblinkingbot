@@ -1,5 +1,5 @@
 [Unit]
-Description=unblinkingBot - Another Slack bot
+Description=unblinkingBot
 Documentation=http://www.unblinkingbot.com
 After=network.target
 
