@@ -11,11 +11,10 @@
 var socket = io.connect();
 
 /**
+ * Initialize all tooltips
  * https://v4-alpha.getbootstrap.com/components/tooltips/
  */
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
+$(() => $('[data-toggle="tooltip"]').tooltip());
 
 /**
  * Setup the page buttons when this script is loaded.

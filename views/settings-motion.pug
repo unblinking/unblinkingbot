@@ -8,37 +8,5 @@
             target="_blank"
           )
             |About motionEye
-        .card-block
-          .mb-3|Snapshot URLs
-          pre.text-primary.ml-1(
-            id="motionSnapshotUrlList"
-          )|Nothing yet.
-          .form-group(id="motionSnapshotPanel")
-            .card
-              .card-header|Add a new motion snapshot URL
-              .card-block
-                .small.mb-3
-                  |Enter details for a new motion snapshot URL and click Save.
-                .input-group.mb-3(id="motionUrlInputGroup")
-                  .input-group-addon
-                    |Name
-                  input.form-control.bg-faded.text-primary(
-                    id="motionNickname",
-                    style="border-color: blue; font-family: monospace;",
-                    type="text",
-                    placeholder="e.g. office"
-                  )
-                  .input-group-addon
-                    |URL
-                  input.form-control.bg-faded.text-primary(
-                    id="motionSnapshotUrl",
-                    style="border-color: blue; font-family: monospace;",
-                    type="text",
-                    placeholder="e.g. http://192.168.0.9:8000/picture/1/current/"
-                  )
-                  .input-group-addon.btn.btn-outline-primary.bg-faded(
-                    id="saveMotionUrl",
-                    style="border-color: blue;"
-                  )
-                    |Save
-        .card-footer
+        ul.list-group.list-group-flush
+          include settings-motion-set-snapshots
