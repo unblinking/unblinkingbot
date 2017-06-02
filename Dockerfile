@@ -21,13 +21,3 @@ EXPOSE 1138
 
 # Run systemd
 CMD [ "/usr/sbin/init" ]
-
-##  Example docker commands
-# 
-# Building:
-# docker build --rm --no-cache -t nothingworksright/unblinkingbot:0.0.1 .
-# 
-# Running:
-# docker run --restart=always --detach --publish 1138:1138 --name unblinkingbot --volume /etc/localtime:/etc/localtime:ro --volume /sys/fs/cgroup:/sys/fs/cgroup:ro --volume /mnt/4tb/unblinkingbot/db:/usr/local/unblinkingbot/db --volume /mnt/4tb/motion/captured:/usr/local/unblinkingbot/caps nothingworksright/unblinkingbot:0.0.1
-# 
-##
