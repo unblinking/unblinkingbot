@@ -22,3 +22,6 @@ ratings:
   - "**.md"
 exclude_paths:
 - "public/images/"
+- "public/bootstrap/"
+- "public/bluebird/"
+- "public/jquery/"
