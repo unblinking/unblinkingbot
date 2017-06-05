@@ -22,12 +22,14 @@ const datastore = {
    * Get all key-value pairs.
    * @function getAllData
    * @param {Object} db Reference to the LevelDB data store
-   * @param {Function} callback Called when the ReadStream ends.
+   * 
    */
   getAllData: db => {
     return new P((resolve, reject) => {
       let foundData = {};
       db.createReadStream()
+        // @see {@link https://github.com/eslint/eslint/issues/5150 `no-return-assign` behavior changed with arrow functions}
+        // eslint-disable-next-line
         .on("data", data => foundData[data.key] = data.value)
         .on("error", err => reject(err))
         //.on("close", () => console.log("closing"))
