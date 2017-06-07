@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * The unblinking bot.
- * @namespace unblinkingbot
- * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
+ * The unblinkingBot.
+ * @author jmg1138 {@link https://github.com/jmg1138 jmg1138}
+ * @copyright 2015-2017 {@link https://github.com/nothingworksright nothingworksright}
+ * @license MIT License
+ * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
 /**

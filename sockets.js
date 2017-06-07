@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * The socket.io wrapper functions for the unblinkingbot.
- * @namespace sockets.js
- * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
+ * The Socket.IO wrapper functions for the unblinkingBot.
+ * @author jmg1138 {@link https://github.com/jmg1138 jmg1138}
+ * @copyright 2015-2017 {@link https://github.com/nothingworksright nothingworksright}
+ * @license MIT License
+ * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
 /**

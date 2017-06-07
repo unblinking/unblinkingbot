@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * The LevelDB datastore wrapper functions for the unblinkingbot.
- * @module datastore
- * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
+ * The LevelDB datastore wrapper functions for the unblinkingBot.
+ * @author jmg1138 {@link https://github.com/jmg1138 jmg1138}
+ * @copyright 2015-2017 {@link https://github.com/nothingworksright nothingworksright}
+ * @license MIT License
+ * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
 /**
@@ -22,7 +24,7 @@ const datastore = {
    * Get all key-value pairs.
    * @function getAllData
    * @param {Object} db Reference to the LevelDB data store
-   * 
+   *
    */
   getAllData: db => {
     return new P((resolve, reject) => {

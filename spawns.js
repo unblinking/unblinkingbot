@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * The child process wrapper functions for the unblinkingbot.
- * @namespace spawns
- * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
+ * The child process wrapper functions for the unblinkingBot.
+ * @author jmg1138 {@link https://github.com/jmg1138 jmg1138}
+ * @copyright 2015-2017 {@link https://github.com/nothingworksright nothingworksright}
+ * @license MIT License
+ * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
 /**
@@ -95,7 +97,7 @@ const spawns = {
 
     /**
      * Handle the process output of the spawned child process.
-     * @param {*} proc 
+     * @param {*} proc
      */
     function handleProcessOutput(proc) {
       return new P(resolve => {
@@ -109,7 +111,7 @@ const spawns = {
 
     /**
      * Log data to the console, after removing newlines.
-     * @param {*} data 
+     * @param {*} data
      */
     function logOutput(data) {
       data = data.toString("utf8").replace(/\n$/, ''); // Remove newlines
