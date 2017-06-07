@@ -65,11 +65,14 @@ const messages = {
    */
   findCommandWords: (bundle, message) => {
     return new P(resolve => {
-      if (message.text.match(/snapshot list/gi)) { // Asked for the snapshot list.
+      if (message.text.match(/snapshot list/gi)) {
+        // Asked for the snapshot list.
         messages.getSnapshotList(bundle, message);
-      } else if (message.text.match(/snapshot/gi)) { // Asked for an actual snapshot.
+      } else if (message.text.match(/snapshot/gi)) {
+        // Asked for an actual snapshot.
         messages.getSnapshot(bundle, message);
-      } else { // No command words were found in the message text.
+      } else {
+        // No command words were found in the message text.
         messages.thatsMyName(bundle, message);
       }
       resolve();
