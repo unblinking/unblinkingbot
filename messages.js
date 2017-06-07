@@ -8,18 +8,18 @@
  * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
- /**
-  * Require the 3rd party modules that will be used.
-  * @see {@link https://github.com/petkaantonov/bluebird bluebird}
-  * @see {@link https://github.com/request/request request}
-  */
- const P = require("bluebird");
- const request = require("request");
+/**
+ * Require the 3rd party modules that will be used.
+ * @see {@link https://github.com/petkaantonov/bluebird bluebird}
+ * @see {@link https://github.com/request/request request}
+ */
+const P = require("bluebird");
+const request = require("request");
 
- /**
-  * Require the local modules/functions that will be used.
-  */
- const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
+/**
+ * Require the local modules/functions that will be used.
+ */
+const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
 
 /**
  *
@@ -52,10 +52,9 @@ const messages = {
    */
   findTriggerWords: (bundle, message) => {
     return new P(resolve => {
-      if (
-        message.text.match(/unblinkingbot/gi) ||
-        message.text.match(new RegExp(bundle.rtm.activeUserId, "g"))
-      ) messages.findCommandWords(bundle, message);
+      let matchName = message.text.match(/unblinkingbot/gi);
+      let matchID = message.text.match(new RegExp(bundle.rtm.activeUserId, "g"));
+      if (matchName || matchID) messages.findCommandWords(bundle, message);
       resolve();
     });
   },
@@ -65,16 +64,11 @@ const messages = {
    */
   findCommandWords: (bundle, message) => {
     return new P(resolve => {
-      if (message.text.match(/snapshot list/gi)) {
-        // Asked for the snapshot list.
-        messages.getSnapshotList(bundle, message);
-      } else if (message.text.match(/snapshot/gi)) {
-        // Asked for an actual snapshot.
-        messages.getSnapshot(bundle, message);
-      } else {
-        // No command words were found in the message text.
-        messages.thatsMyName(bundle, message);
-      }
+      let snapshotList = message.text.match(/snapshot list/gi);
+      let snapshot = message.text.match(/snapshot/gi);
+      if (snapshotList) messages.getSnapshotList(bundle, message);
+      else if (snapshot) messages.getSnapshot(bundle, message);
+      else messages.thatsMyName(bundle, message);
       resolve();
     });
   },
