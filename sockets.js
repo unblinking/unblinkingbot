@@ -223,7 +223,7 @@ const sockets = {
       socket.on("restartReq", () => process.exit(1)); // TODO: Restart the systemd service differently?
 
       /**
-       *
+       * TODO: Clean up this long mess
        */
       socket.on("dashRecentActivityReq", () => {
         let notify;

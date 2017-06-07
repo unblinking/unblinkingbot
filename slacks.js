@@ -19,10 +19,10 @@ const slackClient = require("@slack/client");
 const request = require("request");
 
 /**
- * Require the local modules/functions that will be used.
+ * Require the local modules that will be used.
  */
 const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
-const newMessage = require("./messages.js").new;
+const messages = require("./messages.js");
 
 /**
  *
@@ -100,7 +100,7 @@ const slacks = {
 
       bundle.rtm.on(
         slackClient.RTM_EVENTS.MESSAGE,
-        message => newMessage(bundle, message));
+        message => messages.inbox(bundle, message));
 
       bundle.rtm.on(
         slackClient.RTM_EVENTS.GOODBYE,
