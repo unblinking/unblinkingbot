@@ -63,21 +63,21 @@ const server = http.Server(app);
  */
 const port = parseInt(process.env.PORT, 10) || 1138;
 server.listen(port, function () {
-  console.log(`unblinkingbot web-server listening on port ${port}`);
+  console.log(`unblinkingBot web-server listening on port ${port}`);
 });
 
 /**
- * Create the main bundle object, copies of references that will be passed to
- * other functions. Holds references to the LevelDB data store, Slack RTM
- * Client, and Socket.io server.
+ * Create the main bundle object, which holds copies of references to be passed
+ * to other functions. This allows separate functions to share the same
+ * datastore, Slack clients, and Socket.IO server.
  */
 var bundle = {};
 bundle.db = thenLevel(level("db", {
   valueEncoding: 'json'
 }));
-bundle.rtm = undefined;
+bundle.rtm = undefined; // Placeholder for the Slack RTM Client object.
 bundle.io = io(server);
-bundle.web = undefined;
+bundle.web = undefined; // Placeholder for the Slack Web Client object.
 
 /**
  * Define socket.io events.
@@ -91,6 +91,7 @@ routes(app, bundle);
 
 /**
  * Try to start the Slack integration
+ * TODO: This is duplicated elsewhere, so it should live in just one place.
  */
 disconnectRtm(bundle)
   .then(() => {
