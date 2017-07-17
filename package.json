@@ -12,22 +12,35 @@
     "url": "https://github.com/nothingworksright/unblinkingbot.git"
   },
   "dependencies": {
-    "@slack/client": "3.9.0",
-    "ansi-to-html": "0.6.0",
-    "express": "4.15.2",
-    "level": "1.6.0",
-    "moment": "2.18.1",
-    "pretty-error": "2.1.0",
-    "pug": "2.0.0-beta.12",
-    "socket.io": "1.7.3",
-    "then-levelup": "1.0.2"
+    "@slack/client": "^3.10.0",
+    "ansi-to-html": "^0.6.3",
+    "express": "^4.15.3",
+    "level": "^1.7.0",
+    "moment": "^2.18.1",
+    "pretty-error": "^2.1.1",
+    "pug": "^2.0.0-rc.2",
+    "socket.io": "^2.0.3",
+    "then-levelup": "^1.0.2"
   },
   "devDependencies": {
-    "eslint": "3.19.0",
-    "jshint": "2.9.4"
+    "codecov": "2.2.0",
+    "env-test": "1.0.0",
+    "eslint": "4.2.0",
+    "eslint-config-standard": "10.2.1",
+    "eslint-plugin-import": "2.7.0",
+    "eslint-plugin-node": "5.1.0",
+    "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-standard": "3.0.1",
+    "istanbul": "0.4.5",
+    "mocha": "3.4.2",
+    "npm-check-updates": "2.12.1",
+    "should": "11.2.1",
+    "supertest": "3.0.0"
   },
   "scripts": {
-    "start": "node app.js",
-    "test": "mocha --timeout 10000"
+    "pretest": "echo npm-check-updates && ncu",
+    "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec",
+    "posttest": "./node_modules/.bin/codecov",
+    "start": "node app.js"
   }
 }

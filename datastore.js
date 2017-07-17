@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
+'use strict'
+
 /**
- * The LevelDB datastore wrapper functions for the unblinkingBot.
+ * Datastore wrapper functions for the unblinkingBot.
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138}
- * @copyright 2015-2017 {@link https://github.com/nothingworksright nothingworksright}
- * @license MIT License
  * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
@@ -14,10 +14,6 @@
  */
 const P = require("bluebird");
 
-/**
- * Datastore related functions for the unblinkingbot application.
- * @constant datastore
- */
 const datastore = {
 
   /**

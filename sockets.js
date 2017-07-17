@@ -34,10 +34,8 @@ const pretty = new pretty_error()
  */
 const getAllData = require("./datastore.js").getAllData;
 const getValuesByKeyPrefix = require("./datastore.js").getValuesByKeyPrefix;
-const getNewRtmInstance = require("./slacks.js").getNewRtmInstance;
-const startRtmInstance = require("./slacks.js").startRtmInstance;
-const listenForRtmEvents = require("./slacks.js").listenForEvents;
-const disconnectRtm = require("./slacks.js").disconnectRtmInstance;
+const startSlack = require("./slacks.js").startSlack;
+const disconnectRtm = require("./slacks.js").disconnectRtm;
 
 /**
  * Module to be exported, containing the Socket.io events.
@@ -117,7 +115,7 @@ const sockets = {
           convert.toHtml(pretty.render(err)))));
 
       socket.on("saveMotionUrlReq", object => {
-        console.log("heard req to save motion URL");
+        // console.log("heard req to save motion URL");
         bundle.db.put("motion::snapshot::" + object.name, object)
           .then(() => socket.emit("saveMotionUrlRes", object, true, null))
           .catch(err => socket.emit("saveMotionUrlRes", object, false,
@@ -153,27 +151,13 @@ const sockets = {
       /**
        * Register the "slackRestartReq" event handler.
        */
-      socket.on("slackRestartReq", () =>
-        disconnectRtm(bundle)
-        .then(() => {
-          return bundle.db.get("slack::settings::token");
-        })
-        .then((token) => {
-          bundle.token = token;
-          return bundle;
-        })
-        .then(getNewRtmInstance)
-        .then(startRtmInstance)
-        .then(listenForRtmEvents)
-        .catch(err => console.log(err.message)));
+      socket.on("slackRestartReq", () => startSlack(bundle))
 
       /**
        * Register the "slackStopReq" event handler.
        * Disconnect the Slack RTM Client.
        */
-      socket.on("slackStopReq", () =>
-        disconnectRtm(bundle)
-        .catch(err => console.log(err.message)));
+      socket.on("slackStopReq", () => disconnectRtm(bundle))
 
       /**
        * Register the "slackNotifyReq" event handler.
@@ -211,7 +195,7 @@ const sockets = {
         getValuesByKeyPrefix(bundle, "motion::snapshot::")
           .then(snapshots => {
             Object.keys(snapshots).forEach(key => {
-              socket.emit("motionSnapshotsRes", snapshots[key].name + " " + snapshots[key].url)
+              socket.emit("motionSnapshotsRes", "<a href='" + snapshots[key].url + "'>" + snapshots[key].name + "</a>")
             });
           }));
 

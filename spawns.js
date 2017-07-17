@@ -115,7 +115,7 @@ const spawns = {
      */
     function logOutput(data) {
       data = data.toString("utf8").replace(/\n$/, ''); // Remove newlines
-      console.log(data);
+      // console.log(data);
     }
 
   }
