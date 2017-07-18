@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
+'use strict'
+
 /**
  * The node-slack-sdk wrapper functions for the unblinkingBot.
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138}
- * @copyright 2015-2017 {@link https://github.com/nothingworksright nothingworksright}
- * @license MIT License
  * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
 /**
- * Require the 3rd party modules that will be used.
+ * 3rd party modules that will be used.
  * @see {@link https://github.com/slackhq/node-slack-sdk node-slack-sdk}
  * @see {@link https://github.com/request/request request}
  */
@@ -17,10 +17,10 @@ const slackClient = require('@slack/client')
 const request = require('request')
 
 /**
- * Require the local modules that will be used.
+ * Local functions that will be used.
  */
-const getValuesByKeyPrefix = require('./datastore.js').getValuesByKeyPrefix
-const messages = require('./messages.js')
+const getValuesByKeyPrefix = require('./datastore').getValuesByKeyPrefix
+const messages = require('./messages')
 
 /**
  *

@@ -5,23 +5,23 @@
 /**
  * Message functions for the unblinkingBot.
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138}
+ * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
 /**
- * Require the modules that will be used.
+ * 3rd party modules that will be used.
  * @see {@link https://github.com/request/request request}
  */
 const request = require('request')
 
 /**
- * Require the local functions that will be used.
+ * Local functions that will be used.
  */
 const getValuesByKeyPrefix = require('./datastore.js').getValuesByKeyPrefix
 
 /**
- * Handle a new message from the Slack RTM Client RTM_EVENTS.MESSAGE event. If
- * the message includes text, and it was not posted from the bot's own user ID,
- * then see if the text includes any magic words.
+ * Inbox for new messages from the Slack RTM Client RTM_EVENTS.MESSAGE event.
+ * Verify that the message includes text, and it was not posted from the bot's * own user ID, then see if the text includes any magic words.
  */
 function inbox (bundle, message) {
   return new Promise(resolve => {
