@@ -31,16 +31,16 @@
     "eslint-plugin-node": "5.1.0",
     "eslint-plugin-promise": "3.5.0",
     "eslint-plugin-standard": "3.0.1",
-    "istanbul": "0.4.5",
+    "nyc": "11.1.0",
     "mocha": "3.4.2",
     "npm-check-updates": "2.12.1",
     "should": "11.2.1",
     "supertest": "3.0.0"
   },
   "scripts": {
-    "pretest": "echo npm-check-updates && ncu",
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec",
-    "posttest": "./node_modules/.bin/codecov",
+    "pretest": "ncu --packageFile package.json",
+    "test": "nyc mocha",
+    "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "start": "node app.js"
   }
 }

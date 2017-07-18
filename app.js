@@ -23,19 +23,17 @@ const sockets = require('./sockets')
 var bundle = {
   "db": undefined, // LevelDB datastore.
   "express": undefined, // Express.js web front-end.
+  "server": undefined, // Http server.
   "io": undefined, // Socket.IO websockets.
   "rtm": undefined, // Slack RTM Client object.
-  "server": undefined, // Http server.
-  "web": undefined, // Slack Web Client object.
+  "web": undefined // Slack Web Client object.
 }
 
 async function startThisApp (bundle) {
-  await frontend.create(bundle)
   await datastore.create(bundle)
+  await frontend.create(bundle)
   await sockets.create(bundle) // Uses bundle.server from frontend.create
   await slacks.startSlack(bundle)
 }
 
 startThisApp(bundle)
-
-exports.app = bundle.express // For unit tests.
