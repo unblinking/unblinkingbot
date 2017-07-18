@@ -122,9 +122,4 @@ const spawns = {
 
 };
 
-/**
- * Assign our appRouter object to module.exports.
- * @see {@link https://nodejs.org/api/modules.html#modules_the_module_object Nodejs modules: The module object}
- * @see {@link https://nodejs.org/api/modules.html#modules_module_exports Nodejs modules: module exports}
- */
 module.exports = spawns;
