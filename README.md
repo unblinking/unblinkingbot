@@ -1,4 +1,4 @@
-# unblinkingBot  
+# ಠ_ಠ unblinkingBot  
 
 ![unblinkingbot logo](https://raw.githubusercontent.com/nothingworksright/unblinkingbot/master/public/images/android-chrome-192x192.png)  
 

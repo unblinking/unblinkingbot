@@ -64,7 +64,10 @@ function findCommandWords (bundle, message) {
   return new Promise(resolve => {
     let botId = bundle.rtm.activeUserId
     let botName = bundle.rtm.dataStore.getUserById(botId).name
-    if (/snapshot list/gi.test(message.text)) { // Request for the snapshot list
+    if (
+      /snapshot list/gi.test(message.text) ||
+      /camera list/gi.test(message.text)
+    ) { // Request for the snapshot list
       getSnapshotList(bundle, message)
     } else if (/snapshot/gi.test(message.text)) { // Request snapshot, not list
       getSnapshot(bundle, message)
