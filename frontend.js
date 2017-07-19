@@ -24,6 +24,7 @@ const pretty_error = require('pretty-error')
 
 /**
  * Instantiate the express.js application.
+ * @param {Object} bundle The main bundle of shared references from app.js.
  */
 function expressInstance (bundle) {
   return new Promise(resolve => {
@@ -35,6 +36,7 @@ function expressInstance (bundle) {
 /**
  * Configure the express.js application.
  * Define all express configurations here (except routes, define routes last).
+ * @param {Object} bundle The main bundle of shared references from app.js.
  */
 function expressConfigure (bundle) {
   return new Promise(resolve => {
@@ -48,6 +50,7 @@ function expressConfigure (bundle) {
 
 /**
  * Define the express.js routes.
+ * @param {Object} bundle The main bundle of shared references from app.js.
  * @see {@link https://expressjs.com/en/guide/routing.html Express routing}
  */
 function expressRoutes (bundle) {
@@ -61,6 +64,7 @@ function expressRoutes (bundle) {
 
 /**
  * Define the express.js error handling middleware.
+ * @param {Object} bundle The main bundle of shared references from app.js.
  */
 function expressErrors (bundle) {
   return new Promise(resolve => {
@@ -85,6 +89,7 @@ function expressErrors (bundle) {
 
 /**
  * Instantiate the http server.
+ * @param {Object} bundle The main bundle of shared references from app.js.
  */
 function serverInstance (bundle) {
   return new Promise(resolve => {
@@ -95,6 +100,7 @@ function serverInstance (bundle) {
 
 /**
  * Listen for http server connections.
+ * @param {Object} bundle The main bundle of shared references from app.js.
  * @see {@link https://expressjs.com/en/api.html#app.listen Express app.listen}
  * @see {@link https://github.com/socketio/socket.io socket.io}
  * "Starting with 3.0, express applications have become request handler
@@ -112,6 +118,10 @@ function serverListen (bundle) {
   })
 }
 
+/**
+ * Create the web front-end parts in proper order.
+ * @param {Object} bundle The main bundle of shared references from app.js.
+ */
 async function create (bundle) {
   await expressInstance(bundle)
   await expressConfigure(bundle)

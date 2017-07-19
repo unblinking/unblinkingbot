@@ -33,8 +33,7 @@ const pretty = new pretty_error().skipNodeFiles()
  */
 const getAllData = require('./datastore.js').getAll
 const getValuesByKeyPrefix = require('./datastore.js').getValuesByKeyPrefix
-const startSlack = require('./slacks.js').startSlack
-const disconnectRtm = require('./slacks.js').disconnectRtm
+const slacks = require('./slacks.js')
 
 function instance (bundle) {
   return new Promise(resolve => {
@@ -144,13 +143,13 @@ function configure (bundle) {
       /**
        * Register the "slackRestartReq" event handler.
        */
-      socket.on('slackRestartReq', () => startSlack(bundle))
+      socket.on('slackRestartReq', () => slacks.create(bundle))
 
       /**
        * Register the "slackStopReq" event handler.
        * Disconnect the Slack RTM Client.
        */
-      socket.on('slackStopReq', () => disconnectRtm(bundle))
+      socket.on('slackStopReq', () => slacks.disconnectRtm(bundle))
 
       /**
        * Register the "slackNotifyReq" event handler.
