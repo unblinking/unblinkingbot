@@ -22,12 +22,12 @@ const sockets = require('./sockets')
  * will be assigned as the application starts up.
  */
 var bundle = {
-  "db": undefined, // LevelDB key/value datastore.
-  "express": undefined, // Express.js web application framework.
-  "server": undefined, // Http server for Express.js and Socket.IO to share.
-  "io": undefined, // Socket.IO websockets for the web front-end application.
-  "rtm": undefined, // Slack RTM API Client object (real-time messaging).
-  "web": undefined // Slack Web API Client object.
+  'db': undefined, // LevelDB key/value datastore.
+  'express': undefined, // Express.js web application framework.
+  'server': undefined, // Http server for Express.js and Socket.IO to share.
+  'io': undefined, // Socket.IO websockets for the web front-end application.
+  'rtm': undefined, // Slack RTM API Client object (real-time messaging).
+  'web': undefined // Slack Web API Client object.
 }
 
 /**

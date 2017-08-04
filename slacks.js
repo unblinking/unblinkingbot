@@ -22,7 +22,7 @@ const request = require('request')
 const messages = require('./messages')
 
 /**
- * Instantiate a new Slack RTM Client
+ * Instantiate new Slack RTM and Web Clients.
  * @param {Object} bundle The main bundle of shared references from app.js.
  */
 function getNewClients (bundle) {

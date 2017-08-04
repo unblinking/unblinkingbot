@@ -18,7 +18,7 @@ enableHideBtn();
 
 /**
  * Register the "fullDbRes" event handler.
- * Enable the refresh button, and then populate the datastore data into the 
+ * Enable the refresh button, and then populate the datastore data into the
  * dataStoreCardBody element.
  */
 socket.on("fullDbRes", data =>

@@ -22,7 +22,7 @@ enableRestartBtn();
 //socket.on("reconnect", () => location.reload());
 
 /**
- * 
+ *
  */
 function enableRestartBtn() {
   return new P(resolve => {
