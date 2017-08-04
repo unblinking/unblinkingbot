@@ -22,13 +22,15 @@ const getValuesByKeyPrefix = require('./datastore.js').getValuesByKeyPrefix
 /**
  * Inbox for new messages from the Slack RTM Client RTM_EVENTS.MESSAGE event.
  * Verify that the message includes text, and it was not posted from the bot's * own user ID, then see if the text includes any magic words.
+ * @param {Object} bundle The main bundle of shared references.
+ * @param {Object} message A message object from the Slack RTM_EVENTS.MESSAGE.
  */
 function inbox (bundle, message) {
   return new Promise(resolve => {
     let botUser = bundle.rtm.activeUserId
     if (
-      message.text !== undefined &&
-      message.user !== botUser
+      message.text !== undefined && // The message does have some text.
+      message.user !== botUser // The message is not from this bot user.
     ) {
       findMagicWords(bundle, message)
     }
@@ -113,6 +115,9 @@ function getSnapshotList (bundle, message) {
   })
 }
 
+/**
+ *
+ */
 function getSnapshot (bundle, message) {
   return new Promise(resolve => {
     getValuesByKeyPrefix(bundle, 'motion::snapshot::')
@@ -162,6 +167,9 @@ function getSnapshot (bundle, message) {
   })
 }
 
+/**
+ *
+ */
 function thatsMyName (bundle, message) {
   return new Promise(resolve => {
     let user = bundle.rtm.dataStore.getUserById(message.user).name
