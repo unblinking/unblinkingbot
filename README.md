@@ -1,4 +1,4 @@
-# unblinkingBot  
+# ಠ_ಠ unblinkingBot  
 
 ![unblinkingbot logo](https://raw.githubusercontent.com/nothingworksright/unblinkingbot/master/public/images/android-chrome-192x192.png)  
 
@@ -13,4 +13,5 @@ For documentation, please [see the wiki](https://github.com/nothingworksright/un
 ## Show your support  
 
 Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
-:copyright: 2017 [nothingworksright](https://github.com/nothingworksright)  
+
+© 2017 [nothingworksright](https://github.com/nothingworksright)  

@@ -4,8 +4,6 @@ Dockerfile
 .gitignore
 README.md
 node_modules/
-unblinkingbot.db/
-.vscode/
 .eslintrc.json
 npm-debug.log.*
 testing*
