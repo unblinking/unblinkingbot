@@ -9,27 +9,27 @@
 /**
  * Render the HTML for the Datastore Refresh button.
  */
-function renderHtmlBtnDatastoreRefresh() {
-  return new P.resolve(`Refresh`);
+function renderHtmlBtnDatastoreRefresh () {
+  return new P.resolve(`Refresh`)
 }
 
 /**
  * Render the HTML for the Datastore Refresh button during a refresh.
  */
-function renderHtmlBtnDatastoreRefreshing() {
-  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Refreshing`);
+function renderHtmlBtnDatastoreRefreshing () {
+  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Refreshing`)
 }
 
 /**
  * Render the HTML for the Datastore Hide button.
  */
-function renderHtmlBtnDatastoreHide() {
-  return new P.resolve(`Hide`);
+function renderHtmlBtnDatastoreHide () {
+  return new P.resolve(`Hide`)
 }
 
 /**
  * Render the HTML for the Datastore Hide button during a hide.
  */
-function renderHtmlBtnDatastoreHiding() {
-  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Hiding`);
+function renderHtmlBtnDatastoreHiding () {
+  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Hiding`)
 }
