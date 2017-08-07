@@ -16,11 +16,11 @@
  * @see {@link https://nodejs.org/api/path.html path}
  * @see {@link https://github.com/AriaMinaei/pretty-error pretty-error}
  */
-const ansi_to_html = require('ansi-to-html')
+const AnsiToHtml = require('ansi-to-html')
 const express = require('express')
 const http = require('http')
 const path = require('path')
-const pretty_error = require('pretty-error')
+const PrettyError = require('pretty-error')
 
 /**
  * Instantiate the express.js application.
@@ -68,17 +68,17 @@ function expressRoutes (bundle) {
  */
 function expressErrors (bundle) {
   return new Promise(resolve => {
-    const ansiConvert = new ansi_to_html({
+    const convert = new AnsiToHtml({
       newline: true
     })
-    const prettyError = new pretty_error().skipNodeFiles()
+    const pretty = new PrettyError().skipNodeFiles()
     bundle.express.use(function (req, res, next) {
       res.status(404).render('404')
     })
     bundle.express.use(function (err, req, res, next) {
       if (err) {
         let params = {
-          error: ansiConvert.toHtml(prettyError.render(err))
+          error: convert.toHtml(pretty.render(err))
         }
         res.render('error', params)
       }
