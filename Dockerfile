@@ -4,7 +4,7 @@ FROM nothingworksright/amd64_debian_systemd
 ENV INITSYSTEM on
 
 # Update sources, install curl and build-essential
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     curl \
     build-essential
 
