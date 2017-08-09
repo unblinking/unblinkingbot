@@ -19,4 +19,4 @@ RUN systemctl enable unblinkingbot.service
 EXPOSE 1138
 
 # Run systemd
-CMD [ "/usr/sbin/init" ]
+CMD [ "/sbin/init" ]
