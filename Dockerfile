@@ -1,8 +1,5 @@
 FROM nothingworksright/amd64_debian_systemd
 
-# Enable the systemd init system
-ENV INITSYSTEM on
-
 # Update sources, install curl and build-essential
 RUN apt-get update && apt-get install -y \
     curl \
