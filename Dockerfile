@@ -1,4 +1,4 @@
-FROM nothingworksright/amd64_debian_node
+FROM nothingworksright/amd64_debian_systemd
 
 # Enable the systemd init system
 ENV INITSYSTEM on
