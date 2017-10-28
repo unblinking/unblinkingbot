@@ -7,9 +7,9 @@
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
 
-/**
- * @see {@link https://socket.io/docs/#using-with-express-3/4 Socket.io }
- */
+/* eslint-env jquery */
+/* global io */
+
 var socket = io.connect()
 
 /**
@@ -165,7 +165,7 @@ socket.on('saveMotionUrlRes', (object, success, err) => {
  * @param {String} html HTML to set as the content of each matched element.
  */
 function alertAnimationError (element, html) {
-  return new P(resolve => fade(element, 0, 0)
+  return new Promise(resolve => fade(element, 0, 0)
     .then(() => upSlide(element, 0))
     .then(() => htmlSet(element, html))
     .then(() => downSlide(element, 500))
@@ -183,7 +183,7 @@ function alertAnimationError (element, html) {
  * @param {String} html HTML to set as the content of each matched element.
  */
 function alertAnimationSuccess (element, html) {
-  return new P(resolve => fade(element, 0, 0)
+  return new Promise(resolve => fade(element, 0, 0)
     .then(() => upSlide(element, 0))
     .then(() => htmlSet(element, html))
     .then(() => downSlide(element, 500))
@@ -200,7 +200,7 @@ function alertAnimationSuccess (element, html) {
  * @param {String} message A message from the Slack RTM Connection event.
  */
 function alertSlackConnection (message) {
-  return new P(resolve => renderHtmlAlertSlackConnection(message)
+  return new Promise(resolve => renderHtmlAlertSlackConnection(message)
     .then(alert => alertAnimationSuccess(alert.element, alert.html))
     .then(() => resolve()))
 }
@@ -210,7 +210,7 @@ function alertSlackConnection (message) {
  * @param {String} message A message from the Slack RTM Disconnection event.
  */
 function alertSlackDisconnection (message) {
-  return new P(resolve => renderHtmlAlertSlackDisconnection(message)
+  return new Promise(resolve => renderHtmlAlertSlackDisconnection(message)
     .then(alert => alertAnimationSuccess(alert.element, alert.html))
     .then(() => resolve()))
 }
@@ -220,7 +220,7 @@ function alertSlackDisconnection (message) {
  * @param {number} seconds How many seconds to count to.
  */
 function countTo (seconds) {
-  return new P(resolve => setTimeout(resolve, (seconds * 1000)))
+  return new Promise(resolve => setTimeout(resolve, (seconds * 1000)))
 }
 
 /**
@@ -229,14 +229,14 @@ function countTo (seconds) {
  * @param {Number} speed Duration of the animation in milliseconds.
  */
 function downSlide (element, speed) {
-  return new P(resolve => element.show(speed, resolve))
+  return new Promise(resolve => element.show(speed, resolve))
 }
 
 /**
  *
  */
 function enableNotifyTypeRadioBtn () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#radioChannel').off('click') // Remove previous handler to start with none.
     $('#radioChannel').one('click', () => { // Add new handler.
       $('#radioChannel').off('click') // When clicked, remove handler.
@@ -271,7 +271,7 @@ function enableNotifyTypeRadioBtn () {
  * restarting message, and then emit a slackRestartReq event via Socket.io.
  */
 function enableRestartSlackBtn () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#startSlack').off('click') // Start with no click handler, prevent duplicates.
     renderHtmlBtnSlackRestart().then(html => $('#startSlack').html(html))
     $('#startSlack').one('click', () => { // Add new click handler.
@@ -287,7 +287,7 @@ function enableRestartSlackBtn () {
  *
  */
 function enableSaveNotifyBtn () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     let btnC = $('#saveSlackDefaultNotifyChannel')
     let btnG = $('#saveSlackDefaultNotifyGroup')
     let btnU = $('#saveSlackDefaultNotifyUser')
@@ -337,7 +337,7 @@ function enableSaveNotifyBtn () {
  * slackToken input element.
  */
 function enableSaveTokenBtn () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     let btn = $('#saveToken')
     btn.off('click') // Remove previous handler to start with none.
     renderHtmlBtnSaveToken().then(html => btn.html(html))
@@ -356,7 +356,7 @@ function enableSaveTokenBtn () {
  * stopping message, and then emit a slackStopReq event via Socket.io.
  */
 function enableStopSlackBtn () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     let btn = $('#stopSlack')
     btn.off('click') // Remove previous handler to start with none.
     renderHtmlBtnSlackStop().then(html => btn.html(html))
@@ -370,7 +370,7 @@ function enableStopSlackBtn () {
 }
 
 function enableSaveMotionUrlBtn () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     let btn = $('#saveMotionUrl')
     btn.off('click') // Remove previous handler to start with none.
     renderHtmlBtnMotionUrlSave().then(html => btn.html(html))
@@ -393,7 +393,7 @@ function enableSaveMotionUrlBtn () {
  * @param {Number} opacity Target opacity, a number between 0 and 1.
  */
 function fade (element, speed, opacity) {
-  return new P(resolve => element.fadeTo(speed, opacity, resolve))
+  return new Promise(resolve => element.fadeTo(speed, opacity, resolve))
 }
 
 /**
@@ -401,7 +401,7 @@ function fade (element, speed, opacity) {
  * @param {*} err
  */
 function handleSaveNotifyError (err) {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#inputChannels').addClass('has-error')
     $('#inputGroups').addClass('has-error')
     $('#inputUsers').addClass('has-error')
@@ -415,7 +415,7 @@ function handleSaveNotifyError (err) {
  * @param {*} notifyType
  */
 function handleSaveNotifySuccess (notify, notifyType) {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#currentSettingsNotify').html(notifyType + ' ' + notify)
     if (notifyType === 'channel') $('#inputChannels').addClass('has-success')
     if (notifyType === 'group') $('#inputGroups').addClass('has-success')
@@ -429,7 +429,9 @@ function handleSaveNotifySuccess (notify, notifyType) {
  * @param {*} err
  */
 function handleSaveTokenError (err) {
-  return new P.resolve($('#slackTokenInputGroup').addClass('has-error'))
+  return new Promise(resolve => {
+    ($('#slackTokenInputGroup').addClass('has-error'))
+  })
 }
 
 /**
@@ -437,7 +439,7 @@ function handleSaveTokenError (err) {
  * @param {*} token
  */
 function handleSaveTokenSuccess (token) {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#slackTokenInputGroup').addClass('has-success')
     socket.emit('slackRestartReq')
     resolve()
@@ -445,7 +447,7 @@ function handleSaveTokenSuccess (token) {
 }
 
 function handleSaveMotionUrlSuccess (object) {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#motionSnapshotUrlList').append("<a href='" + object.url + "'>" + object.name + '</a><br>')
     $('#motionUrlInputGroup').addClass('has-success')
     resolve()
@@ -456,7 +458,7 @@ function handleSaveMotionUrlSuccess (object) {
  * Hide all drop down selectors for default notifications
  */
 function hideDefaultNotifySelectors () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#inputChannels').addClass('hidden-xs-up')
     $('#inputGroups').addClass('hidden-xs-up')
     $('#inputUsers').addClass('hidden-xs-up')
@@ -470,11 +472,13 @@ function hideDefaultNotifySelectors () {
  * @param {String} html HTML string to set as the content of matched elements.
  */
 function htmlSet (element, html) {
-  return new P.resolve(element.html(html))
+  return new Promise(resolve => {
+    (element.html(html))
+  })
 }
 
 function populateDropDown (element, array, selector) {
-  return new P(resolve => {
+  return new Promise(resolve => {
     element.removeClass('hidden-xs-up')
     for (let i = 0; i < array.length; i++) {
       let name = array[i]
@@ -491,7 +495,7 @@ function populateDropDown (element, array, selector) {
  * Remove the has-success class from inputs on focus events.
  */
 function removeSuccessOnFocus () {
-  return new P(resolve => {
+  return new Promise(resolve => {
     $('#slackToken').focus(() => $('#slackTokenInputGroup').removeClass('has-success'))
     $('#defaultChannelSelect').focus(() => $('#inputChannels').removeClass('has-success'))
     $('#defaultGroupSelect').focus(() => $('#inputGroups').removeClass('has-success'))
@@ -504,7 +508,9 @@ function removeSuccessOnFocus () {
  *
  */
 function slackConnectionStatusReq () {
-  return new P.resolve(socket.emit('slackConnectionStatusReq'))
+  return new Promise(resolve => {
+    (socket.emit('slackConnectionStatusReq'))
+  })
 }
 
 /**
@@ -512,7 +518,7 @@ function slackConnectionStatusReq () {
  * @param {Boolean} connected True if connected, false if disconnected.
  */
 function slackConnectionStatusUpdate (connected) {
-  return new P(resolve => {
+  return new Promise(resolve => {
     let element = $('#slackIntegrationStatus')
     if (connected) {
       element.removeClass('text-danger')
@@ -531,21 +537,27 @@ function slackConnectionStatusUpdate (connected) {
  *
  */
 function slackNotifyReq () {
-  return new P.resolve(socket.emit('slackNotifyReq'))
+  return new Promise(resolve => {
+    (socket.emit('slackNotifyReq'))
+  })
 }
 
 /**
  *
  */
 function slackTokenReq () {
-  return new P.resolve(socket.emit('slackTokenReq'))
+  return new Promise(resolve => {
+    (socket.emit('slackTokenReq'))
+  })
 }
 
 /**
  *
  */
 function motionSnapshotsReq () {
-  return new P.resolve(socket.emit('motionSnapshotsReq'))
+  return new Promise(resolve {
+    (socket.emit('motionSnapshotsReq'))
+  })
 }
 
 /**
@@ -554,7 +566,7 @@ function motionSnapshotsReq () {
  * @param {Number} speed Duration of the animation in milliseconds.
  */
 function upSlide (element, speed) {
-  return new P(resolve => {
+  return new Promise(resolve => {
     element.hide(speed, resolve)
   })
 }

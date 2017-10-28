@@ -6,30 +6,36 @@
  * @see {@link http://getbootstrap.com/components/#alerts Bootstrap Alerts}
  */
 
+/* exported renderHtmlBtnDatastoreRefresh */
+/* exported renderHtmlBtnDatastoreRefreshing */
+/* exported renderHtmlBtnDatastoreHide */
+/* exported renderHtmlBtnDatastoreHiding */
+
+
 /**
  * Render the HTML for the Datastore Refresh button.
  */
 function renderHtmlBtnDatastoreRefresh () {
-  return new P.resolve(`Refresh`)
+  Promise.resolve(`Refresh`)
 }
 
 /**
  * Render the HTML for the Datastore Refresh button during a refresh.
  */
 function renderHtmlBtnDatastoreRefreshing () {
-  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Refreshing`)
+  return new Promise.resolve(`<div class="loader float-left"></div> &nbsp; Refreshing`)
 }
 
 /**
  * Render the HTML for the Datastore Hide button.
  */
 function renderHtmlBtnDatastoreHide () {
-  return new P.resolve(`Hide`)
+  return new Promise.resolve(`Hide`)
 }
 
 /**
  * Render the HTML for the Datastore Hide button during a hide.
  */
 function renderHtmlBtnDatastoreHiding () {
-  return new P.resolve(`<div class="loader float-left"></div> &nbsp; Hiding`)
+  return new Promise.resolve(`<div class="loader float-left"></div> &nbsp; Hiding`)
 }

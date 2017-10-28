@@ -13,17 +13,20 @@
   "engines": {
     "node": "8.8.1"
   },
+  "standard": {
+    "ignore": [
+      "/public/bootstrap",
+      "/public/jquery"
+    ]
+  },
   "dependencies": {
     "@slack/client": "3.14.1",
-    "ansi-to-html": "0.6.3",
     "express": "4.16.2",
+    "helmet": "3.9.0",
     "level": "2.0.0",
     "moment": "2.19.1",
-    "ncu": "0.2.1",
-    "pretty-error": "2.1.1",
     "pug": "2.0.0-rc.4",
-    "socket.io": "2.0.4",
-    "then-levelup": "1.0.2"
+    "socket.io": "2.0.4"
   },
   "devDependencies": {
     "codecov": "3.0.0",
@@ -31,6 +34,7 @@
     "eslint": "4.9.0",
     "intercept-stdout": "0.1.2",
     "mocha": "3.4.2",
+    "ncu": "0.2.1",
     "npm-check-updates": "2.13.0",
     "nyc": "11.2.1",
     "should": "13.1.2",
@@ -38,10 +42,12 @@
     "supertest": "3.0.0"
   },
   "scripts": {
+    "linter": "standard",
+    "fixer": "standard --fix",
     "pretest": "echo \"Checking for available dependency updates\" && ncu",
     "test": "standard && nyc mocha --reporter dot",
     "testonly": "nyc mocha --reporter spec",
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "start": "node app.js"
+    "start": "node -e 'require(`./app`).main()'"
   }
 }

@@ -2,9 +2,11 @@
 
 ![unblinkingbot logo](https://raw.githubusercontent.com/nothingworksright/unblinkingbot/master/public/images/android-chrome-192x192.png)  
 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)  
+
 ## About  
 
-The unblinkingBot is a surveillance-system assistant.  
+A surveillance system assistant.  
 
 For general information, please [see the website](http://www.unblinkingBot.com/).  
 

@@ -5,25 +5,25 @@
  * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
  */
 
-/**
- * @see {@link https://socket.io/docs/#using-with-express-3/4 Socket.io }
- */
-var socket = io.connect();
+/* eslint-env jquery */
+/* global io */
+
+var socket = io.connect()
 
 /**
  * Setup the page buttons when this script is loaded.
  */
-enableRefreshBtn();
-enableHideBtn();
+enableRefreshBtn()
+enableHideBtn()
 
 /**
  * Register the "fullDbRes" event handler.
  * Enable the refresh button, and then populate the datastore data into the
  * dataStoreCardBody element.
  */
-socket.on("fullDbRes", data =>
+socket.on('fullDbRes', data =>
   enableRefreshBtn().then(() =>
-    $("#dataStoreCardBody").html(JSON.stringify(data, undefined, 2))));
+    $('#dataStoreCardBody').html(JSON.stringify(data, undefined, 2))))
 
 /**
  * Attach a handler to the click event for the hideBtn element.
@@ -33,18 +33,18 @@ socket.on("fullDbRes", data =>
  * to happen at the same time, and then set the html content of
  * dataStoreCardBody to an empty string, and then enable the hide button again.
  */
-function enableHideBtn() {
-  return new P(resolve => {
-    $("#hideBtn").off("click"); // Remove previous handler to start with none.
-    renderHtmlBtnDatastoreHide().then(html => $("#hideBtn").html(html));
-    $("#hideBtn").one("click", () => { // Add new handler.
-      $("#hideBtn").off("click"); // When clicked, remove handler.
-      renderHtmlBtnDatastoreHiding().then(html => $("#hideBtn").html(html));
-      $("#dataStoreCardBody").html("");
-      enableHideBtn();
-    });
-    resolve();
-  });
+function enableHideBtn () {
+  return new Promise(resolve => {
+    $('#hideBtn').off('click') // Remove previous handler to start with none.
+    Promise.resolve(`Hide`).then(html => $('#hideBtn').html(html))
+    $('#hideBtn').one('click', () => { // Add new handler.
+      $('#hideBtn').off('click') // When clicked, remove handler.
+      Promise.resolve(`<div class="loader float-left"></div> &nbsp; Hiding`).then(html => $('#hideBtn').html(html))
+      $('#dataStoreCardBody').html('')
+      enableHideBtn()
+    })
+    resolve()
+  })
 }
 
 /**
@@ -54,15 +54,15 @@ function enableHideBtn() {
  * clicked, first remove the existing handler to disable multiple clicks trying
  * to happen at the same time, and then use Socket.io to emit fullDbReq.
  */
-function enableRefreshBtn() {
-  return new P(resolve => {
-    $("#refreshBtn").off("click"); // Remove previous handler to start with none.
-    renderHtmlBtnDatastoreRefresh().then(html => $("#refreshBtn").html(html));
-    $("#refreshBtn").one("click", () => { // Add new handler.
-      $("#refreshBtn").off("click"); // When clicked, remove handler.
-      renderHtmlBtnDatastoreRefreshing().then(html => $("#refreshBtn").html(html));
-      socket.emit("fullDbReq");
-    });
-    resolve();
-  });
+function enableRefreshBtn () {
+  return new Promise(resolve => {
+    $('#refreshBtn').off('click') // Remove previous handler to start with none.
+    Promise.resolve(`Refresh`).then(html => $('#refreshBtn').html(html))
+    $('#refreshBtn').one('click', () => { // Add new handler.
+      $('#refreshBtn').off('click') // When clicked, remove handler.
+      Promise.resolve(`<div class="loader float-left"></div> &nbsp; Refreshing`).then(html => $('#refreshBtn').html(html))
+      socket.emit('fullDbReq')
+    })
+    resolve()
+  })
 }

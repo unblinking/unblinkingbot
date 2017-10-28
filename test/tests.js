@@ -17,5 +17,3 @@ describe(`Unit testing`, () => {
     require(`./app/app`)
   })
 })
-
-
