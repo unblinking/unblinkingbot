@@ -48,6 +48,6 @@
     "test": "standard && nyc mocha --reporter dot",
     "testonly": "nyc mocha --reporter spec",
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "start": "node -e 'require(`./app`).main()'"
+    "start": "node app.js"
   }
 }

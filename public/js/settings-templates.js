@@ -1,38 +1,10 @@
 /**
- * The unblinking bot.
- * HTML templates for the unblinkingbot web UI settings page.
- * @namespace settings-templates.js
- * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
+ * HTML templates for the unblinkingbot frontend settings page.
+ * @author {@link https://github.com/jmg1138 jmg1138}
  * @see {@link http://getbootstrap.com/components/#alerts Bootstrap Alerts}
  */
 
 /* eslint-env jquery */
-
-/**
- * Render the HTML for a Bootstrap alert that Slack is connected.
- * @param {String} message A message from the Slack RTM Connection event.
- */
-function renderHtmlAlertSlackConnection (message) {
-  return new Promise(resolve => {
-    resolve({
-      element: $('#restartSlackIntegrationAlert'),
-      html: `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack integration was started.<br><span class="small">Message: ${message}</span></div>`
-    })
-  })
-}
-
-/**
- * Render the HTML for a Bootstrap alert that Slack is disconnected.
- * @param {String} message A message from the Slack RTM Disconnection event.
- */
-function renderHtmlAlertSlackDisconnection (message) {
-  return new Promise(resolve => {
-    resolve({
-      element: $('#stopSlackIntegrationAlert'),
-      html: `<div class="alert alert-warning mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Warning!</strong> Slack integration was stopped.<br><span class="small">Message: ${message}</span></div>`
-    })
-  })
-}
 
 /**
  *

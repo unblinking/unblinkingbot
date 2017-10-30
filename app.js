@@ -8,12 +8,11 @@
  * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
-/*
 const datastores = require(`./lib/datastores`)
 const frontends = require('./lib/frontends')
+const funs = require(`./lib/funs`)
 const slacks = require('./lib/slacks')
 const sockets = require('./lib/sockets')
-*/
 
 /**
  * Starts the unblinkingBot application.
@@ -25,25 +24,28 @@ const sockets = require('./lib/sockets')
  */
 async function main () {
   try {
-    console.log(`got here`)
-    /*
-    let db = await datastores.instance()
-    let express = await frontends.expressInstance()
+    let db
+    let express
+    let io
+    let server
+    let slack = {}
+    db = await datastores.instance()
+    express = await frontends.expressInstance()
     await frontends.expressConfigure(express)
     await frontends.expressRoutes(express)
     await frontends.expressErrors(express)
-    let server = await frontends.serverInstance(express)
+    server = await frontends.serverInstance(express)
     await frontends.serverListen(server)
-    */
+    io = await sockets.instance(server)
+    await sockets.listen(db, io, slack)
+    console.log(await funs.graffiti())
   } catch (err) {
     console.log(err)
   }
 }
 
+if (require.main === module) main()
+
 module.exports = {
   main: main
 }
-
-
-console.warn(`root of the file`)
-process.stdout.write("hello: \n");
