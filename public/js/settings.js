@@ -52,25 +52,7 @@ async function alertAnimationSuccess (element, html) {
   }
 }
 
-/**
- * Show the Slack RTM Connection alert.
- * @param {String} message A message from the Slack RTM Connection event.
- */
-async function alertSlackConnection (message) {
-  try {
-    let element = $('#restartSlackIntegrationAlert')
-    let html = `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack integration was started.<br><span class="small">Message: ${message}</span></div>`
-    await alertAnimationSuccess(element, html)
-    return
-  } catch (err) {
-    console.log(err)
-  }
 
-
-  return new Promise(resolve => renderHtmlAlertSlackConnection(message)
-    .then(alert => alertAnimationSuccess(alert.element, alert.html))
-    .then(() => resolve()))
-}
 
 /**
  * Show the Slack RTM Disconnection alert.
@@ -111,11 +93,12 @@ function downSlide (element, speed) {
  */
 function enableRestartSlackBtn () {
   return new Promise(resolve => {
-    $('#startSlack').off('click') // Start with no click handler, prevent duplicates.
-    renderHtmlBtnSlackRestart().then(html => $('#startSlack').html(html))
-    $('#startSlack').one('click', () => { // Add new click handler.
-      $('#startSlack').off('click') // When clicked, remove handler.
-      renderHtmlBtnSlackRestarting().then(html => $('#startSlack').html(html))
+    let btn = $('#startSlack')
+    btn.off('click') // Start with no click handler, prevent duplicates.
+    btn.html(`Restart Slack RTM Client`)
+    btn.one('click', () => { // Add new click handler.
+      btn.off('click') // When clicked, remove handler.
+      btn.html(`<div class="loader float-left"></div> &nbsp; Restarting Slack RTM Client`)
       socket.emit('slackRestartReq')
     })
     resolve()
@@ -131,10 +114,10 @@ function enableStopSlackBtn () {
   return new Promise(resolve => {
     let btn = $('#stopSlack')
     btn.off('click') // Remove previous handler to start with none.
-    renderHtmlBtnSlackStop().then(html => btn.html(html))
+    btn.html(`Stop Slack RTM Client`)
     btn.one('click', () => { // Add new handler.
       btn.off('click') // When clicked, remove handler.
-      renderHtmlBtnSlackStopping().then(html => btn.html(html))
+      btn.html(`<div class="loader float-left"></div> &nbsp; Stopping Slack RTM Client`)
       socket.emit('slackStopReq')
     })
     resolve()
@@ -151,10 +134,10 @@ function enableSaveTokenBtn () {
   return new Promise(resolve => {
     let btn = $('#saveToken')
     btn.off('click') // Remove previous handler to start with none.
-    renderHtmlBtnSaveToken().then(html => btn.html(html))
+    btn.html(`Save`)
     btn.one('click', () => { // Add new handler.
       btn.off('click') // When clicked, remove handler.
-      renderHtmlBtnSavingToken().then(html => btn.html(html))
+      btn.html(`<div class="loader float-left"></div>`)
       socket.emit('saveSlackTokenReq', $('input[id=slackToken]').val())
     })
     resolve()
@@ -172,14 +155,12 @@ function enableSaveNotifyBtn () {
     btnC.off('click') // Remove previous handler to start with none.
     btnG.off('click') // Remove previous handler to start with none.
     btnU.off('click') // Remove previous handler to start with none.
-    renderHtmlBtnSaveNotify().then(html => {
-      btnC.html(html)
-      btnG.html(html)
-      btnU.html(html)
-    })
+    btnC.html(`Save`)
+    btnG.html(`Save`)
+    btnU.html(`Save`)
     btnC.one('click', () => { // Add new handler.
       btnC.off('click') // When clicked, remove handler.
-      renderHtmlBtnSavingNotify().then(html => btnC.html(html))
+      btnC.html(`<div class="loader float-left"></div>`)
       socket.emit(
         'saveSlackNotifyReq',
         $('select[id=defaultChannelSelect]').val(),
@@ -188,7 +169,7 @@ function enableSaveNotifyBtn () {
     })
     btnG.one('click', () => { // Add new handler.
       btnG.off('click') // When clicked, remove handler.
-      renderHtmlBtnSavingNotify().then(html => btnG.html(html))
+      btnG.html(`<div class="loader float-left"></div>`)
       socket.emit(
         'saveSlackNotifyReq',
         $('select[id=defaultGroupSelect]').val(),
@@ -197,7 +178,7 @@ function enableSaveNotifyBtn () {
     })
     btnU.one('click', () => { // Add new handler.
       btnU.off('click') // When clicked, remove handler.
-      renderHtmlBtnSavingNotify().then(html => btnU.html(html))
+      btnU.html(`<div class="loader float-left"></div>`)
       socket.emit(
         'saveSlackNotifyReq',
         $('select[id=defaultUserSelect]').val(),
@@ -258,10 +239,10 @@ function enableSaveMotionUrlBtn () {
   return new Promise(resolve => {
     let btn = $('#saveMotionUrl')
     btn.off('click') // Remove previous handler to start with none.
-    renderHtmlBtnMotionUrlSave().then(html => btn.html(html))
+    btn.html(`Save`)
     btn.one('click', () => { // Add new handler.
       btn.off('click') // When clicked, remove handler.
-      renderHtmlBtnMotionUrlSaving().then(html => btn.html(html))
+      btn.html(`<div class="loader float-left"></div>`)
       socket.emit('saveMotionUrlReq', {
         'name': $('input[id=motionNickname]').val(),
         'url': $('input[id=motionSnapshotUrl]').val()
@@ -309,27 +290,9 @@ function handleSaveNotifySuccess (notify, notifyType) {
   })
 }
 
-/**
- *
- * @param {*} err
- */
-function handleSaveTokenError (err) {
-  return new Promise(resolve => {
-    ($('#slackTokenInputGroup').addClass('has-error'))
-  })
-}
 
-/**
- *
- * @param {*} token
- */
-function handleSaveTokenSuccess (token) {
-  return new Promise(resolve => {
-    $('#slackTokenInputGroup').addClass('has-success')
-    socket.emit('slackRestartReq')
-    resolve()
-  })
-}
+
+
 
 function handleSaveMotionUrlSuccess (object) {
   return new Promise(resolve => {
@@ -496,41 +459,62 @@ socket.on('saveSlackNotifyRes', (notify, notifyType, success, err) =>
       }
     }))
 
-/**
- * Register the "saveSlackTokenRes" event handler.
- * Enable the save button, update token on-screen, and display an alert.
- */
-socket.on('saveSlackTokenRes', (token, success, err) => {
-  enableSaveTokenBtn()
-    .then(() => {
-      if (success) {
-        handleSaveTokenSuccess(token)
-          .then(() => renderHtmlAlertTokenSavedSuccess())
-          .then(alert => alertAnimationSuccess(alert.element, alert.html))
-      }
-      if (!success) {
-        handleSaveTokenError(err)
-          .then(() => renderHtmlAlertTokenSavedError(err))
-          .then(alert => alertAnimationError(alert.element, alert.html))
-      }
-    })
-})
+socket.on('saveSlackTokenRes', (token, success, err) =>
+  handleSaveSlackTokenRes(token, success, err)
+)
 
-/**
- *
- */
+async function handleSaveSlackTokenRes (token, success, err) {
+  await enableSaveTokenBtn()
+  if (success) {
+    $('#slackTokenInputGroup').addClass('has-success')
+    socket.emit('slackRestartReq')
+    let notice = await renderHtmlAlertTokenSavedSuccess()
+    await alertAnimationSuccess(notice.element, notice.html)
+  } else {
+    $('#slackTokenInputGroup').addClass('has-error')
+    let notice = renderHtmlAlertTokenSavedError(err)
+    await alertAnimationError(notice.element, notice.html)
+  }
+  return
+}
+
+
 socket.on('slackConnectionStatusRes', connected =>
-  slackConnectionStatusUpdate(connected))
+  slackConnectionStatusUpdate(connected)
+)
 
 /**
  * Register the "slackConnectionOpened" event handler.
  * Enable the restart button, update connection status, and display an alert.
  */
-socket.on('slackConnectionOpened', message =>
+socket.on('slackConnectionOpened', async (message) =>
   enableRestartSlackBtn()
     .then(() => slackConnectionStatusUpdate(true))
     .then(() => alertSlackConnection(message)))
 
+/**
+ * Show the Slack RTM Connection alert.
+ * @param {String} message A message from the Slack RTM Connection event.
+ */
+async function alertSlackConnection (message) {
+  try {
+    let element = $('#restartSlackIntegrationAlert')
+    let html = `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack integration was started.<br><span class="small">Message: ${message}</span></div>`
+    await alertAnimationSuccess(element, html)
+    return
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+socket.on('slackConnectionFailed', async (message) => {
+  await enableRestartSlackBtn()
+  await slackConnectionStatusUpdate(false)
+  await alertAnimationError(
+    $('#restartSlackIntegrationAlert'),
+    `<div class="alert alert-danger mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> Slack integration was not started.<br><span class="small">Message: ${message}</span></div>`
+  )
+})
 
 
 /**

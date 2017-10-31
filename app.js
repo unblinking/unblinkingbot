@@ -24,20 +24,17 @@ const sockets = require('./lib/sockets')
  */
 async function main () {
   try {
-    let db
-    let express
-    let io
-    let server
-    let slack = {}
-    db = await datastores.instance()
-    express = await frontends.expressInstance()
+    let db = await datastores.instance()
+    let express = await frontends.expressInstance()
     await frontends.expressConfigure(express)
     await frontends.expressRoutes(express)
     await frontends.expressErrors(express)
-    server = await frontends.serverInstance(express)
+    let server = await frontends.serverInstance(express)
     await frontends.serverListen(server)
-    io = await sockets.instance(server)
+    let io = await sockets.instance(server)
+    let slack = {}
     await sockets.listen(db, io, slack)
+    await slacks.connect(db, io, slack)
     console.log(await funs.graffiti())
   } catch (err) {
     console.log(err)
