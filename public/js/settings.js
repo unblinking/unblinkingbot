@@ -1,8 +1,9 @@
 'use strict'
 
 /**
- * ublinkingBot frontend settings page scripts.
+ * Settings page scripts, ublinkingBot web based management console.
  * @author {@link https://github.com/jmg1138 jmg1138}
+ * @see {@link http://unblinkingbot.com/ unblinkingBot.com}
  */
 
 /* eslint-env jquery */
@@ -11,32 +12,36 @@
 var socket = io.connect()
 
 /**
- * Alert error animation sequence.
+ * Announcement of error, animation sequence.
  * First, fade to zero opacity and slide up out of view just in case it is
  * visible. Next, set html content, slide down, and fade to full opacity. Leave
- * the error alert on the screen for the user to manually dismiss.
+ * the error announcement on the screen for the user to manually dismiss.
  * @param {JQuery} element The JQuery element selector to be manipulated.
  * @param {String} html HTML to set as the content of each matched element.
  */
-function alertAnimationError (element, html) {
-  return new Promise(resolve => fade(element, 0, 0)
-    .then(() => upSlide(element, 0))
-    .then(() => htmlSet(element, html))
-    .then(() => downSlide(element, 500))
-    .then(() => fade(element, 500, 1))
-    .then(() => resolve()))
+async function announcementAnimationError (element, html) {
+  try {
+    await fade(element, 0, 0)
+    await upSlide(element, 0)
+    await htmlSet(element, html)
+    await downSlide(element, 500)
+    await fade(element, 500, 1)
+    return
+  } catch (err) {
+    alert(err)
+  }
 }
 
 /**
- * Alert success animation sequence.
+ * Announcement of success, animation sequence.
  * First, fade to zero opacity and slide up out of view just in case it is
  * visible. Next, set html content, slide down, fade to full opacity, and sleep
- * while the alert is visible. Last, fade to zero opacity and slide up out of
- * view.
+ * while the announcement is visible. Last, fade to zero opacity and slide up
+ * out of view.
  * @param {JQuery} element The JQuery element selector to be manipulated.
  * @param {String} html HTML to set as the content of each matched element.
  */
-async function alertAnimationSuccess (element, html) {
+async function announcementAnimationSuccess (element, html) {
   try {
     await fade(element, 0, 0)
     await upSlide(element, 0)
@@ -48,21 +53,19 @@ async function alertAnimationSuccess (element, html) {
     await upSlide(element, 500)
     return
   } catch (err) {
-    console.log(err)
+    alert(err)
   }
 }
 
-
-
 /**
- * Show the Slack RTM Disconnection alert.
+ * Show the Slack RTM Disconnection announcement.
  * @param {String} message A message from the Slack RTM Disconnection event.
  */
-async function alertSlackDisconnection (message) {
+async function announcementSlackDisconnection (message) {
   try {
     let element = $('#stopSlackIntegrationAlert')
     let html = `<div class="alert alert-warning mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Warning!</strong> Slack integration was stopped.<br><span class="small">Message: ${message}</span></div>`
-    await alertAnimationSuccess(element, html)
+    await announcementAnimationSuccess(element, html)
     return
   } catch (err) {
     console.log(err)
@@ -262,33 +265,10 @@ function fade (element, speed, opacity) {
   return new Promise(resolve => element.fadeTo(speed, opacity, resolve))
 }
 
-/**
- *
- * @param {*} err
- */
-function handleSaveNotifyError (err) {
-  return new Promise(resolve => {
-    $('#inputChannels').addClass('has-error')
-    $('#inputGroups').addClass('has-error')
-    $('#inputUsers').addClass('has-error')
-    resolve()
-  })
-}
 
-/**
- *
- * @param {*} notify
- * @param {*} notifyType
- */
-function handleSaveNotifySuccess (notify, notifyType) {
-  return new Promise(resolve => {
-    $('#currentSettingsNotify').html(notifyType + ' ' + notify)
-    if (notifyType === 'channel') $('#inputChannels').addClass('has-success')
-    if (notifyType === 'group') $('#inputGroups').addClass('has-success')
-    if (notifyType === 'user') $('#inputUsers').addClass('has-success')
-    resolve()
-  })
-}
+
+
+
 
 
 
@@ -442,40 +422,59 @@ socket.on('readSlackUsersRes', userNames =>
 
 /**
  * Register the "saveSlackNotifyRes" event handler.
- * Enable the save button, update notify on-screen, and display an alert.
+ * Enable the save button, update notify on-screen, and display an announcement.
  */
 socket.on('saveSlackNotifyRes', (notify, notifyType, success, err) =>
-  enableSaveNotifyBtn()
-    .then(() => {
-      if (success) {
-        handleSaveNotifySuccess(notify, notifyType)
-          .then(() => renderHtmlAlertNotifySavedSuccess())
-          .then(alert => alertAnimationSuccess(alert.element, alert.html))
-      }
-      if (!success) {
-        handleSaveNotifyError(err)
-          .then(() => renderHtmlAlertNotifySavedError(err))
-          .then(alert => alertAnimationError(alert.element, alert.html))
-      }
-    }))
+  handleSaveSlackNotifyRes(notify, notifyType, success, err)
+)
+
+async function handleSaveSlackNotifyRes (notify, notifyType, success, err) {
+  try {
+    await enableSaveNotifyBtn()
+    if (success) {
+      $('#currentSettingsNotify').html(`${notifyType} ${notify}`)
+      if (notifyType === 'channel') $('#inputChannels').addClass('has-success')
+      if (notifyType === 'group') $('#inputGroups').addClass('has-success')
+      if (notifyType === 'user') $('#inputUsers').addClass('has-success')
+      let element = $('#saveSlackNotifyAlert')
+      let html = `<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Default notification recipient saved successfully.</div>`
+      await announcementAnimationSuccess(element, html)
+    } else {
+      $('#inputChannels').addClass('has-error')
+      $('#inputGroups').addClass('has-error')
+      $('#inputUsers').addClass('has-error')
+      let element = $('#saveSlackNotifyAlert')
+      let html = `<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> There was an error. Default notification recipient was not saved. &nbsp; <span class="badge badge-warning small"><a data-toggle="collapse" data-target="#errorDetails" aria-expanded="false" aria-controls="errorDetails">Details</a></span><br><br><div class="container-fluid rounded p-3 collapse" id="errorDetails" style="background-color:#000; overflow:hidden"> ${err} </div></div>`
+      await announcementAnimationError(element, html)
+    }
+  } catch (err) {
+    alert(err)
+  }
+}
 
 socket.on('saveSlackTokenRes', (token, success, err) =>
   handleSaveSlackTokenRes(token, success, err)
 )
 
 async function handleSaveSlackTokenRes (token, success, err) {
-  await enableSaveTokenBtn()
-  if (success) {
-    $('#slackTokenInputGroup').addClass('has-success')
-    socket.emit('slackRestartReq')
-    let notice = await renderHtmlAlertTokenSavedSuccess()
-    await alertAnimationSuccess(notice.element, notice.html)
-  } else {
-    $('#slackTokenInputGroup').addClass('has-error')
-    let notice = renderHtmlAlertTokenSavedError(err)
-    await alertAnimationError(notice.element, notice.html)
+  try {
+    await enableSaveTokenBtn()
+    if (success) {
+      $('#slackTokenInputGroup').addClass('has-success')
+      socket.emit('slackRestartReq')
+      let element = $('#saveSlackTokenAlert')
+      let html = `<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Slack token saved successfully. Slack integration is being restarted to use the new token.</div>`
+      await announcementAnimationSuccess(element, html)
+    } else {
+      $('#slackTokenInputGroup').addClass('has-error')
+      let element = $('#saveSlackTokenAlert')
+      let html = `<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> There was an error. Slack token was not saved.<br><span class="small">Message: ${err}</span></div>`
+      await announcementAnimationError(element, html)
+    }
+    return
+  } catch (err) {
+    alert(err)
   }
-  return
 }
 
 
@@ -485,22 +484,22 @@ socket.on('slackConnectionStatusRes', connected =>
 
 /**
  * Register the "slackConnectionOpened" event handler.
- * Enable the restart button, update connection status, and display an alert.
+ * Enable the restart button, update connection status, and display an announcement.
  */
 socket.on('slackConnectionOpened', async (message) =>
   enableRestartSlackBtn()
     .then(() => slackConnectionStatusUpdate(true))
-    .then(() => alertSlackConnection(message)))
+    .then(() => announcementSlackConnection(message)))
 
 /**
- * Show the Slack RTM Connection alert.
+ * Show the Slack RTM Connection announcement.
  * @param {String} message A message from the Slack RTM Connection event.
  */
-async function alertSlackConnection (message) {
+async function announcementSlackConnection (message) {
   try {
     let element = $('#restartSlackIntegrationAlert')
     let html = `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack integration was started.<br><span class="small">Message: ${message}</span></div>`
-    await alertAnimationSuccess(element, html)
+    await announcementAnimationSuccess(element, html)
     return
   } catch (err) {
     console.log(err)
@@ -510,7 +509,7 @@ async function alertSlackConnection (message) {
 socket.on('slackConnectionFailed', async (message) => {
   await enableRestartSlackBtn()
   await slackConnectionStatusUpdate(false)
-  await alertAnimationError(
+  await announcementAnimationError(
     $('#restartSlackIntegrationAlert'),
     `<div class="alert alert-danger mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> Slack integration was not started.<br><span class="small">Message: ${message}</span></div>`
   )
@@ -519,14 +518,14 @@ socket.on('slackConnectionFailed', async (message) => {
 
 /**
  * Register the "slackDisconnection" event handler.
- * Enable the stop button, update connection status, and display an alert.
+ * Enable the stop button, update connection status, and display an announcement.
  */
 socket.on('slackDisconnection', message => handleSlackDisconnection(message))
 
 async function handleSlackDisconnection (message) {
   await enableStopSlackBtn()
   await slackConnectionStatusUpdate(false)
-  await alertSlackDisconnection(message)
+  await announcementSlackDisconnection(message)
 }
 
 /**
@@ -543,7 +542,7 @@ socket.on('slackTokenRes', token => {
 })
 
 /**
- * TODO: render and show alert too
+ * TODO: render and show announcement too
  */
 socket.on('saveMotionUrlRes', (object, success, err) => {
   enableSaveMotionUrlBtn()
