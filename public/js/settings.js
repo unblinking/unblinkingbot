@@ -28,7 +28,7 @@ async function announcementAnimationError (element, html) {
     await fade(element, 500, 1)
     return
   } catch (err) {
-    alert(err)
+    window.alert(`Error: ${err.name}`)
   }
 }
 
@@ -53,7 +53,7 @@ async function announcementAnimationSuccess (element, html) {
     await upSlide(element, 500)
     return
   } catch (err) {
-    alert(err)
+    window.alert(`Error: ${err.name}`)
   }
 }
 
@@ -68,7 +68,7 @@ async function announcementSlackDisconnection (message) {
     await announcementAnimationSuccess(element, html)
     return
   } catch (err) {
-    console.log(err)
+    window.alert(`Error: ${err.name}`)
   }
 }
 
@@ -265,23 +265,6 @@ function fade (element, speed, opacity) {
   return new Promise(resolve => element.fadeTo(speed, opacity, resolve))
 }
 
-
-
-
-
-
-
-
-
-
-function handleSaveMotionUrlSuccess (object) {
-  return new Promise(resolve => {
-    $('#motionSnapshotUrlList').append("<a href='" + object.url + "'>" + object.name + '</a><br>')
-    $('#motionUrlInputGroup').addClass('has-success')
-    resolve()
-  })
-}
-
 /**
  * Hide all drop down selectors for default notifications
  */
@@ -448,7 +431,7 @@ async function handleSaveSlackNotifyRes (notify, notifyType, success, err) {
       await announcementAnimationError(element, html)
     }
   } catch (err) {
-    alert(err)
+    window.alert(`Error: ${err.name}`)
   }
 }
 
@@ -473,10 +456,9 @@ async function handleSaveSlackTokenRes (token, success, err) {
     }
     return
   } catch (err) {
-    alert(err)
+    window.alert(`Error: ${err.name}`)
   }
 }
-
 
 socket.on('slackConnectionStatusRes', connected =>
   slackConnectionStatusUpdate(connected)
@@ -502,7 +484,7 @@ async function announcementSlackConnection (message) {
     await announcementAnimationSuccess(element, html)
     return
   } catch (err) {
-    console.log(err)
+    window.alert(`Error: ${err.name}`)
   }
 }
 
@@ -514,7 +496,6 @@ socket.on('slackConnectionFailed', async (message) => {
     `<div class="alert alert-danger mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> Slack integration was not started.<br><span class="small">Message: ${message}</span></div>`
   )
 })
-
 
 /**
  * Register the "slackDisconnection" event handler.
@@ -552,12 +533,26 @@ socket.on('saveMotionUrlRes', (object, success, err) => {
     })
 })
 
+function handleSaveMotionUrlSuccess (object) {
+  return new Promise(resolve => {
+    $('#motionSnapshotUrlList').append("<a href='" + object.url + "'>" + object.name + '</a><br>')
+    $('#motionUrlInputGroup').addClass('has-success')
+    resolve()
+  })
+}
+
+/**
+ * TODO: Really write this
+ */
+function handleSaveMotionUrlError (err) {
+  window.alert(`Error: ${err.name}`)
+}
+
 /**
  * Initialize all tooltips
  * https://v4-alpha.getbootstrap.com/components/tooltips/
  */
 $(() => $('[data-toggle="tooltip"]').tooltip())
-
 
 /**
  * Setup the page buttons when this script is loaded.
