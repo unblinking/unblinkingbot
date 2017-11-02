@@ -11,7 +11,7 @@
   "license": "MIT",
   "readme": "README.md",
   "engines": {
-    "node": "8.8.1"
+    "node": "8.9.0"
   },
   "standard": {
     "ignore": [

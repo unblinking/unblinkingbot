@@ -4,6 +4,3 @@ Dockerfile
 .gitignore
 README.md
 node_modules/
-.eslintrc.json
-npm-debug.log.*
-testing*

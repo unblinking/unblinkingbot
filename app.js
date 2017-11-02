@@ -9,10 +9,10 @@
  */
 
 const datastores = require(`./lib/datastores`)
-const frontends = require('./lib/frontends')
+const frontends = require(`./lib/frontends`)
 const funs = require(`./lib/funs`)
-const slacks = require('./lib/slacks')
-const sockets = require('./lib/sockets')
+const slacks = require(`./lib/slacks`)
+const sockets = require(`./lib/sockets`)
 
 /**
  * Starts the unblinkingBot application.

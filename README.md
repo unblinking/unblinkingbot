@@ -14,6 +14,8 @@ For documentation, please [see the wiki](https://github.com/nothingworksright/un
 
 ## Show your support  
 
-Support this project by [making a pledge via Patreon](https://www.patreon.com/jmg1138).  
+Support this open source project and motivate me to continue development. Using [Beerpay.io](https://beerpay.io/nothingworksright/unblinkingbot?focus=wish) you can send me support, and make a wish for a new feature or issue fix.  
 
-© 2017 [nothingworksright](https://github.com/nothingworksright)  
+[Click here to show your support](https://beerpay.io/nothingworksright/unblinkingbot?focus=wish).  
+
+[![Beerpay](https://beerpay.io/nothingworksright/unblinkingbot/badge.svg?style=beer)](https://beerpay.io/nothingworksright/unblinkingbot)  [![Beerpay](https://beerpay.io/nothingworksright/unblinkingbot/make-wish.svg?style=flat)](https://beerpay.io/nothingworksright/unblinkingbot?focus=wish)  
