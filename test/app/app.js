@@ -14,7 +14,7 @@ const util = require(`util`)
 const setTimeoutPromise = util.promisify(setTimeout)
 
 describe(`App.js (the main app script)`, async () => {
-  it(`should start the app successfully.`, async () => {
+  it(`should start the main process without exiting.`, async () => {
     const exit = process.exit
     process.env.APP_EXIT = `false`
     process.exit = () => { process.env.APP_EXIT = `true` }

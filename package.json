@@ -33,7 +33,7 @@
     "env-test": "1.0.0",
     "eslint": "4.10.0",
     "intercept-stdout": "0.1.2",
-    "mocha": "4.0.1",
+    "mocha": "3.5.3",
     "ncu": "0.2.1",
     "npm-check-updates": "2.13.0",
     "nyc": "11.2.1",
