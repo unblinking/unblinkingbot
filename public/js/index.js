@@ -1,24 +1,15 @@
 /**
- * The unblinking bot.
- * Javascript for the unblinkingbot web UI index page.
- * @namespace index.js
- * @author jmg1138 {@link https://github.com/jmg1138 jmg1138 on GitHub}
+ * unblinkingBot front-end landing page (index.html)
+ * @author {@link https://github.com/jmg1138 jmg1138}
  */
 
-/**
- * @see {@link https://socket.io/docs/#using-with-express-3/4 Socket.io }
- */
-var socket = io.connect();
+/* eslint-env jquery */
+/* global io */
 
-/**
- * Setup the dashboard instrumentation when this script is loaded.
- */
-showRecentActivity();
+var socket = io.connect()
 
-socket.on("slacktivity", text => {
-  $("#activityCard").append(text + `<br>`);
-});
+socket.on('slacktivity', text => {
+  $('#activityCard').append(`${text}<br>`)
+})
 
-function showRecentActivity() {
-  return new P.resolve(socket.emit("dashRecentActivityReq"));
-}
+socket.emit('dashRecentActivityReq')

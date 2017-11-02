@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-env mocha */
 
 'use strict'
 
@@ -7,22 +8,12 @@
  * @author {@link https://github.com/jmg1138 jmg1138}
  */
 
-/**
- * Required modules.
- * @see {@link https://github.com/visionmedia/supertest supertest}
- */
-const express = require('../app')
-const supertest = require('supertest')
-
-const server = supertest.agent('http://127.0.0.1:1138');
-
-/**
- * Tests.
- */
-describe('GET / (the root route)', () =>
-  it('should respond.', () =>
-    server
-      .get('/')
-      .expect(200)
+describe(`Unit testing`, () => {
+  it(`should find that NODE_ENV has been set to test.`, () =>
+    process.env.NODE_ENV.should.equal(`test`)
   )
-)
+  after(() => {
+    // Unit tests, required in special order of execution.
+    require(`./app/app`)
+  })
+})
