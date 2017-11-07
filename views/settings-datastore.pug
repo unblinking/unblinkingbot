@@ -1,0 +1,14 @@
+.container.mb-3.p-0
+  .card
+    .card-header|Datastore
+      .btn.btn-sm.btn-outline-success.float-right.ml-3(
+        id="showDatastoreBtn"
+      )
+      .btn.btn-sm.btn-outline-danger.float-right.ml-3(
+        id="hideDatastoreBtn"
+      )
+    .card-block
+      .small.text-muted.mb-3
+        |This will show the bot's LevelDB datastore contents.
+      .card.card-outline-success
+        pre.small(id="dataStoreCardBody")

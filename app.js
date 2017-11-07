@@ -41,6 +41,9 @@ async function main () {
   }
 }
 
+// https://medium.com/@dtinth/making-unhandled-promise-rejections-crash-the-node-js-process-ffc27cfcc9dd
+process.on(`unhandledRejection`, up => { throw up })
+
 if (require.main === module) main()
 
 module.exports = {
