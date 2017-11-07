@@ -34,7 +34,14 @@ async function main () {
     let io = await sockets.instance(server)
     let slack = {}
     await sockets.listen(db, io, slack)
-    await slacks.connect(db, io, slack)
+    let token = await datastores.getSlackToken(db)
+    let restart = await slacks.restart(slack, token)
+    if (restart.done === true) {
+      slacks.listen(db, io, slack)
+    }
+    if (restart.done === false) {
+      io.emit(`slackRestartFailed`, `${restart.message}`)
+    }
     console.log(await funs.graffiti())
   } catch (err) {
     console.log(err)
@@ -42,7 +49,7 @@ async function main () {
 }
 
 // https://medium.com/@dtinth/making-unhandled-promise-rejections-crash-the-node-js-process-ffc27cfcc9dd
-process.on(`unhandledRejection`, up => { throw up })
+// process.on(`unhandledRejection`, up => { throw up })
 
 if (require.main === module) main()
 

@@ -18,10 +18,10 @@ socket.on(`motionThreadFileRes`, count => handleMotionThreadFileRes(count))
 socket.on(`readSlackChannelsRes`, channelNames => handleChannelsRes(channelNames))
 socket.on(`readSlackGroupsRes`, groupNames => handleReadSlackGroupsRes(groupNames))
 socket.on(`readSlackUsersRes`, userNames => handleReadSlackUsersRes(userNames))
-socket.on(`saveMotionUrlRes`, (object, success, err) => handleSaveMotionUrlRes(object, success, err))
-socket.on(`saveSlackNotifyRes`, (notify, notifyType, success, err) =>handleSaveSlackNotifyRes(notify, notifyType, success, err))
+// socket.on(`saveMotionUrlRes`, (object, success, err) => handleSaveMotionUrlRes(object, success, err))
+socket.on(`saveSlackNotifyRes`, (notify, notifyType, success, err) => handleSaveSlackNotifyRes(notify, notifyType, success, err))
 socket.on(`saveSlackTokenRes`, (token, success, err) => handleSaveSlackTokenRes(token, success, err))
-socket.on(`slackConnectionFailed`, message => handleSlackConnectionFailed(message))
+socket.on(`slackRestartFailed`, message => handleSlackRestartFailed(message))
 socket.on(`slackConnectionOpened`, message => handleSlackConnectionOpened(message))
 socket.on(`slackConnectionStatusRes`, connected => handleSlackConnectionStatusRes(connected))
 socket.on(`slackDisconnection`, message => handleSlackDisconnection(message))
@@ -98,17 +98,17 @@ function enableButton (btn, label, busy, emitFn) {
 
 function enableRestartSlackBtn () {
   let btn = $(`#startSlack`)
-  let label = `🚀 Restart Slack RTM Client`
-  let busy = `<div class="loader float-left"></div> &nbsp; Restarting Slack RTM Client`
-  function emitFn() { socket.emit(`slackRestartReq`) }
+  let label = `🚀 Reconnect`
+  let busy = `<div class="loader float-left"></div> &nbsp; Reconnecting`
+  function emitFn () { socket.emit(`slackRestartReq`) }
   enableButton(btn, label, busy, emitFn)
 }
 
 function enableStopSlackBtn () {
   let btn = $(`#stopSlack`)
-  let label = `⏹ Stop Slack RTM Client`
-  let busy = `<div class="loader float-left"></div> &nbsp; Stopping Slack RTM Client`
-  function emitFn() { socket.emit(`slackStopReq`) }
+  let label = `⏹ Disconnect`
+  let busy = `<div class="loader float-left"></div> &nbsp; Disconnecting`
+  function emitFn () { socket.emit(`slackStopReq`) }
   enableButton(btn, label, busy, emitFn)
 }
 
@@ -116,7 +116,7 @@ function enableSaveTokenBtn () {
   let btn = $(`#saveToken`)
   let label = `Save`
   let busy = `<div class="loader float-left"></div>`
-  function emitFn() { socket.emit(`saveSlackTokenReq`, $(`input[id=slackToken]`).val()) }
+  function emitFn () { socket.emit(`saveSlackTokenReq`, $(`input[id=slackToken]`).val()) }
   enableButton(btn, label, busy, emitFn)
 }
 
@@ -124,7 +124,7 @@ function enableSaveNotifyChannelBtn () {
   let btn = $(`#saveSlackDefaultNotifyChannel`)
   let label = `Save`
   let busy = `<div class="loader float-left"></div>`
-  function emitFn() { socket.emit(`saveSlackNotifyReq`, $(`select[id=defaultChannelSelect]`).val(), `channel`) }
+  function emitFn () { socket.emit(`saveSlackNotifyReq`, $(`select[id=defaultChannelSelect]`).val(), `channel`) }
   enableButton(btn, label, busy, emitFn)
 }
 
@@ -132,7 +132,7 @@ function enableSaveNotifyGroupBtn () {
   let btn = $(`#saveSlackDefaultNotifyGroup`)
   let label = `Save`
   let busy = `<div class="loader float-left"></div>`
-  function emitFn() { socket.emit(`saveSlackNotifyReq`, $(`select[id=defaultGroupSelect]`).val(), `group`) }
+  function emitFn () { socket.emit(`saveSlackNotifyReq`, $(`select[id=defaultGroupSelect]`).val(), `group`) }
   enableButton(btn, label, busy, emitFn)
 }
 
@@ -140,16 +140,18 @@ function enableSaveNotifyUserBtn () {
   let btn = $(`#saveSlackDefaultNotifyUser`)
   let label = `Save`
   let busy = `<div class="loader float-left"></div>`
-  function emitFn() { socket.emit(`saveSlackNotifyReq`, $(`select[id=defaultUserSelect]`).val(), `user`) }
+  function emitFn () { socket.emit(`saveSlackNotifyReq`, $(`select[id=defaultUserSelect]`).val(), `user`) }
   enableButton(btn, label, busy, emitFn)
 }
 
+/*
 function enableSaveMotionUrlBtn () {
   let btn = $(`#saveMotionUrl`)
   let label = `Save`
   let busy = `<div class="loader float-left"></div>`
-  function emitFn() { socket.emit(`saveMotionUrlReq`, { name: $(`input[id=motionNickname]`).val(), url: $(`input[id=motionSnapshotUrl]`).val() }) }
+  function emitFn () { socket.emit(`saveMotionUrlReq`, { name: $(`input[id=motionNickname]`).val(), url: $(`input[id=motionSnapshotUrl]`).val() }) }
 }
+*/
 
 /**
  * Enable a default notify type button element.
@@ -174,21 +176,21 @@ function enableNotifyTypeRadioBtn (btn, emitFn) {
   })
 }
 
-function enableNotifyTypeChannelRadioBtn() {
+function enableNotifyTypeChannelRadioBtn () {
   let btn = $(`#radioChannel`)
-  function emitFn() { socket.emit(`readSlackChannelsReq`) }
+  function emitFn () { socket.emit(`readSlackChannelsReq`) }
   enableNotifyTypeRadioBtn(btn, emitFn)
 }
 
-function enableNotifyTypeGroupRadioBtn() {
+function enableNotifyTypeGroupRadioBtn () {
   let btn = $(`#radioGroup`)
-  function emitFn() { socket.emit(`readSlackGroupsReq`) }
+  function emitFn () { socket.emit(`readSlackGroupsReq`) }
   enableNotifyTypeRadioBtn(btn, emitFn)
 }
 
-function enableNotifyTypeUserRadioBtn() {
+function enableNotifyTypeUserRadioBtn () {
   let btn = $(`#radioUser`)
-  function emitFn() { socket.emit(`readSlackUsersReq`) }
+  function emitFn () { socket.emit(`readSlackUsersReq`) }
   enableNotifyTypeRadioBtn(btn, emitFn)
 }
 
@@ -196,7 +198,7 @@ function enableDatastoreHideBtn () {
   let btn = $('#hideDatastoreBtn')
   let label = `🙈 Hide`
   let busy = `<div class="loader float-left"></div> &nbsp; Hiding`
-  function emitFn() {
+  function emitFn () {
     // Instead of a socket.io emit, just hide the data and then enable button.
     $('#dataStoreCardBody').html(``)
     enableDatastoreHideBtn()
@@ -206,9 +208,9 @@ function enableDatastoreHideBtn () {
 
 function enableDatastoreShowBtn () {
   let btn = $('#showDatastoreBtn')
-  let label = `🙉 Show`
+  let label = `🙉 Show | Refresh`
   let busy = `<div class="loader float-left"></div> &nbsp; Loading`
-  function emitFn() { socket.emit('fullDbReq') }
+  function emitFn () { socket.emit('fullDbReq') }
   enableButton(btn, label, busy, emitFn)
 }
 
@@ -303,7 +305,7 @@ async function handleSaveSlackTokenRes (token, success, err) {
       $(`#slackTokenInputGroup`).addClass(`has-success`)
       socket.emit(`slackRestartReq`)
       element = $(`#saveSlackTokenAlert`)
-      let html = `<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Slack token saved successfully. Slack integration is being restarted to use the new token.</div>`
+      let html = `<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Success!</strong> Slack token saved successfully. Slack messaging is being reconnected to use the new token.</div>`
       await announcementAnimationSuccess(element, html)
     } else {
       $(`#slackTokenInputGroup`).addClass(`has-error`)
@@ -325,7 +327,7 @@ async function handleSlackConnectionOpened (message) {
   try {
     handleSlackConnectionStatusUpdate(true)
     let element = $(`#restartSlackIntegrationAlert`)
-    let html = `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack integration was started.<br><span class="small">Message: ${message}</span></div>`
+    let html = `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Slack messaging was connected.<br><span class="small">Message: ${message}</span></div>`
     await announcementAnimationSuccess(element, html)
     element.promise().done(() => { enableRestartSlackBtn() })
   } catch (err) {
@@ -333,10 +335,10 @@ async function handleSlackConnectionOpened (message) {
   }
 }
 
-function handleSlackConnectionFailed (message) {
+function handleSlackRestartFailed (message) {
   handleSlackConnectionStatusUpdate(false)
   let element = $(`#restartSlackIntegrationAlert`)
-  let html = `<div class="alert alert-danger mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> Slack integration was not started.<br><span class="small">Message: ${message}</span></div>`
+  let html = `<div class="alert alert-danger mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> Slack messaging was not connected.<br><span class="small">Message: ${message}</span></div>`
   announcementAnimationError(element, html)
   element.promise().done(() => { enableRestartSlackBtn() })
 }
@@ -345,7 +347,7 @@ async function handleSlackDisconnection (message) {
   try {
     await handleSlackConnectionStatusUpdate(false)
     let element = $(`#stopSlackIntegrationAlert`)
-    let html = `<div class="alert alert-warning mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Warning!</strong> Slack integration was stopped.<br><span class="small">Message: ${message}</span></div>`
+    let html = `<div class="alert alert-warning mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Warning!</strong> Slack messaging was disconnected.<br><span class="small">Message: ${message}</span></div>`
     await announcementAnimationSuccess(element, html)
     element.promise().done(() => { enableStopSlackBtn() })
   } catch (err) {
@@ -363,7 +365,7 @@ function handleSlackNotifyRes (data) {
     element.text(`${data.notifyType} ${data.notify}`)
   } else {
     element.addClass(`text-danger`)
-    element.text(`the black hole`)
+    element.text(`a black hole`)
   }
 }
 
@@ -371,9 +373,11 @@ function handleSlackTokenRes (token) {
   $(`#slackToken`).val(token)
 }
 
+/*
 function handleMotionSnapshotsRes (text) {
   $(`#motionSnapshotUrlList`).append(`${text}<br>`)
 }
+*/
 
 function handleMotionConfFileRes (loaded) {
   let element = $(`#motionConfFileStatus`)
@@ -416,6 +420,8 @@ function handleMotionThreadFileRes (count) {
 
 // TODO: Rewrite this.
 // TODO: Don't allow empty input to be processed!
+// TODO: Just get rid of it? Replaced?
+/*
 async function handleSaveMotionUrlRes (object, success, error) {
   try {
     let element = $(`#saveMotionSnapshotUrlAlert`)
@@ -435,6 +441,7 @@ async function handleSaveMotionUrlRes (object, success, error) {
     window.alert(`Error: ${err.message}`)
   }
 }
+*/
 
 /**
  * Remove the has-success class from inputs on focus events.
@@ -465,7 +472,7 @@ function main () {
     enableNotifyTypeChannelRadioBtn()
     enableNotifyTypeGroupRadioBtn()
     enableNotifyTypeUserRadioBtn()
-    enableSaveMotionUrlBtn()
+    // enableSaveMotionUrlBtn()
     removeSuccessOnFocus()
     socket.emit(`slackConnectionStatusReq`)
     socket.emit(`slackTokenReq`)
