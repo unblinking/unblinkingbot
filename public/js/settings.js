@@ -11,14 +11,13 @@
 
 var socket = io.connect()
 
-socket.on('fullDbRes', data => handleFullDbRes(data))
+socket.on(`fullDbRes`, data => handleFullDbRes(data))
 socket.on(`motionConfFileRes`, text => handleMotionConfFileRes(text))
 socket.on(`motionEyeConfFileRes`, text => handleMotionEyeConfFileRes(text))
 socket.on(`motionThreadFileRes`, count => handleMotionThreadFileRes(count))
 socket.on(`readSlackChannelsRes`, channelNames => handleChannelsRes(channelNames))
 socket.on(`readSlackGroupsRes`, groupNames => handleReadSlackGroupsRes(groupNames))
 socket.on(`readSlackUsersRes`, userNames => handleReadSlackUsersRes(userNames))
-// socket.on(`saveMotionUrlRes`, (object, success, err) => handleSaveMotionUrlRes(object, success, err))
 socket.on(`saveSlackNotifyRes`, (notify, notifyType, success, err) => handleSaveSlackNotifyRes(notify, notifyType, success, err))
 socket.on(`saveSlackTokenRes`, (token, success, err) => handleSaveSlackTokenRes(token, success, err))
 socket.on(`slackRestartFailed`, message => handleSlackRestartFailed(message))
@@ -144,15 +143,6 @@ function enableSaveNotifyUserBtn () {
   enableButton(btn, label, busy, emitFn)
 }
 
-/*
-function enableSaveMotionUrlBtn () {
-  let btn = $(`#saveMotionUrl`)
-  let label = `Save`
-  let busy = `<div class="loader float-left"></div>`
-  function emitFn () { socket.emit(`saveMotionUrlReq`, { name: $(`input[id=motionNickname]`).val(), url: $(`input[id=motionSnapshotUrl]`).val() }) }
-}
-*/
-
 /**
  * Enable a default notify type button element.
  * @param {JQuery} btn The JQuery element selector for the button.
@@ -195,27 +185,27 @@ function enableNotifyTypeUserRadioBtn () {
 }
 
 function enableDatastoreHideBtn () {
-  let btn = $('#hideDatastoreBtn')
+  let btn = $(`#hideDatastoreBtn`)
   let label = `🙈 Hide`
   let busy = `<div class="loader float-left"></div> &nbsp; Hiding`
   function emitFn () {
     // Instead of a socket.io emit, just hide the data and then enable button.
-    $('#dataStoreCardBody').html(``)
+    $(`#dataStoreCardBody`).html(``)
     enableDatastoreHideBtn()
   }
   enableButton(btn, label, busy, emitFn)
 }
 
 function enableDatastoreShowBtn () {
-  let btn = $('#showDatastoreBtn')
+  let btn = $(`#showDatastoreBtn`)
   let label = `🙉 Show | Refresh`
   let busy = `<div class="loader float-left"></div> &nbsp; Loading`
-  function emitFn () { socket.emit('fullDbReq') }
+  function emitFn () { socket.emit(`fullDbReq`) }
   enableButton(btn, label, busy, emitFn)
 }
 
 function handleFullDbRes (data) {
-  $('#dataStoreCardBody').html(JSON.stringify(data, undefined, 2))
+  $(`#dataStoreCardBody`).html(JSON.stringify(data, undefined, 2))
   enableDatastoreShowBtn()
 }
 
@@ -238,8 +228,8 @@ function handleSlackConnectionStatusUpdate (connected) {
 
 /**
  * Populate a drop down selector with options from an array.
- * @param  {Array} array Array of options to go into the selector.
- * @param  {JQuery} selector The JQuery element selector to populate.
+ * @param {Array} array Array of options to go into the selector.
+ * @param {JQuery} selector The JQuery element selector to populate.
  */
 function populateDropDown (array, selector) {
   for (let i = 0; i < array.length; i++) {
@@ -373,12 +363,6 @@ function handleSlackTokenRes (token) {
   $(`#slackToken`).val(token)
 }
 
-/*
-function handleMotionSnapshotsRes (text) {
-  $(`#motionSnapshotUrlList`).append(`${text}<br>`)
-}
-*/
-
 function handleMotionConfFileRes (loaded) {
   let element = $(`#motionConfFileStatus`)
   if (loaded) {
@@ -418,31 +402,6 @@ function handleMotionThreadFileRes (count) {
   }
 }
 
-// TODO: Rewrite this.
-// TODO: Don't allow empty input to be processed!
-// TODO: Just get rid of it? Replaced?
-/*
-async function handleSaveMotionUrlRes (object, success, error) {
-  try {
-    let element = $(`#saveMotionSnapshotUrlAlert`)
-    if (success) {
-      $(`#motionSnapshotUrlList`).append(`<a href="${object.url}">${object.name}</a><br>`)
-      $(`#motionUrlInputGroup`).addClass(`has-success`)
-      let html = `<div class="alert alert-info mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Heads-up!</strong> Snapshot URL was saved.</div>`
-      await announcementAnimationSuccess(element, html)
-    } else {
-      $(`#motionUrlInputGroup`).addClass(`has-error`)
-      let html = `<div class="alert alert-danger mt-3"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error!</strong> Snapshot URL was not saved.<br><span class="small">Message: ${error.name}</span></div>`
-      await announcementAnimationError(element, html)
-    }
-    element.promise().done(() => { enableSaveMotionUrlBtn() })
-    return
-  } catch (err) {
-    window.alert(`Error: ${err.message}`)
-  }
-}
-*/
-
 /**
  * Remove the has-success class from inputs on focus events.
  */
@@ -472,7 +431,6 @@ function main () {
     enableNotifyTypeChannelRadioBtn()
     enableNotifyTypeGroupRadioBtn()
     enableNotifyTypeUserRadioBtn()
-    // enableSaveMotionUrlBtn()
     removeSuccessOnFocus()
     socket.emit(`slackConnectionStatusReq`)
     socket.emit(`slackTokenReq`)
@@ -480,7 +438,6 @@ function main () {
     socket.emit(`motionConfFileReq`)
     socket.emit(`motionEyeConfFileReq`)
     socket.emit(`motionThreadFileReq`)
-    // socket.emit(`motionSnapshotsReq`)
   } catch (err) {
     window.alert(`Error: ${err.message}`)
   }

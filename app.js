@@ -33,7 +33,7 @@ async function main () {
     await frontends.serverListen(server)
     let io = await sockets.instance(server)
     let slack = {}
-    await sockets.listen(db, io, slack)
+    sockets.listen(db, io, slack)
     let token = await datastores.getSlackToken(db)
     let restart = await slacks.restart(slack, token)
     if (restart.done === true) {
