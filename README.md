@@ -1,4 +1,4 @@
-# 🤖 unblinkingBot  
+# ಠ_ಠ unblinkingBot  
 
 Surveillance system assistant, as a Slack bot.  
 
