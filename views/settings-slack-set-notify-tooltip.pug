@@ -1,9 +1,11 @@
 .badge.badge-info.float-right(
-  data-toggle="tooltip",
-  data-delay={ "show": 50, "hide": 1500 },
+  data-toggle="popover",
   data-placement="left",
   data-container="body",
   data-html="true",
-  title="<div align='left'>Set the default recipient for the bot-user to send notifications. Choose between a channel, a group (private channel), or a user (direct message). You must add the bot user to the desired channel or direct message in Slack first.</div>"
+  title="Notifications",
+  data-content="<div align='left'>Set the default recipient for the bot-user to send notifications. Choose between a channel, a group (private channel), or a user (direct message). You must add the bot user to the desired channel or direct message in Slack first.</div>",
+  data-animation="true",
+  data-trigger="hover"
   )
   |?

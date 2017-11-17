@@ -1,6 +1,12 @@
 .collapse(
   id="editSnapshots"
   )
+  dl.row.mt-3
+    dt.col-sm-3|Current snapshots
+    dd.col-sm-9
+      span.text-primary(
+        id="motionSnapshotUrlList"
+      )
   .h5.mt-3|Add a motionEye snapshot URL
   |Enter details for a new motion snapshot URL and click Save.
   .input-group.mt-3(id="motionUrlInputGroup")
@@ -29,3 +35,4 @@
       style="border-color: blue;"
       )
       |Save
+  #saveMotionSnapshotUrlAlert

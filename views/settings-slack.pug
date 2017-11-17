@@ -1,21 +1,22 @@
-.container.mt-3
-  form(id="slackSettings")
-    .form-group(id="slackSettingsPanel")
-      .card
-        .card-header|Slack Integration
-          a.btn.btn-sm.btn-link.float-right(
-            href="https://api.slack.com/bot-users",
-            target="_blank"
-          )
-            |About Slack bot-users
-        .card-block
-          .mb-3|Slack RTM Client is
-            span.ml-1(id="slackIntegrationStatus")
-            |.
-          .btn.btn-sm.btn-outline-success.mr-1.mb-1(id="startSlack")
-          .btn.btn-sm.btn-outline-danger.mb-1(id="stopSlack")
-          #restartSlackIntegrationAlert
-          #stopSlackIntegrationAlert
-        ul.list-group.list-group-flush
-          include settings-slack-set-token
-          include settings-slack-set-notify
+.container.mb-3.p-0
+  .card
+    .card-header|Slack Bot User
+      a.btn.btn-sm.btn-link.float-right(
+        href="https://api.slack.com/bot-users",
+        target="_blank"
+      )
+        |About Slack bot-users 🤖
+    .card-block
+      .small|🔌 Slack messaging is
+        span.ml-1(id="slackIntegrationStatus")
+        |.
+      .small|Notifications go to
+        span.ml-1(id="currentSettingsNotify")
+        |.
+      .btn.btn-sm.btn-outline-success.mt-3.mr-1.mb-1(id="startSlack")
+      .btn.btn-sm.btn-outline-danger.mt-3.mb-1(id="stopSlack")
+      #restartSlackIntegrationAlert
+      #stopSlackIntegrationAlert
+    ul.list-group.list-group-flush
+      include settings-slack-set-token
+      include settings-slack-set-notify

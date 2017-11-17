@@ -1,34 +1,7 @@
-.container
-  nav.navbar.navbar-toggleable-sm.navbar-light.bg-faded.rounded
-    .btn.btn-outline-primary.navbar-toggler-right.hidden-md-up(
-      data-toggle="collapse", data-target="#navbar",
-      aria-expanded="false", aria-controls="navbar",
-      aria-label="Toggle navigation"
-    )
-      |Menu
-    .navbar-brand
-      img(src="/images/safari-pinned-tab.svg", height="30dp")
-    .collapse.navbar-collapse(id="navbar")
-      .navbar-nav
-        .nav-item
-          a.nav-link.text-primary(href="/")
-            |Dashboard
-        .nav-item
-          a.nav-link.text-primary(href="/settings")
-            |Settings
-        .nav-item
-          a.nav-link.text-primary(href="/datastore")
-            |Datastore
-        .nav-item.dropdown
-          a.nav-link.text-primary.dropdown-toggle(
-            href="#",
-            id="restartDropDown",
-            data-toggle="dropdown",
-            aria-haspopup="true",
-            aria-expanded="false"
-          )
-            |Restart
-            .dropdown-menu(aria-labelledby="restartDropDown")
-              a.dropdown-item.text-primary(id="restartBtn")
-                |Are you sure?
-                .small.mt-1|This will restart the unblinkingbot application
+.container.rounded-bottom.bg-inverse.mt-0.mb-3.p-0.clearfix
+  img.rounded.m-2(
+    src="/images/android-chrome-192x192.png",
+    height="30dp"
+  )
+  span.text-white.mr-2|unblinkingBot
+  span.text-white.small.float-right.mt-2.mr-2| web management console
