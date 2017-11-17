@@ -12,9 +12,10 @@ RUN apt-get install -y nodejs
 # Prepare the unblinkingbot application files and directories
 RUN mkdir -p /usr/local/unblinkingbot
 RUN mkdir -p /usr/local/unblinkingbot/db
+RUN mkdir -p /usr/local/unblinkingbot/motion
 WORKDIR /usr/local/unblinkingbot
 COPY . /usr/local/unblinkingbot
-RUN npm install
+RUN yarn
 
 # Prepare the unblinkingBot systemd based service
 COPY unblinkingbot.service /lib/systemd/system/unblinkingbot.service
