@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@slack/client": "3.14.2",
-    "casperjs": "1.1.4",
+    "chromy": "0.5.7",
     "express": "4.16.2",
     "helmet": "3.9.0",
     "level": "2.0.1",
