@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Surveillance-system assistant.",
   "main": "app.js",
-  "repository": "github:nothingworksright/unblinkingbot",
+  "repository": "github:unblinking/unblinkingbot",
   "engines": {
     "node": "8.9.1"
   },
